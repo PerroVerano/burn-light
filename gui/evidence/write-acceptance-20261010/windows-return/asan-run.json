@@ -1,0 +1,32 @@
+{
+  "result": "PASS",
+  "runs": [
+    {
+      "command": [
+        "/private/tmp/burnlight-return-asan-1buyt022/BurnLight.app/Contents/MacOS/drive_selection_test"
+      ],
+      "exit": 0,
+      "output": "Automatic optical selection, identity/media/write-capability and CD/DVD parameter checks passed; no hardware accessed.\n"
+    },
+    {
+      "command": [
+        "python3",
+        "/Users/luzove/Documents/Projects/BurnLight/gui/Validation/compact_session.py"
+      ],
+      "exit": 0,
+      "output": "PASS: 8 compact-session assertions; zero physical writes\n"
+    },
+    {
+      "command": [
+        "python3",
+        "/Users/luzove/Documents/Projects/BurnLight/gui/Validation/conflict_offline.py"
+      ],
+      "exit": 0,
+      "output": "PASS: 50 conflict assertions; zero physical writes\n"
+    }
+  ],
+  "physicalWrites": 0,
+  "leakDetection": false,
+  "reason": "not supported on this macOS sanitizer runtime",
+  "instrumentedCLIsha256": "9a0da329e80468fa3b600d327bc2319819e1513f5ca4dcf16c686a3326011353"
+}

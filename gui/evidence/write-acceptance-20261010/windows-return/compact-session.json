@@ -1,0 +1,17 @@
+{
+  "result": "PASS",
+  "count": 8,
+  "checks": [
+    "fixture is a complete 31-block volume",
+    "compact Joliet list imports expected file",
+    "independent descriptors and path tables accept compact volume",
+    "compact source exported payload matches independent oracle",
+    "compact source continuation generated without reading old payload",
+    "generated continuation still passes strict verify",
+    "descriptor outside reported volume remains rejected",
+    "rebinding hash cannot weaken generated 32-block minimum"
+  ],
+  "scratch": "/private/tmp/burnlight-compact-1g3zxny7",
+  "physicalWrites": 0,
+  "cliSHA256": "39a519188731eced63162d6308d400c067a41f69014f12295eea94bbef683f8a"
+}

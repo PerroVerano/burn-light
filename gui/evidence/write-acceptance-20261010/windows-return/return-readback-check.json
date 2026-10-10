@@ -1,0 +1,94 @@
+{
+  "result": "PASS",
+  "GUIInspectionJob": "44A8C222-4F9D-4F9F-B051-F4EE920C3233",
+  "GUIExportJob": "46B5B7F1-66D9-424E-885D-74110C6BA19A",
+  "localExport": "/Users/luzove/Documents/Projects/BurnLight/gui/evidence/write-acceptance-20261010/windows-return/local-copy/BurnLight-export-46B5B7F1-66D9-424E-885D-74110C6BA19A",
+  "media": "CD-R",
+  "sessions": 5,
+  "tracks": 5,
+  "latestSession": 33464,
+  "nextWritable": 40666,
+  "freeBytes": 653674496,
+  "appendable": true,
+  "files": [
+    {
+      "path": "AlgoLogFileWatcher.java",
+      "size": 2564,
+      "sha256": "e1dfef26bb3ed4f724edf967227635aea4488bb2f9c91c4eb46504dda1983e02",
+      "actualOpticalReads": 2,
+      "localCopyMatches": true,
+      "currentUserOwned": true,
+      "matchesBeforeWindows": false
+    },
+    {
+      "path": "DirectionRangeSimplifier.java",
+      "size": 7358,
+      "sha256": "e8c66918bbff155f1cedc27627d527470fcf676c9f318e118520a4cb28d63446",
+      "actualOpticalReads": 2,
+      "localCopyMatches": true,
+      "currentUserOwned": true,
+      "matchesBeforeWindows": true
+    },
+    {
+      "path": "GUI-追加验收/receipt.txt",
+      "size": 54,
+      "sha256": "30534f4c53ee31d8cbcc6a0d2c6833316a2740bbb330ee58531d447415a0b778",
+      "actualOpticalReads": 2,
+      "localCopyMatches": true,
+      "currentUserOwned": true,
+      "matchesBeforeWindows": true
+    },
+    {
+      "path": "hello-from-macos.txt",
+      "size": 25,
+      "sha256": "7ee4e19e373dbba1a7ae1ea2e69a1d30f49796ca25324375a1a5aa37e56db1d8",
+      "actualOpticalReads": 2,
+      "localCopyMatches": true,
+      "currentUserOwned": true,
+      "matchesBeforeWindows": true
+    },
+    {
+      "path": "swagger.json",
+      "size": 246137,
+      "sha256": "4f9bf438f233b913b77a3c071eea3a8607c11eaf0dfa253535f58b22b1a8d4f4",
+      "actualOpticalReads": 2,
+      "localCopyMatches": true,
+      "currentUserOwned": true,
+      "matchesBeforeWindows": true
+    },
+    {
+      "path": "中文目录/MixedCase.txt",
+      "size": 39,
+      "sha256": "5c17cb581762283d33e82e6477720d535e8c021bab264b17673bc2de925de1a0",
+      "actualOpticalReads": 2,
+      "localCopyMatches": true,
+      "currentUserOwned": true,
+      "matchesBeforeWindows": true
+    },
+    {
+      "path": "中文首刻.txt",
+      "size": 40,
+      "sha256": "66b4e6d3b41b759cf31df61c3bbeb4261e292d365c59ca2aab1fd0498873bddf",
+      "actualOpticalReads": 2,
+      "localCopyMatches": true,
+      "currentUserOwned": true,
+      "matchesBeforeWindows": true
+    },
+    {
+      "path": "方向范围约束航迹抽稀技术说明.docx",
+      "size": 802519,
+      "sha256": "42a9de1eab7677feac26d570d0907a21461d59d5c22aa28565339affb0290ddd",
+      "actualOpticalReads": 2,
+      "localCopyMatches": true,
+      "currentUserOwned": true,
+      "matchesBeforeWindows": true
+    }
+  ],
+  "sevenHistoricalHashesUnchanged": true,
+  "sevenHistoricalExtentsUnchanged": true,
+  "desktopOriginalsUnchanged": true,
+  "physicalWritesDuringReturn": 0,
+  "windows": "MANUAL_PASS",
+  "newWindowsFileOriginalHashCollected": false,
+  "boundary": "New Windows file is proven by two independent actual optical reads and a matching local copy; its original Windows source hash was not supplied."
+}

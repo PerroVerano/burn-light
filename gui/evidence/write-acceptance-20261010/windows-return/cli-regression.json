@@ -1,0 +1,8 @@
+{
+  "exitCode": 0,
+  "source": "unchanged original six CTest definitions, bundled CLI and separately compiled core tests; drive_selection adds Session-address contradiction cases",
+  "bundledCLIsha256": "39a519188731eced63162d6308d400c067a41f69014f12295eea94bbef683f8a",
+  "scratch": "/private/tmp/burnlight-original-regression-fb9otj48",
+  "physicalWrites": 0,
+  "originalCLIsha256": "306bfd58e78847e2ed9d157849c8269a2f6ca04912fcd185ef3f35a443b2a587"
+}

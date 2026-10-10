@@ -1,0 +1,15 @@
+/build*/
+.DS_Store
+/toc.dat
+/artifacts/*
+!/artifacts/baseline-before-gui/
+/artifacts/baseline-before-gui/*
+!/artifacts/baseline-before-gui/latest.json
+!/artifacts/baseline-before-gui/20261010-101609/
+/artifacts/baseline-before-gui/20261010-101609/*
+!/artifacts/baseline-before-gui/20261010-101609/sha256.json
+!/artifacts/baseline-before-gui/20261010-101609/baseline.tar.gz
+*.iso
+*.manifest
+*.blocks
+__pycache__/

@@ -1,0 +1,29 @@
+{
+  "initialGUIJob": "4EC88338-ABC8-4609-BFE5-D383BF6F9364",
+  "initialGUIsha256": "218c2f74ae82cb65ce66a9b60a50ed7b4e48f4dca88245cad44fd3a8c0e5bf1b",
+  "observedBug": {
+    "inspectLatestSession": 33464,
+    "listMsinfoLatestSession": 0,
+    "minfoLatestSession": 33464,
+    "nextWritable": 40666,
+    "incorrectFirstSessionFilesDisplayed": 3
+  },
+  "addressCheckedGUIJob": "5516692E-4588-4998-AA67-A08242DA6BD2",
+  "addressCheckedCLIsha256": "0b6823bdbafe156f0b274d9135a040420f7c375b2205801255759c1a91fe9849",
+  "secondObservedBoundary": {
+    "latestSession": 33464,
+    "PVDandSVDVolumeSpaceSize": 31,
+    "listExitCode": 1,
+    "error": "Invalid Volume Space Size"
+  },
+  "physicalWritesDuringInvestigation": 0,
+  "repairs": [
+    "Require matching msinfo/minfo; at most three read-only address queries, no writer retry",
+    "Require GUI inspect/list identity and geometry match",
+    "Accept imported compact ISO volume containing its descriptor while retaining generated-image minimum and strict size equality"
+  ],
+  "status": "RESOLVED_BY_FINAL_GUI_READ_ONLY_VALIDATION",
+  "finalInspectionJob": "44A8C222-4F9D-4F9F-B051-F4EE920C3233",
+  "finalExportJob": "46B5B7F1-66D9-424E-885D-74110C6BA19A",
+  "finalCompatibilityFix": "Import descriptor-in-volume instead of imposing generated 32-block minimum; UDF recognition uses known end"
+}

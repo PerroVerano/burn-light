@@ -1,0 +1,23 @@
+{
+  "result": "PASS",
+  "version": "1.1.1",
+  "checks": [
+    "installed/build/release bindings",
+    "136 GUI assertions",
+    "six CLI groups",
+    "50 conflict + 10 export + 8 compact offline cases",
+    "ASan/UBSan",
+    "actual optical caches and eight local files",
+    "source hashes",
+    "original baseline",
+    "Windows manual acceptance and Mac return"
+  ],
+  "physicalWritesDuringReturn": 0,
+  "documentation": {
+    "README.md": "dea00d384bd55bbb231a7760ebb51c1911b5f527da4a0e93095a6d567727b5d3",
+    "docs/implementation.md": "4e32026b35a44f39106d5e75e876bd916462ff8cdfdb48127ac30994806cd0ef",
+    "docs/gui-development-guide.md": "236a486a371d845a8d6ab4d90082c5188ab550398fff13042327b1b24eec8918",
+    "gui/README.md": "9bdedd26f112464b0ddbf366671ad97c4b0507754a466e7641c7678d5aeee6fb",
+    "gui/evidence/write-acceptance-20261010/acceptance.md": "51db11720a8ea8b55793e867851aee25f9f848eac10b3ad71f97ae3447e0069c"
+  }
+}

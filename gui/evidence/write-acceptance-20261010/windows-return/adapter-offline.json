@@ -1,0 +1,19 @@
+{
+  "result": "PASS",
+  "count": 10,
+  "checks": [
+    "Joliet-all-old-payload-nested-Chinese-empty-Finder-cache",
+    "Joliet-selected-folder-includes-descendants",
+    "Joliet-selected-nested-file-includes-ancestors",
+    "UDF-multisession-retained-extents-and-new-files",
+    "saved-real-CD-Windows-session-and-Mac-old-extents",
+    "missing-selection-path-rejected",
+    "path-traversal-rejected",
+    "wrong-file-size-rejected",
+    "physical-LBA-option-rejected-before-any-device-access",
+    "write-command-rejected-without-CLI-fallback"
+  ],
+  "scratch": "/private/tmp/burnlight-export-offline-lccaa_ft",
+  "physicalWrites": 0,
+  "actualOpticalRead": false
+}

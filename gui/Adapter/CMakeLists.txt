@@ -1,0 +1,33 @@
+cmake_minimum_required(VERSION 3.20)
+project(BurnLightExport LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBISOFS REQUIRED IMPORTED_TARGET libisofs-1>=1.5.4)
+pkg_check_modules(LIBUDFREAD REQUIRED IMPORTED_TARGET libudfread>=1.2.0)
+get_filename_component(CORE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE)
+find_program(CDRECORD_PATH appendcd-cdrecord PATHS "$ENV{HOME}/.local/libexec/appendcd" NO_DEFAULT_PATH REQUIRED)
+find_program(INITIAL_CDRECORD_PATH appendcd-initial-cdrecord PATHS "$ENV{HOME}/.local/libexec/appendcd" NO_DEFAULT_PATH REQUIRED)
+find_program(READCD_PATH readcd REQUIRED)
+# 单独编译共享核心；不向原 build/ 写文件，默认 appendcd 冲突行为不变。
+add_library(exportcore STATIC
+  ${CORE_ROOT}/src/Util.cpp ${CORE_ROOT}/src/IsoCore.cpp ${CORE_ROOT}/src/IsoInitial.cpp
+  ${CORE_ROOT}/src/IsoVerifier.cpp ${CORE_ROOT}/src/GeneratedMetadata.cpp
+  ${CORE_ROOT}/src/DiscScanner.cpp ${CORE_ROOT}/src/OpticalDrive.cpp
+  ${CORE_ROOT}/src/DiskArbitrationGuard.cpp ${CORE_ROOT}/src/UdfReader.cpp ${CORE_ROOT}/src/UdfSession.cpp)
+target_include_directories(exportcore PUBLIC ${CORE_ROOT}/src)
+target_compile_definitions(exportcore PUBLIC LIBISOFS_WITHOUT_LIBBURN)
+target_compile_options(exportcore PUBLIC -include "${CMAKE_CURRENT_SOURCE_DIR}/RuntimePaths.hpp")
+target_link_libraries(exportcore PUBLIC PkgConfig::LIBISOFS PkgConfig::LIBUDFREAD "-framework CoreFoundation" "-framework IOKit")
+target_compile_options(exportcore PRIVATE -Wno-deprecated-declarations)
+add_executable(burnlight-export Export.cpp)
+target_link_libraries(burnlight-export PRIVATE exportcore)
+target_compile_options(burnlight-export PRIVATE -Wall -Wextra -Wpedantic)
+add_executable(appendcd "${CORE_ROOT}/src/main.cpp")
+target_link_libraries(appendcd PRIVATE exportcore)
+foreach(test backend_target recovery_image drive_selection)
+  add_executable(${test}_test "${CORE_ROOT}/tests/${test}.cpp")
+  if(NOT test STREQUAL "backend_target")
+    target_link_libraries(${test}_test PRIVATE exportcore)
+  endif()
+endforeach()

@@ -1,0 +1,23 @@
+{
+  "GUIsha256": "c68460e6e478afe1676a8717d08f3416bb0c0679f01ed6f4ea97b2b9dabf8ec4",
+  "dependencies": {
+    "Frameworks/libisofs.6.dylib": "c718e7b716cd51cd19f58183d3117241366dff0bb8d5a9dd66aedcbdb2ac08ec",
+    "Frameworks/libudfread.3.dylib": "d77a290a6c72bd3c558284fb500d38ddab9399362f2bb0cb2ab6c2150bfd8580",
+    "MacOS/appendcd": "39a519188731eced63162d6308d400c067a41f69014f12295eea94bbef683f8a",
+    "MacOS/appendcd-cdrecord": "11c4f0d0bca59d5fb1e1efea706aabfb228681df32cea66cd0ee48009d8879ec",
+    "MacOS/appendcd-initial-cdrecord": "60a8f03459c5d4ba6adbaa5bfd4a24e3afcbd7b021f97129ccc3cf95c568911d",
+    "MacOS/burnlight-export": "33a3fc2d0201913ca9812cb6e9646d12cde1f6a1a000a54ef408258501ebb606",
+    "MacOS/readcd": "b9679cc60652aa9ebbcffb0200f469865ddedbd46e2849115b70eeaeb69f4c18"
+  },
+  "allowPhysicalWrites": true,
+  "version": "1.1.1",
+  "jobs": [
+    "48DA0119-0E1B-4F02-8366-AAB7B452F1BD",
+    "44A8C222-4F9D-4F9F-B051-F4EE920C3233",
+    "46B5B7F1-66D9-424E-885D-74110C6BA19A"
+  ],
+  "physicalWrites": 0,
+  "releaseZIPsha256": "ef76dbc72b6e8b82b00fbbb4f59501fd0f65eae44eac4589137471c62402c4a1",
+  "priorPhysicalWriteBuild": "gui/evidence/write-acceptance-20261010/physical-build-binding.json",
+  "boundary": "Actual GUI burns were performed with 1.1.0; 1.1.1 adds Session consistency and compact-source import checks and was tested offline and read-only on the returned physical disc. No extra burn is claimed."
+}

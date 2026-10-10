@@ -1,0 +1,14 @@
+{
+  "result": "PASS",
+  "activeMarker": false,
+  "processes": [
+    {
+      "state": "Ss",
+      "process": "/usr/libexec/diskarbitrationd"
+    },
+    {
+      "state": "S",
+      "process": "/Users/luzove/Applications/BurnLight.app/Contents/MacOS/BurnLight"
+    }
+  ]
+}

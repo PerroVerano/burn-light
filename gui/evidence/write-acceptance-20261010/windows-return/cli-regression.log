@@ -1,0 +1,17 @@
+Test project /private/tmp/burnlight-original-regression-fb9otj48/Relocated Local.app/Contents/MacOS
+    Start 1: offline_multisession
+1/6 Test #1: offline_multisession .............   Passed    0.73 sec
+    Start 2: udf_multisession
+2/6 Test #2: udf_multisession .................   Passed    0.11 sec
+    Start 3: backend_target
+3/6 Test #3: backend_target ...................   Passed    0.00 sec
+    Start 4: recovery_image
+4/6 Test #4: recovery_image ...................   Passed    0.01 sec
+    Start 5: drive_selection
+5/6 Test #5: drive_selection ..................   Passed    0.01 sec
+    Start 6: initial_session
+6/6 Test #6: initial_session ..................   Passed    0.12 sec
+
+100% tests passed out of 6
+
+Total Test time (real) =   0.97 sec

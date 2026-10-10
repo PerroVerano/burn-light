@@ -1,0 +1,79 @@
+{
+  "result": "PASS",
+  "firstGUIWrite": "EE38FFEE-330A-4CCB-A17C-97791DB8145B",
+  "replacementGUIWrite": "3651DFC7-29CC-4495-BB56-3D57B4FDF778",
+  "skipGUIReadOnlyPreview": "2B6BDEB9-2903-4ED8-844A-8B685A2C01C0",
+  "skipPreservesJavaExtent": {
+    "bytes": 7304,
+    "sections": [
+      "LBA=18932+7304"
+    ]
+  },
+  "replacementJava": {
+    "kind": "F",
+    "origin": "N",
+    "bytes": 7358,
+    "sha256": "e8c66918bbff155f1cedc27627d527470fcf676c9f318e118520a4cb28d63446",
+    "sections": [],
+    "actualSections": [
+      "LBA=26292+7358"
+    ]
+  },
+  "retainedFiles": [
+    "hello-from-macos.txt",
+    "swagger.json",
+    "中文目录/MixedCase.txt",
+    "中文首刻.txt",
+    "方向范围约束航迹抽稀技术说明.docx"
+  ],
+  "allRetainedExtentsAndHashesUnchanged": true,
+  "physicalWriteRequests": 2,
+  "exportGUIJob": "DAFB4311-0B9B-4ECF-86FE-1DCE256DDC45",
+  "localExport": "/Users/luzove/Documents/Projects/BurnLight/gui/evidence/write-acceptance-20261010/local-copy/BurnLight-export-DAFB4311-0B9B-4ECF-86FE-1DCE256DDC45",
+  "copiedFiles": [
+    {
+      "path": "DirectionRangeSimplifier.java",
+      "size": 7358,
+      "sha256": "e8c66918bbff155f1cedc27627d527470fcf676c9f318e118520a4cb28d63446",
+      "currentUserOwned": true
+    },
+    {
+      "path": "GUI-追加验收/receipt.txt",
+      "size": 54,
+      "sha256": "30534f4c53ee31d8cbcc6a0d2c6833316a2740bbb330ee58531d447415a0b778",
+      "currentUserOwned": true
+    },
+    {
+      "path": "hello-from-macos.txt",
+      "size": 25,
+      "sha256": "7ee4e19e373dbba1a7ae1ea2e69a1d30f49796ca25324375a1a5aa37e56db1d8",
+      "currentUserOwned": true
+    },
+    {
+      "path": "swagger.json",
+      "size": 246137,
+      "sha256": "4f9bf438f233b913b77a3c071eea3a8607c11eaf0dfa253535f58b22b1a8d4f4",
+      "currentUserOwned": true
+    },
+    {
+      "path": "中文目录/MixedCase.txt",
+      "size": 39,
+      "sha256": "5c17cb581762283d33e82e6477720d535e8c021bab264b17673bc2de925de1a0",
+      "currentUserOwned": true
+    },
+    {
+      "path": "中文首刻.txt",
+      "size": 40,
+      "sha256": "66b4e6d3b41b759cf31df61c3bbeb4261e292d365c59ca2aab1fd0498873bddf",
+      "currentUserOwned": true
+    },
+    {
+      "path": "方向范围约束航迹抽稀技术说明.docx",
+      "size": 802519,
+      "sha256": "42a9de1eab7677feac26d570d0907a21461d59d5c22aa28565339affb0290ddd",
+      "currentUserOwned": true
+    }
+  ],
+  "desktopOriginalsUnchanged": true,
+  "windowsAcceptance": "PENDING"
+}
