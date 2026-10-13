@@ -6,7 +6,7 @@
 #ifndef APPENDCD_BACKEND_H
 #define APPENDCD_BACKEND_H
 extern int appendcd_probe, appendcd_expected_nwa, appendcd_reuse, appendcd_finish;
-extern int appendcd_initial;
+extern int appendcd_initial, appendcd_vat;
 extern int appendcd_physical_track, appendcd_reserved_count, appendcd_checked_track;
 extern int appendcd_select_track(SCSI *, long *);
 extern void appendcd_check_reserved_size(SCSI *, int, long);
@@ -14,12 +14,20 @@ extern void appendcd_close_empty_tracks(SCSI *);
 extern void appendcd_validate_finish(SCSI *);
 extern void appendcd_validate_cd(SCSI *);
 
+/* The upstream packet parser clears TAO on track 0 but sets PACKET only on
+ * the data track. Fixation receives track 0; VAT must still close the Session.
+ * Keep the baseline driver's selection unchanged outside the VAT executor. */
+static int appendcd_fixate_packet(int lead_packet, int data_packet) {
+    return lead_packet || (appendcd_vat && data_packet);
+}
+
 #ifdef APPENDCD_BACKEND_IMPLEMENTATION
 int appendcd_probe;
 int appendcd_expected_nwa = -1;
 int appendcd_reuse;
 int appendcd_finish;
 int appendcd_initial;
+int appendcd_vat;
 int appendcd_physical_track;
 int appendcd_reserved_count;
 int appendcd_checked_track;
@@ -168,7 +176,7 @@ void appendcd_validate_finish(SCSI *scgp) {
 }
 
 static void appendcd_read_cd(SCSI *scgp, struct disk_info *di, struct track_info *ti) {
-    if (get_curprofile(scgp) != 0x09 || appendcd_reuse || appendcd_finish)
+    if (get_curprofile(scgp) != 0x09 || appendcd_reuse || appendcd_finish || (appendcd_vat && appendcd_initial))
         comerrno(EX_BAD, "appendcd CD path requires CD-R, without DVD recovery options.\n");
     fillbytes((caddr_t)di, sizeof (*di), '\0');
     fillbytes((caddr_t)ti, sizeof (*ti), '\0');
@@ -179,7 +187,7 @@ static void appendcd_read_cd(SCSI *scgp, struct disk_info *di, struct track_info
     /* The official MMC CD driver queries the invisible track as 0xFF. */
     if (get_trackinfo(scgp, (caddr_t)ti, TI_TYPE_TRACK, 0xFF, sizeof (*ti)) < 0 ||
         a_to_2_byte(ti->data_len) + 2 < 32 || !ti->nwa_valid || !ti->blank ||
-        ti->rt || ti->damage || ti->packet || ti->fp ||
+        ti->rt || ti->damage || (ti->packet && !appendcd_vat) || ti->fp ||
         (appendcd_initial ? (a_to_4_byte(ti->next_writable_addr) != 0 || a_to_4_byte(ti->track_start) != 0) :
          a_to_4_byte(ti->next_writable_addr) <= 0) || a_to_4_byte(ti->free_blocks) <= 0)
         comerrno(EX_BAD, "appendcd CD-R invisible Track has no valid streaming NWA.\n");

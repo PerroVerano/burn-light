@@ -6,9 +6,10 @@ import pathlib
 import shutil
 import subprocess
 import sys
+import os
 
 CLI = pathlib.Path(sys.argv[1]).resolve()
-OUT = CLI.parent.parent / 'artifacts' / 'initial-offline'
+OUT = pathlib.Path(os.environ.get('APPENDCD_TEST_ARTIFACT_ROOT', str(CLI.parent.parent/'artifacts'))) / 'initial-offline'
 if OUT.exists():
     shutil.rmtree(OUT)
 OUT.mkdir(parents=True)

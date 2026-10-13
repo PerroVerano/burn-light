@@ -18,4 +18,5 @@ inline std::string runtime(const char *name) {
 }
 #define CDRECORD_PATH burnlight::runtime("appendcd-cdrecord")
 #define INITIAL_CDRECORD_PATH burnlight::runtime("appendcd-initial-cdrecord")
+#define VAT_CDRECORD_PATH burnlight::runtime("appendcd-vat-cdrecord")
 #define READCD_PATH burnlight::runtime("readcd")

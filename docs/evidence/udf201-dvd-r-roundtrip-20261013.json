@@ -1,0 +1,513 @@
+{
+  "schema": 1,
+  "date": "2026-10-13",
+  "scope": "Supported UDF2.01/type1+virtual VAT on current Lenovo XL6M DVD-R promoted to formal local 1.2.0 after authorized human Windows roundtrip",
+  "evidenceRoot": "/Users/luzove/Documents/Projects/BurnLight/artifacts/dvd-vat-return/20261013-093516",
+  "userStatement": "Windows可以看到刻录的文件，然后我又刻录了一个大小246137字节的swagger.json文件放了进来。如果成功看到的话，可以变成正式版了",
+  "physicalWritesByThisAgentTurn": 0,
+  "actualUserBurn": {
+    "archivePath": "/Users/luzove/Library/Application Support/BurnLight/Archives/F552EB7A-B8AC-4C32-87BF-0FC8DC46C60F",
+    "conflictPolicy": "reject",
+    "created": "2026-10-13T01:28:37Z",
+    "device": {
+      "bsdNode": "/dev/disk4",
+      "device": "1,0,0",
+      "media": "DVD-R",
+      "name": "Lenovo Ultraslim DVD XL6M",
+      "registryID": "4294986360"
+    },
+    "evidencePath": "/tmp/burnlight-job-F552EB7A-B8AC-4C32-87BF-0FC8DC46C60F/optical/run-0QveI9",
+    "id": "F552EB7A-B8AC-4C32-87BF-0FC8DC46C60F",
+    "imagePath": "/tmp/burnlight-job-F552EB7A-B8AC-4C32-87BF-0FC8DC46C60F/optical/run-0QveI9/session-next.iso",
+    "message": "刻录与实际光盘读回验证完成，介质仍可追加。Windows 实机验收待完成。",
+    "operation": "burn",
+    "phase": "completed",
+    "snapshotPath": "/private/tmp/burnlight-input-iMB37w/files",
+    "workspacePath": "/private/tmp/burnlight-job-F552EB7A-B8AC-4C32-87BF-0FC8DC46C60F"
+  },
+  "returnedDisc": {
+    "device": "1,0,0",
+    "registryID": "4294987524",
+    "bsdNode": "/dev/disk4",
+    "media": "DVD-R",
+    "sessions": 5,
+    "tracks": 5,
+    "latest": 113520,
+    "nwa": 120160,
+    "appendable": true,
+    "unfinishedSession": false,
+    "freeBlocks": 2177728,
+    "freeBytes": 4459986944,
+    "recordedRanges": [
+      [
+        0,
+        65264
+      ],
+      [
+        93952,
+        94112
+      ],
+      [
+        100272,
+        100624
+      ],
+      [
+        106784,
+        107360
+      ],
+      [
+        113520,
+        114000
+      ]
+    ]
+  },
+  "independentReadback": {
+    "result": "PASS",
+    "sessionStart": 113520,
+    "sessions": 5,
+    "tracks": 5,
+    "nwa": 120160,
+    "appendable": true,
+    "independentReads": 2,
+    "sourceSHA256Provided": false,
+    "windowsConfirmation": "human",
+    "baselineCache": "/Users/luzove/Documents/Projects/BurnLight/artifacts/dvd-vat-return/20261013-093516/actual-user-burn-archive/workspace/optical/run-0QveI9/after-read/disc-cache.iso",
+    "before": {
+      "20261008_1-T-20261008103937-7cf51ef0.log": {
+        "size": 3068,
+        "sha256": "9ff8d85860f793293d639b242076ca9e592d3c1f3a39cf28bf113e71bc5cd314",
+        "sections": [
+          [
+            100576,
+            3068,
+            0
+          ]
+        ],
+        "uniqueId": 16
+      },
+      "AlgoLogFileWatcher-delivery.zip": {
+        "size": 16327,
+        "sha256": "b37388f29ada6694bbfd62b72814d1d3180363be0cc315aa59db3e4bc9748a84",
+        "sections": [
+          [
+            107076,
+            16327,
+            0
+          ]
+        ],
+        "uniqueId": 17
+      }
+    },
+    "after": {
+      "20261008_1-T-20261008103937-7cf51ef0.log": {
+        "size": 3068,
+        "sha256": "9ff8d85860f793293d639b242076ca9e592d3c1f3a39cf28bf113e71bc5cd314",
+        "sections": [
+          [
+            100576,
+            3068,
+            0
+          ]
+        ],
+        "uniqueId": 16
+      },
+      "AlgoLogFileWatcher-delivery.zip": {
+        "size": 16327,
+        "sha256": "b37388f29ada6694bbfd62b72814d1d3180363be0cc315aa59db3e4bc9748a84",
+        "sections": [
+          [
+            107076,
+            16327,
+            0
+          ]
+        ],
+        "uniqueId": 17
+      },
+      "swagger.json": {
+        "size": 246137,
+        "sha256": "4f9bf438f233b913b77a3c071eea3a8607c11eaf0dfa253535f58b22b1a8d4f4",
+        "sections": [
+          [
+            113808,
+            65536,
+            0
+          ],
+          [
+            113856,
+            180601,
+            0
+          ]
+        ],
+        "uniqueId": 18
+      }
+    },
+    "vat": 113999,
+    "previous": 107359,
+    "vds": 106816,
+    "strictConformance": false,
+    "compatibility": [
+      {
+        "directory": "",
+        "byteOffset": 4096,
+        "expected": 13401,
+        "recorded": 6531
+      },
+      {
+        "directory": "",
+        "byteOffset": 6144,
+        "expected": 13402,
+        "recorded": 0
+      }
+    ],
+    "oldFileHashExtentUniqueIdPreserved": true,
+    "swaggerJSONValid": true
+  },
+  "mountedView": {
+    "20261008_1-T-20261008103937-7cf51ef0.log": {
+      "size": 3068,
+      "sha256": "9ff8d85860f793293d639b242076ca9e592d3c1f3a39cf28bf113e71bc5cd314"
+    },
+    "AlgoLogFileWatcher-delivery.zip": {
+      "size": 16327,
+      "sha256": "b37388f29ada6694bbfd62b72814d1d3180363be0cc315aa59db3e4bc9748a84"
+    },
+    "swagger.json": {
+      "size": 246137,
+      "sha256": "4f9bf438f233b913b77a3c071eea3a8607c11eaf0dfa253535f58b22b1a8d4f4"
+    }
+  },
+  "sourceBinding": {
+    "before": {
+      "backend/CDDL.Schily.txt": "0770cbf84caf67c6e776ef1dcf89dc0cda47f8ede144f170a2850df9008739c7",
+      "backend/appendcd_backend.h": "ad1786cdf2607eae9a2f036a7adb0155a154a20dc48864ea9f8d67bfe753c724",
+      "backend/appendcd_identity.h": "f6dfaa09cae0afdb96b5885f3572e6edacb5299364fd9439fbcd212e8865cb80",
+      "gui/Adapter/CMakeLists.txt": "3b1e6c1a44e15cc7ec2dd219486522b6cd353acb35305a1fe8970236fb6b42a1",
+      "gui/Adapter/Export.cpp": "966184d469c5f7f2b9e122634ee92b2556088ca0dfd2fe3fef4c3b418d094b4c",
+      "gui/Adapter/RuntimePaths.hpp": "28bb10a244e98fe6ef30fe19c876119daa585a92251532d4b977aa3f8fbc72dc",
+      "gui/Sources/BurnLightApp/AppModel.swift": "e178f066a16161a6144b62532176c01633c11be0fda1410a9b208bb68cca7280",
+      "gui/Sources/BurnLightApp/BurnLightApp.swift": "d2492675f38c46c7f34fd9d510d09c18ccc5a02d9e2412b006cec92ab055af8f",
+      "gui/Sources/BurnLightApp/ContentView.swift": "0cba786d554c29cc75630ba0e44850d3cb4e24e83d298f2b2c475922fade5421",
+      "gui/Sources/BurnLightCore/DiscExport.swift": "91601aa4d7707832c047e157a6b204d95ddcedf18e4eab68eeb098f3545e2206",
+      "gui/Sources/BurnLightCore/JobArchive.swift": "e6523344067bbff3b71dc10bd0e6f4c6732508d81953c0f461b7a168b493a78d",
+      "gui/Sources/BurnLightCore/JobStore.swift": "dc9eb6ecb203e8bc6bec7e69b357360bcb3f7c0b2e9981b8305ae857800aef7b",
+      "gui/Sources/BurnLightCore/Models.swift": "94b5b9d5cc02036203a3e25022cbf95bec1ad7f9df7c64a6defed97dacb05989",
+      "gui/Sources/BurnLightCore/Recovery.swift": "f496fb29590425c09d5f84839b8eb225535f040212730498e100ae84f278672f",
+      "gui/Sources/BurnLightCore/Runner.swift": "eb3a902161bd65ef20f27712adb8ef5960f9e2417942b54e2809bc2d5f0d5b65",
+      "gui/Sources/BurnLightCore/Staging.swift": "ff1a3d727af82efdf5335e1f3b11a2e1ce4094e185d4570eade53c36adaab87d",
+      "gui/Sources/BurnLightCore/TextContract.swift": "143cc8e87dcadc30b9d8f36561cb2190b632a8ae8f211e488b5a28e1fd3ea72e",
+      "gui/Validation/Fixtures/new-files/GUI data.txt": "98bb8492ab4e7281863c2b6905445e969af67b37b12e2589f45d0fc23a87bf04",
+      "gui/Validation/Fixtures/new-files/GUI只读预览.txt": "15693e4163ddb104e6c406784558dbe68f0c4e3b647886249a3ad9fcf4ddd770",
+      "gui/Validation/PhysicalFixtures/conflict-20261010/GUI-追加验收/receipt.txt": "30534f4c53ee31d8cbcc6a0d2c6833316a2740bbb330ee58531d447415a0b778",
+      "gui/Validation/ValidationMain.swift": "44811e964c7fee4ec09aaca84bb23e0fd504bce787b397db536ba2caf8635ed2",
+      "gui/Validation/compact_session.py": "9d499aac1da2ff6efb61cc9d3bb44fbfd0560005d567cf8a5b2c1da27ba94ade",
+      "gui/Validation/conflict_offline.py": "a7907c545142e21688a6963250df655cb46e9a24df13d230ba849501002f18df",
+      "gui/Validation/export_offline.py": "478d68223dfa987e1a54e26235e6b78bb505f270042c7e7b984daf94067e6883",
+      "gui/Validation/physical_check.py": "df20c7f7e6cffad725461a2fda1925bd1230a6bd7f94b3518194ac30e1d929a0",
+      "gui/Validation/process_check.py": "6c7d294509a3fcccef7ab89c76450dc0815da248236d7875d3d32194a7c6b49e",
+      "gui/Validation/release_check.py": "eea24bb93fed335da025ceaa811282f03574998967989b6a707ea5d9401f87ed",
+      "gui/Validation/vat_export.py": "37eb1111ec3515343249b9c726433e5f5f7a5be70d4c2dad207cc4d99a9a8e98",
+      "gui/Validation/windows_return_check.py": "24c7f6fda4f6033a15103452b05af16e3daca400376cc63753a94357db955ddd",
+      "gui/scripts/build.sh": "dda9413010d2a66a97af2ac255d17b1ce02611648978298e11c15874074882d7",
+      "gui/scripts/cli-regression.py": "52ebf82b90a40903a5d5f2b90f0718d5e76e0a8525803f63f361c1ceeb34237f",
+      "gui/scripts/collect-evidence.py": "eac056d54b794fadc63a174a68b44230180edb85ea0014a9f96c39af96ed7c64",
+      "gui/scripts/icon-pack.py": "3127898492cb20fb14b7a028572b8d200f46e3597466fbfb209cababaf9a8236",
+      "gui/scripts/icon.swift": "44740d4ec114f6a45891b3502d15e87eb336746ed84d75079485e5a308662d31",
+      "gui/scripts/install-local.py": "41f3f52fa084b5e3be89601ff2b88a7427f6ca5d4ab182d8588077a41ce552bb",
+      "gui/scripts/package.py": "d8bb8550d7bc8b810784946bfbab1588c6d7cbcf386296ad9c311a26b418e13c",
+      "gui/scripts/release.sh": "fcdfb3bea71f3c6d9efbfc66c297ce89dc641c121859deb7d78a4a23e351f554",
+      "gui/scripts/restore-reference.py": "e9feaf3d4e43b41121b07974688fdd970d3c44272bfa6e56153d1288cbd52cd2",
+      "gui/scripts/test.sh": "530df33b8c38f121d345e4d291e6b0275252a385db921805f3cca848469d9b0c",
+      "scripts/admin-run.sh": "f9e6b1046371c98a1f182a50416b52359a7813b42b1d1d4c057e12f354380039",
+      "scripts/build-cdrecord.py": "efa40c8f51f0ac8a23e492ce719a1fad2b3328b10107d89461b5b03d53a987c0",
+      "scripts/windows-verify.ps1": "e7d76a1dd6a164a02e8fea184fa9384a27c56da2ebf1e85fc54b92f09aed930e",
+      "src/DiscScanner.cpp": "edd66d1015eb986c585320378508c9fe11bfe98f6a102c3e9c61f3faa44b53c6",
+      "src/DiscScanner.hpp": "a7efcb295ebb06abe6ecb9b48d48473abd063f4714157b760b06e43385ae15ac",
+      "src/DiskArbitrationGuard.cpp": "0a0ffa21ed7530926380637b1b87db552dcadc9c38ce72a72e445eedabd9645d",
+      "src/DiskArbitrationGuard.hpp": "9e557a25a35e5cb0ac561b2cac6236545f5acdd6f49caad4112ec82b94fa8c58",
+      "src/GeneratedMetadata.cpp": "804153af850fdb55cdcae2a765004d94cfbe27e3f52b30f818ab882185658109",
+      "src/GeneratedMetadata.hpp": "9635d67df7cf40246a43e42a1522c158d1726918a38baa9fe1fb7e2de3605ef4",
+      "src/IsoCore.cpp": "281f34f92f86f236b1f21c0cd2f5fd2bcfd2b8c5334caca559ac49e8e4776663",
+      "src/IsoCore.hpp": "437b60b98d27baf7e092e0ddb703af46a3d456d6204095bee9638ed3d7536b0d",
+      "src/IsoInitial.cpp": "62b1c31d70b5599c9b27d730bce06692d93429a1c45b75fa365a29ae207481f5",
+      "src/IsoVerifier.cpp": "d1958aca171a0b49d482f13a353b0ea957cd378aef43e53e2df6025f26dcf092",
+      "src/IsoVerifier.hpp": "79220aebc4da82199304d0c30c76208a3b47eeb42c67ed54e018713c5a3711de",
+      "src/OpticalDrive.cpp": "1deb675239d3ce4fe44df821a7a4e8e82bc2491bf3717463e1e11981e4a5daf4",
+      "src/OpticalDrive.hpp": "58437e9de4610390cd6adfd2152b89bae37ffddad26986a85f0f3213d3cb2148",
+      "src/UdfReader.cpp": "28d3113941ff2fedf5fc343d68f25a5ee88ce7cca573ab1ef75702a4b06131ef",
+      "src/UdfReader.hpp": "ea245ec57f5aaa4176135c5d13606ce2c9dec68a102ffd259a9f2709c743ff48",
+      "src/UdfSession.cpp": "17971b356075ffe536f45c87eb670d140052a13af3237ad9204ea62359c2b9ee",
+      "src/UdfSession.hpp": "0ae7a4a5baf99dd020a37e4997f6eb5bd7b2338fddeff01c3f6628279c8ae049",
+      "src/UdfVat.cpp": "9a3cdeb74678b14ae6800a9d8c3b7249dac8323c2fafe595b61621fff95719b5",
+      "src/UdfVat.hpp": "67a4dbce7a0e6e21d17937a5112388a66e7363ff2bf2cfdc8d10d54797a298b0",
+      "src/Util.cpp": "f4b60701091fcfbc4b0fbc9919d62f9636e6e5a53dbe9a5c3275d59598654743",
+      "src/Util.hpp": "d150760e02f3fcee1530951d0763b586decc9bb169d64438077ff2c223717e8d",
+      "src/main.cpp": "3b7557a6b92680b5cb9ef3121d5d85d8c427a9fe83d398fe994f8c4ce0c05a7e",
+      "tests/backend_target.cpp": "ca3bb56d38e190c9b939c51a6ecce9471a5077d3b6ed9f7f9d6e45b3239414a7",
+      "tests/drive_selection.cpp": "9e493be6f1a8b2c07da9fccc63d9cdd0d03fc622078ecda97fa5b44d4cc6492b",
+      "tests/guard_recovery.cpp": "39b251677666762eb15bbf09f7c9e3632533362cf97596f4d8896065c8f44ad9",
+      "tests/initial.py": "e4a1a75f9e90235345559bca54064cec09bb54016008043e299977f94835f289",
+      "tests/offline.py": "8b14dda32f97a76fdfbf66f37ad77d7fe31d95337151c5a3aaadade05d82c52f",
+      "tests/recovery_image.cpp": "519935aee2aa0caa12451f888c612b39ed6ef3ec2a136edd60912866941b6e54",
+      "tests/udf_offline.py": "bf5b8a34ada882910f0315a44434581c0d649cc891586e594d1c298a07219e44",
+      "tests/vat_fixture.py": "a735f04934c7d45cfd6a4720ea7dfebe1f82b278ceb3c05dfd5235f1113495c1",
+      "tests/vat_offline.py": "563028f45d833c39678f33aa6f3fc65e729c85007374ca788da1268d40492959",
+      "tests/vat_oracle.py": "ed83ee729146651fb85608305ca1c20ec62a5e5916f3739feb5029d4b548858a",
+      "CMakeLists.txt": "359f25fa32db25772853f5e39b99eb6479f8ed0f8d3c738f57b246f0b0b6ac31"
+    },
+    "after": {
+      "backend/CDDL.Schily.txt": "0770cbf84caf67c6e776ef1dcf89dc0cda47f8ede144f170a2850df9008739c7",
+      "backend/appendcd_backend.h": "ad1786cdf2607eae9a2f036a7adb0155a154a20dc48864ea9f8d67bfe753c724",
+      "backend/appendcd_identity.h": "f6dfaa09cae0afdb96b5885f3572e6edacb5299364fd9439fbcd212e8865cb80",
+      "gui/Adapter/CMakeLists.txt": "3b1e6c1a44e15cc7ec2dd219486522b6cd353acb35305a1fe8970236fb6b42a1",
+      "gui/Adapter/Export.cpp": "966184d469c5f7f2b9e122634ee92b2556088ca0dfd2fe3fef4c3b418d094b4c",
+      "gui/Adapter/RuntimePaths.hpp": "28bb10a244e98fe6ef30fe19c876119daa585a92251532d4b977aa3f8fbc72dc",
+      "gui/Sources/BurnLightApp/AppModel.swift": "e178f066a16161a6144b62532176c01633c11be0fda1410a9b208bb68cca7280",
+      "gui/Sources/BurnLightApp/BurnLightApp.swift": "d2492675f38c46c7f34fd9d510d09c18ccc5a02d9e2412b006cec92ab055af8f",
+      "gui/Sources/BurnLightApp/ContentView.swift": "addf11d19d61a0f9084d40ecfa7e35f7e08085fba528c203bfcbd9ff77081cbc",
+      "gui/Sources/BurnLightCore/DiscExport.swift": "91601aa4d7707832c047e157a6b204d95ddcedf18e4eab68eeb098f3545e2206",
+      "gui/Sources/BurnLightCore/JobArchive.swift": "e6523344067bbff3b71dc10bd0e6f4c6732508d81953c0f461b7a168b493a78d",
+      "gui/Sources/BurnLightCore/JobStore.swift": "dc9eb6ecb203e8bc6bec7e69b357360bcb3f7c0b2e9981b8305ae857800aef7b",
+      "gui/Sources/BurnLightCore/Models.swift": "94b5b9d5cc02036203a3e25022cbf95bec1ad7f9df7c64a6defed97dacb05989",
+      "gui/Sources/BurnLightCore/Recovery.swift": "f496fb29590425c09d5f84839b8eb225535f040212730498e100ae84f278672f",
+      "gui/Sources/BurnLightCore/Runner.swift": "eb3a902161bd65ef20f27712adb8ef5960f9e2417942b54e2809bc2d5f0d5b65",
+      "gui/Sources/BurnLightCore/Staging.swift": "ff1a3d727af82efdf5335e1f3b11a2e1ce4094e185d4570eade53c36adaab87d",
+      "gui/Sources/BurnLightCore/TextContract.swift": "143cc8e87dcadc30b9d8f36561cb2190b632a8ae8f211e488b5a28e1fd3ea72e",
+      "gui/Validation/Fixtures/new-files/GUI data.txt": "98bb8492ab4e7281863c2b6905445e969af67b37b12e2589f45d0fc23a87bf04",
+      "gui/Validation/Fixtures/new-files/GUI只读预览.txt": "15693e4163ddb104e6c406784558dbe68f0c4e3b647886249a3ad9fcf4ddd770",
+      "gui/Validation/PhysicalFixtures/conflict-20261010/GUI-追加验收/receipt.txt": "30534f4c53ee31d8cbcc6a0d2c6833316a2740bbb330ee58531d447415a0b778",
+      "gui/Validation/ValidationMain.swift": "44811e964c7fee4ec09aaca84bb23e0fd504bce787b397db536ba2caf8635ed2",
+      "gui/Validation/compact_session.py": "9d499aac1da2ff6efb61cc9d3bb44fbfd0560005d567cf8a5b2c1da27ba94ade",
+      "gui/Validation/conflict_offline.py": "a7907c545142e21688a6963250df655cb46e9a24df13d230ba849501002f18df",
+      "gui/Validation/export_offline.py": "478d68223dfa987e1a54e26235e6b78bb505f270042c7e7b984daf94067e6883",
+      "gui/Validation/physical_check.py": "df20c7f7e6cffad725461a2fda1925bd1230a6bd7f94b3518194ac30e1d929a0",
+      "gui/Validation/process_check.py": "6c7d294509a3fcccef7ab89c76450dc0815da248236d7875d3d32194a7c6b49e",
+      "gui/Validation/release_check.py": "eea24bb93fed335da025ceaa811282f03574998967989b6a707ea5d9401f87ed",
+      "gui/Validation/vat_export.py": "37eb1111ec3515343249b9c726433e5f5f7a5be70d4c2dad207cc4d99a9a8e98",
+      "gui/Validation/windows_return_check.py": "24c7f6fda4f6033a15103452b05af16e3daca400376cc63753a94357db955ddd",
+      "gui/scripts/build.sh": "69b4e7e05751d68b542a15b7c70cc0e74e6f6a864f68b6090de20892b850ca45",
+      "gui/scripts/cli-regression.py": "52ebf82b90a40903a5d5f2b90f0718d5e76e0a8525803f63f361c1ceeb34237f",
+      "gui/scripts/collect-evidence.py": "eac056d54b794fadc63a174a68b44230180edb85ea0014a9f96c39af96ed7c64",
+      "gui/scripts/icon-pack.py": "3127898492cb20fb14b7a028572b8d200f46e3597466fbfb209cababaf9a8236",
+      "gui/scripts/icon.swift": "44740d4ec114f6a45891b3502d15e87eb336746ed84d75079485e5a308662d31",
+      "gui/scripts/install-local.py": "41f3f52fa084b5e3be89601ff2b88a7427f6ca5d4ab182d8588077a41ce552bb",
+      "gui/scripts/package.py": "d8bb8550d7bc8b810784946bfbab1588c6d7cbcf386296ad9c311a26b418e13c",
+      "gui/scripts/release.sh": "fcdfb3bea71f3c6d9efbfc66c297ce89dc641c121859deb7d78a4a23e351f554",
+      "gui/scripts/restore-reference.py": "e9feaf3d4e43b41121b07974688fdd970d3c44272bfa6e56153d1288cbd52cd2",
+      "gui/scripts/test.sh": "530df33b8c38f121d345e4d291e6b0275252a385db921805f3cca848469d9b0c",
+      "scripts/admin-run.sh": "f9e6b1046371c98a1f182a50416b52359a7813b42b1d1d4c057e12f354380039",
+      "scripts/build-cdrecord.py": "efa40c8f51f0ac8a23e492ce719a1fad2b3328b10107d89461b5b03d53a987c0",
+      "scripts/windows-verify.ps1": "e7d76a1dd6a164a02e8fea184fa9384a27c56da2ebf1e85fc54b92f09aed930e",
+      "src/DiscScanner.cpp": "edd66d1015eb986c585320378508c9fe11bfe98f6a102c3e9c61f3faa44b53c6",
+      "src/DiscScanner.hpp": "a7efcb295ebb06abe6ecb9b48d48473abd063f4714157b760b06e43385ae15ac",
+      "src/DiskArbitrationGuard.cpp": "0a0ffa21ed7530926380637b1b87db552dcadc9c38ce72a72e445eedabd9645d",
+      "src/DiskArbitrationGuard.hpp": "9e557a25a35e5cb0ac561b2cac6236545f5acdd6f49caad4112ec82b94fa8c58",
+      "src/GeneratedMetadata.cpp": "804153af850fdb55cdcae2a765004d94cfbe27e3f52b30f818ab882185658109",
+      "src/GeneratedMetadata.hpp": "9635d67df7cf40246a43e42a1522c158d1726918a38baa9fe1fb7e2de3605ef4",
+      "src/IsoCore.cpp": "281f34f92f86f236b1f21c0cd2f5fd2bcfd2b8c5334caca559ac49e8e4776663",
+      "src/IsoCore.hpp": "437b60b98d27baf7e092e0ddb703af46a3d456d6204095bee9638ed3d7536b0d",
+      "src/IsoInitial.cpp": "62b1c31d70b5599c9b27d730bce06692d93429a1c45b75fa365a29ae207481f5",
+      "src/IsoVerifier.cpp": "d1958aca171a0b49d482f13a353b0ea957cd378aef43e53e2df6025f26dcf092",
+      "src/IsoVerifier.hpp": "79220aebc4da82199304d0c30c76208a3b47eeb42c67ed54e018713c5a3711de",
+      "src/OpticalDrive.cpp": "1deb675239d3ce4fe44df821a7a4e8e82bc2491bf3717463e1e11981e4a5daf4",
+      "src/OpticalDrive.hpp": "58437e9de4610390cd6adfd2152b89bae37ffddad26986a85f0f3213d3cb2148",
+      "src/UdfReader.cpp": "28d3113941ff2fedf5fc343d68f25a5ee88ce7cca573ab1ef75702a4b06131ef",
+      "src/UdfReader.hpp": "ea245ec57f5aaa4176135c5d13606ce2c9dec68a102ffd259a9f2709c743ff48",
+      "src/UdfSession.cpp": "17971b356075ffe536f45c87eb670d140052a13af3237ad9204ea62359c2b9ee",
+      "src/UdfSession.hpp": "0ae7a4a5baf99dd020a37e4997f6eb5bd7b2338fddeff01c3f6628279c8ae049",
+      "src/UdfVat.cpp": "9a3cdeb74678b14ae6800a9d8c3b7249dac8323c2fafe595b61621fff95719b5",
+      "src/UdfVat.hpp": "67a4dbce7a0e6e21d17937a5112388a66e7363ff2bf2cfdc8d10d54797a298b0",
+      "src/Util.cpp": "f4b60701091fcfbc4b0fbc9919d62f9636e6e5a53dbe9a5c3275d59598654743",
+      "src/Util.hpp": "d150760e02f3fcee1530951d0763b586decc9bb169d64438077ff2c223717e8d",
+      "src/main.cpp": "454346ed92aa4de58836335c1e81dfe79cfe5c5dbee17260b4739e38785a3e13",
+      "tests/backend_target.cpp": "ca3bb56d38e190c9b939c51a6ecce9471a5077d3b6ed9f7f9d6e45b3239414a7",
+      "tests/drive_selection.cpp": "9e493be6f1a8b2c07da9fccc63d9cdd0d03fc622078ecda97fa5b44d4cc6492b",
+      "tests/guard_recovery.cpp": "39b251677666762eb15bbf09f7c9e3632533362cf97596f4d8896065c8f44ad9",
+      "tests/initial.py": "e4a1a75f9e90235345559bca54064cec09bb54016008043e299977f94835f289",
+      "tests/offline.py": "8b14dda32f97a76fdfbf66f37ad77d7fe31d95337151c5a3aaadade05d82c52f",
+      "tests/recovery_image.cpp": "519935aee2aa0caa12451f888c612b39ed6ef3ec2a136edd60912866941b6e54",
+      "tests/udf_offline.py": "bf5b8a34ada882910f0315a44434581c0d649cc891586e594d1c298a07219e44",
+      "tests/vat_fixture.py": "a735f04934c7d45cfd6a4720ea7dfebe1f82b278ceb3c05dfd5235f1113495c1",
+      "tests/vat_offline.py": "563028f45d833c39678f33aa6f3fc65e729c85007374ca788da1268d40492959",
+      "tests/vat_oracle.py": "ed83ee729146651fb85608305ca1c20ec62a5e5916f3739feb5029d4b548858a",
+      "CMakeLists.txt": "359f25fa32db25772853f5e39b99eb6479f8ed0f8d3c738f57b246f0b0b6ac31"
+    },
+    "changedSourceFiles": [
+      "gui/Sources/BurnLightApp/ContentView.swift",
+      "gui/scripts/build.sh",
+      "src/main.cpp"
+    ],
+    "standaloneCLI": {
+      "path": "/Users/luzove/Documents/Projects/BurnLight/build-dvd-vat-release-20261013/appendcd",
+      "sha256": "947342dc021765c3bb1e1d02136ccdc26e6fe1483359c9f77264cca66dc315de"
+    }
+  },
+  "protectedBaseline": {
+    "/Users/luzove/Documents/Projects/BurnLight/build/appendcd": "306bfd58e78847e2ed9d157849c8269a2f6ca04912fcd185ef3f35a443b2a587",
+    "/Users/luzove/.local/libexec/appendcd/appendcd-cdrecord": "588515140fb7e5f74dc064f31f561a6a96be8178cda5f414e0f16ada44e63d17",
+    "/Users/luzove/.local/libexec/appendcd/appendcd-initial-cdrecord": "c8c69b90718bdeb02dee95810b0a3f1be9e1df6e3334f2eeb339a0ec4c4c424e",
+    "/Users/luzove/.local/libexec/appendcd/provenance.json": "db99da46240c8bcceb83b7f044b2f112fab4bed4fef9f6df3a3a400362e28d06",
+    "/Users/luzove/.local/libexec/appendcd/initial-provenance.json": "70714194d3cf604b9bd677546ab3c3e36f3d7258d0abf3c73e3ecfdb2c5aeb9c"
+  },
+  "installation": {
+    "result": "PASS",
+    "version": "1.2.0",
+    "build": "4",
+    "installed": "/Users/luzove/Applications/BurnLight.app",
+    "backup": "/Users/luzove/Applications/BurnLight-previous-20261013-094433-dvd-vat.app",
+    "time": "2026-10-13T01:44:33.284193+00:00",
+    "installedManifest": {
+      "Contents/Frameworks/libisofs.6.dylib": "c718e7b716cd51cd19f58183d3117241366dff0bb8d5a9dd66aedcbdb2ac08ec",
+      "Contents/Frameworks/libudfread.3.dylib": "d77a290a6c72bd3c558284fb500d38ddab9399362f2bb0cb2ab6c2150bfd8580",
+      "Contents/Info.plist": "723e0287ab07db1519496212655ad74dd7310f9e66c867834944ee34da1b11be",
+      "Contents/MacOS/BurnLight": "6f5b4daea44b1f5594ca7284d40e2ed32fee285b17148312d148eef6f47e64a0",
+      "Contents/MacOS/appendcd": "481f49bd45595ec51f25f6467bcacd52a49469017f836290030e2e59aff027a5",
+      "Contents/MacOS/appendcd-cdrecord": "11c4f0d0bca59d5fb1e1efea706aabfb228681df32cea66cd0ee48009d8879ec",
+      "Contents/MacOS/appendcd-initial-cdrecord": "60a8f03459c5d4ba6adbaa5bfd4a24e3afcbd7b021f97129ccc3cf95c568911d",
+      "Contents/MacOS/appendcd-vat-cdrecord": "7a7fcb81577d48fab581160dfb59661275a002f11905f191042a585332ed1026",
+      "Contents/MacOS/burnlight-export": "ff123f2c56e76c2f8cac17758d4c733e27b9e1ffacb0ba611e90229dc46ab474",
+      "Contents/MacOS/readcd": "b9679cc60652aa9ebbcffb0200f469865ddedbd46e2849115b70eeaeb69f4c18",
+      "Contents/Resources/BurnLight.icns": "1561056fb06f7205e9ebc209ce880d2988ce9472e82466fbb55ba9e11fb20d93",
+      "Contents/Resources/LocalConfiguration.json": "1a948265c7835d762870812d0655ef29c5cf4d6415425d90bfa727b235f614be",
+      "Contents/Resources/Provenance.json": "a9331afe781cf9342dd42468c3d391184257c9fd718768e1bd2701958161cbf3",
+      "Contents/Resources/ThirdPartyNotices/CDDL.Schily.txt": "0770cbf84caf67c6e776ef1dcf89dc0cda47f8ede144f170a2850df9008739c7",
+      "Contents/Resources/ThirdPartyNotices/cdrtools-COPYING.txt": "6007ff76c786d413b17cf786a1ea46f4c9cb03c743c488969b5516c4f1674765",
+      "Contents/Resources/ThirdPartyNotices/libisofs-COPYING.txt": "a45932c79317d15116eadbf1c9c6fc59117ec3c4621db3a876066defa723963b",
+      "Contents/Resources/ThirdPartyNotices/libisofs-COPYRIGHT.txt": "f9c07f50364d9e4086736db2df1d30a17d218e7f42c0426e0721cc677c1d8196",
+      "Contents/Resources/ThirdPartyNotices/libudfread-COPYING.txt": "dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551",
+      "Contents/Resources/Usage.md": "bc13efa92d1771dcdf2a6896bf2d547eae687bb76b7b4d103cc54afe23c41158",
+      "Contents/_CodeSignature/CodeResources": "d20fe59bfe30d10a8c0514c849b80410079ea0b23390c18d8d82955c0381a2b4"
+    },
+    "backupManifest": {
+      "Contents/Frameworks/libisofs.6.dylib": "c718e7b716cd51cd19f58183d3117241366dff0bb8d5a9dd66aedcbdb2ac08ec",
+      "Contents/Frameworks/libudfread.3.dylib": "d77a290a6c72bd3c558284fb500d38ddab9399362f2bb0cb2ab6c2150bfd8580",
+      "Contents/Info.plist": "00d8dfff8c05479d19bc6b946d27a0695f682ebe845717209fdd4fa335bcec1c",
+      "Contents/MacOS/BurnLight": "d10e2009594db817651a654cb1087cc56bfcb4148afd3af7d6448d33280b72cd",
+      "Contents/MacOS/appendcd": "295cdae0fb74b403d6fde996d6ff6bc6a54e744c82178084b8e1e830c521fd52",
+      "Contents/MacOS/appendcd-cdrecord": "11c4f0d0bca59d5fb1e1efea706aabfb228681df32cea66cd0ee48009d8879ec",
+      "Contents/MacOS/appendcd-initial-cdrecord": "60a8f03459c5d4ba6adbaa5bfd4a24e3afcbd7b021f97129ccc3cf95c568911d",
+      "Contents/MacOS/appendcd-vat-cdrecord": "7a7fcb81577d48fab581160dfb59661275a002f11905f191042a585332ed1026",
+      "Contents/MacOS/burnlight-export": "ff123f2c56e76c2f8cac17758d4c733e27b9e1ffacb0ba611e90229dc46ab474",
+      "Contents/MacOS/readcd": "b9679cc60652aa9ebbcffb0200f469865ddedbd46e2849115b70eeaeb69f4c18",
+      "Contents/Resources/BurnLight.icns": "1561056fb06f7205e9ebc209ce880d2988ce9472e82466fbb55ba9e11fb20d93",
+      "Contents/Resources/LocalConfiguration.json": "506dce17f545ec3ffcb40356dfc169479f3b5622ab3ad4a8978a208da5fabfdd",
+      "Contents/Resources/Provenance.json": "d96bdf230a2e51f2aa5cb89328b4453c753337e6baa5878231920997e0b02b00",
+      "Contents/Resources/ThirdPartyNotices/CDDL.Schily.txt": "0770cbf84caf67c6e776ef1dcf89dc0cda47f8ede144f170a2850df9008739c7",
+      "Contents/Resources/ThirdPartyNotices/cdrtools-COPYING.txt": "6007ff76c786d413b17cf786a1ea46f4c9cb03c743c488969b5516c4f1674765",
+      "Contents/Resources/ThirdPartyNotices/libisofs-COPYING.txt": "a45932c79317d15116eadbf1c9c6fc59117ec3c4621db3a876066defa723963b",
+      "Contents/Resources/ThirdPartyNotices/libisofs-COPYRIGHT.txt": "f9c07f50364d9e4086736db2df1d30a17d218e7f42c0426e0721cc677c1d8196",
+      "Contents/Resources/ThirdPartyNotices/libudfread-COPYING.txt": "dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551",
+      "Contents/Resources/Usage.md": "437b08e6a1c956a56cb00ab39b8782852d66674aa4c5f2e51e0af7242883992a",
+      "Contents/_CodeSignature/CodeResources": "97af91760448f9a6db90dd331322f17769ddc2f71b4f1fe7893d68838bfa41b4"
+    },
+    "fullHashEquality": true,
+    "signatureVerified": true,
+    "physicalWrites": 0
+  },
+  "release": {
+    "version": "1.2.0",
+    "build": "4",
+    "app": "/Users/luzove/Documents/Projects/BurnLight/build-dvd-vat-release-20261013-write/output/BurnLight.app",
+    "zip": "/Users/luzove/Documents/Projects/BurnLight/build-dvd-vat-release-20261013-write/output/BurnLight-1.2.0-local-arm64.zip",
+    "zipSHA256": "84aa431239bc30b0598235df1079a9f6fdd97a6253dacb3dc375300fbb7671f0",
+    "trustedFiles": {
+      "Frameworks/libisofs.6.dylib": "c718e7b716cd51cd19f58183d3117241366dff0bb8d5a9dd66aedcbdb2ac08ec",
+      "Frameworks/libudfread.3.dylib": "d77a290a6c72bd3c558284fb500d38ddab9399362f2bb0cb2ab6c2150bfd8580",
+      "MacOS/appendcd": "481f49bd45595ec51f25f6467bcacd52a49469017f836290030e2e59aff027a5",
+      "MacOS/appendcd-cdrecord": "11c4f0d0bca59d5fb1e1efea706aabfb228681df32cea66cd0ee48009d8879ec",
+      "MacOS/appendcd-initial-cdrecord": "60a8f03459c5d4ba6adbaa5bfd4a24e3afcbd7b021f97129ccc3cf95c568911d",
+      "MacOS/appendcd-vat-cdrecord": "7a7fcb81577d48fab581160dfb59661275a002f11905f191042a585332ed1026",
+      "MacOS/burnlight-export": "ff123f2c56e76c2f8cac17758d4c733e27b9e1ffacb0ba611e90229dc46ab474",
+      "MacOS/readcd": "b9679cc60652aa9ebbcffb0200f469865ddedbd46e2849115b70eeaeb69f4c18"
+    },
+    "allowPhysicalWrites": true
+  },
+  "checks": [
+    {
+      "id": "DVD_VAT_MAC_GUI_PHYSICAL_APPEND_PASS",
+      "status": "PASS",
+      "input": "AlgoLogFileWatcher-delivery.zip",
+      "buildSHA256": "295cdae0fb74b403d6fde996d6ff6bc6a54e744c82178084b8e1e830c521fd52",
+      "evidence": "/Users/luzove/Documents/Projects/BurnLight/artifacts/dvd-vat-return/20261013-093516/actual-user-burn-archive",
+      "note": "User executed the trial GUI burn. media6 exit=0, 576 sectors, before-write hashes and actual after-read pass; 3 -> 4 completed sessions."
+    },
+    {
+      "id": "DVD_VAT_WINDOWS_READ_AND_REAPPEND_PASS",
+      "status": "PASS_HUMAN",
+      "input": "Mac ZIP read and swagger.json 246137 bytes appended",
+      "evidence": "/Users/luzove/Documents/Projects/BurnLight/artifacts/dvd-vat-return/20261013-093516/baseline.json",
+      "note": "User statement; this round Windows version/source SHA256/IOCTL and automated hash report not collected."
+    },
+    {
+      "id": "DVD_VAT_MAC_RETURN_READBACK_PASS",
+      "status": "PASS_WINDOWS_COMPATIBILITY",
+      "input": "5-session returned DVD-R, latest=113520",
+      "buildSHA256": "ff123f2c56e76c2f8cac17758d4c733e27b9e1ffacb0ba611e90229dc46ab474",
+      "evidence": "/Users/luzove/Documents/Projects/BurnLight/artifacts/dvd-vat-return/20261013-093516/independent-return-check.json",
+      "note": "Two fresh physical reads plus independent parser, GUI export and mounted view equality; strictConformance=false, bounded windows-fid-location-v1 preserved."
+    },
+    {
+      "id": "DVD_VAT_CROSS_SESSION_REFERENCE_PASS",
+      "status": "PASS",
+      "input": "Session 5 Anchor -> Session 4 VDS; VAT history/data from sessions 3/4",
+      "evidence": "/Users/luzove/Documents/Projects/BurnLight/artifacts/dvd-vat-return/20261013-093516/returned-export-archive",
+      "note": "Anchor 113776 -> main 106816/reserve 106880; latest VAT 113999 -> previous 107359; 5 recorded Track intervals enforced."
+    },
+    {
+      "id": "DVD_VAT_RETURN_OFFLINE_APPEND_PASS",
+      "status": "PASS_OFFLINE",
+      "input": "Real returned cache + preview-only 55-byte input",
+      "buildSHA256": "481f49bd45595ec51f25f6467bcacd52a49469017f836290030e2e59aff027a5",
+      "evidence": "/Users/luzove/Documents/Projects/BurnLight/artifacts/dvd-vat-return/20261013-093516/formal-bundle-offline-append.json",
+      "note": "Installed formal CLI produces 576-block continuation. Independent generated composite strict parse passes; all 3 old hash/extent/UniqueID preserved, previous VAT=113999. No new optical burn."
+    },
+    {
+      "id": "FORMAL_GUI_INTEGRATION_PASS",
+      "status": "PASS",
+      "input": "1.2.0/4 installed GUI reading current 5-session DVD",
+      "buildSHA256": "6f5b4daea44b1f5594ca7284d40e2ed32fee285b17148312d148eef6f47e64a0",
+      "evidence": "/Users/luzove/Documents/Projects/BurnLight/artifacts/dvd-vat-return/20261013-093516/formal-inspect-record.json",
+      "note": "Fresh inspect/list show 3 files including swagger.json, appendable, retained Windows compatibility warning, no DVD trial label."
+    },
+    {
+      "id": "EXISTING_FEATURE_REGRESSION_PASS",
+      "status": "PASS_OFFLINE",
+      "input": "7 CTest suites, 153 GUI checks, 50 conflict checks, 6 VAT export checks, relocated init-build/verify",
+      "buildSHA256": "947342dc021765c3bb1e1d02136ccdc26e6fe1483359c9f77264cca66dc315de",
+      "evidence": "/Users/luzove/Documents/Projects/BurnLight/artifacts/dvd-vat-return/20261013-093516",
+      "note": "No new UDF2.01 initial write support or physical initial-write revalidation claimed."
+    },
+    {
+      "id": "FORMAL_LOCAL_INSTALL_PASS",
+      "status": "PASS",
+      "input": "1.2.0/4 signed bundle + ZIP + installed + preserved backup",
+      "evidence": "/Users/luzove/Documents/Projects/BurnLight/artifacts/dvd-vat-return/20261013-093516/release-check.json",
+      "note": "Full bundle equality, 8 pins, local ad hoc signature, no external imports and relocated offline init verification."
+    }
+  ],
+  "originalEightSessionBoundary": {
+    "status": "NOT_PASS_MEDIUM_ERROR",
+    "evidence": "docs/udf201-acceptance-20261012.md",
+    "note": "Damaged primary eight-session CD-R full file-read acceptance remains not passed. This DVD result does not overwrite it."
+  },
+  "remainingBoundaries": [
+    "No Windows automatic hash/IOCTL report or swagger source SHA256",
+    "Strict ECMA FID Tag Location conformity not claimed for Windows compatibility return",
+    "Other UDF revisions/maps, RW/BD, arbitrary layouts, other physical drive models and VAT recovery unsupported/unverified",
+    "Mac initial recording remains ISO9660+Joliet; no UDF2.01 initial-recording implementation",
+    "Local ad hoc package; no Developer ID/notarization/remote release/push"
+  ],
+  "finalServiceState": {
+    "result": "PASS",
+    "time": "2026-10-13T01:51:37.251356+00:00",
+    "activeMarkerPresent": false,
+    "opticalWorkers": [],
+    "diskArbitration": [
+      "  360     1 Ss   17:19:45 /usr/libexec/diskarbitrationd"
+    ],
+    "GUI": [
+      "22495     1 S       04:58 /Users/luzove/Applications/BurnLight.app/Contents/MacOS/BurnLight"
+    ],
+    "mountedVolumePresent": true,
+    "physicalWritesByAgentTurn": 0
+  }
+}

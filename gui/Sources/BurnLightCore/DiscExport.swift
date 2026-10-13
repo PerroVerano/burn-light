@@ -6,6 +6,7 @@ public struct ExportReceipt: Codable, Sendable {
     public let schema: Int
     public let sourceKind: String
     public let filesystem: String
+    public let udfCompatibility: String?
     public let device: String
     public let registryID: String
     public let media: String
@@ -53,9 +54,13 @@ public enum DiscExport {
             throw GUIError.invalid("光盘导出未返回完整成功证据；保留日志与部分缓存，请重新检查介质")
         }
         let receipt = try JSONDecoder().decode(ExportReceipt.self, from: Data(contentsOf: evidence.appendingPathComponent("export.json")))
-        guard receipt.schema == 1, receipt.sourceKind == "optical", ["iso9660+joliet", "udf1.02"].contains(receipt.filesystem),
+        guard receipt.schema == 1, receipt.sourceKind == "optical", ["iso9660+joliet", "udf1.02", "udf2.01+vat"].contains(receipt.filesystem),
               receipt.device == selected.device, receipt.registryID == selected.registryID, receipt.media == selected.media else {
             throw GUIError.invalid("光盘导出版本或目标身份不一致")
+        }
+        guard receipt.udfCompatibility == nil || receipt.udfCompatibility == "" ||
+              (receipt.filesystem == "udf2.01+vat" && receipt.udfCompatibility == "windows-fid-location-v1") else {
+            throw GUIError.invalid("光盘导出包含未知 UDF 兼容分支")
         }
         try validate(receipt.entries, expected: expected)
         return receipt

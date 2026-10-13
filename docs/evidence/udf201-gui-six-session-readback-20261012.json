@@ -1,0 +1,1048 @@
+{
+  "schema": 1,
+  "phase": "PASS_CURRENT_SIX_SESSION_READING_EXPORT_AND_INSTALLED_NATIVE_GUI",
+  "recordedAt": "2026-10-12T17:13:38.925827+08:00",
+  "baseCommit": "b4899944d19d32ff82b89d9185e3dcce1227a38a",
+  "fullOriginalEightSessionFunctionComplete": false,
+  "physicalWrites": 0,
+  "rebootAudit": {
+    "time": "2026-10-12T16:52:22.308274+08:00",
+    "oldBootUUID": "5AD91AB9-EDCB-4BC1-A913-764461443275",
+    "newBootUUID": "71271690-BAF5-4691-9582-C6AC2AC24EC0",
+    "oldDiagnostic": "ABORTED_BY_ACTUAL_OS_RESTART_NO_EXIT_RECEIPT_NOT_PASS",
+    "oldPrivateJobDirectoryExists": false,
+    "activeMarkerExists": false,
+    "physicalLockAvailable": true,
+    "workers": [],
+    "services": [
+      "  360     1 Ss     20:30 /usr/libexec/diskarbitrationd"
+    ],
+    "sourceAggregateSHA256": "48b2632fbc4e6445dbbcf3c6b1e660f2cc0c3d4c30482830be50c845600cf84e",
+    "sourceUnchangedFromPendingCheckpoint": true,
+    "physicalWrites": 0
+  },
+  "sourceHashes": {
+    "backend/CDDL.Schily.txt": "0770cbf84caf67c6e776ef1dcf89dc0cda47f8ede144f170a2850df9008739c7",
+    "backend/appendcd_backend.h": "ad1786cdf2607eae9a2f036a7adb0155a154a20dc48864ea9f8d67bfe753c724",
+    "backend/appendcd_identity.h": "f6dfaa09cae0afdb96b5885f3572e6edacb5299364fd9439fbcd212e8865cb80",
+    "gui/Adapter/CMakeLists.txt": "3b1e6c1a44e15cc7ec2dd219486522b6cd353acb35305a1fe8970236fb6b42a1",
+    "gui/Adapter/Export.cpp": "f99fc7246edb3a67a0e6782c8d3601b5f445da9296fd4e3057b8a0c901ed5084",
+    "gui/Adapter/RuntimePaths.hpp": "28bb10a244e98fe6ef30fe19c876119daa585a92251532d4b977aa3f8fbc72dc",
+    "gui/Sources/BurnLightApp/AppModel.swift": "5f9452128eb4e229ba2c13e80f64ebceeff6463cfb0e4ac342467b98e6c42b95",
+    "gui/Sources/BurnLightApp/BurnLightApp.swift": "d2492675f38c46c7f34fd9d510d09c18ccc5a02d9e2412b006cec92ab055af8f",
+    "gui/Sources/BurnLightApp/ContentView.swift": "527921c72364979051a50ff75e605c818484af0622eda0795cbfd1491059359c",
+    "gui/Sources/BurnLightCore/DiscExport.swift": "91601aa4d7707832c047e157a6b204d95ddcedf18e4eab68eeb098f3545e2206",
+    "gui/Sources/BurnLightCore/JobArchive.swift": "e6523344067bbff3b71dc10bd0e6f4c6732508d81953c0f461b7a168b493a78d",
+    "gui/Sources/BurnLightCore/JobStore.swift": "dc9eb6ecb203e8bc6bec7e69b357360bcb3f7c0b2e9981b8305ae857800aef7b",
+    "gui/Sources/BurnLightCore/Models.swift": "94b5b9d5cc02036203a3e25022cbf95bec1ad7f9df7c64a6defed97dacb05989",
+    "gui/Sources/BurnLightCore/Recovery.swift": "f496fb29590425c09d5f84839b8eb225535f040212730498e100ae84f278672f",
+    "gui/Sources/BurnLightCore/Runner.swift": "eb3a902161bd65ef20f27712adb8ef5960f9e2417942b54e2809bc2d5f0d5b65",
+    "gui/Sources/BurnLightCore/Staging.swift": "ff1a3d727af82efdf5335e1f3b11a2e1ce4094e185d4570eade53c36adaab87d",
+    "gui/Sources/BurnLightCore/TextContract.swift": "143cc8e87dcadc30b9d8f36561cb2190b632a8ae8f211e488b5a28e1fd3ea72e",
+    "gui/Validation/Fixtures/new-files/GUI data.txt": "98bb8492ab4e7281863c2b6905445e969af67b37b12e2589f45d0fc23a87bf04",
+    "gui/Validation/Fixtures/new-files/GUI只读预览.txt": "15693e4163ddb104e6c406784558dbe68f0c4e3b647886249a3ad9fcf4ddd770",
+    "gui/Validation/PhysicalFixtures/conflict-20261010/GUI-追加验收/receipt.txt": "30534f4c53ee31d8cbcc6a0d2c6833316a2740bbb330ee58531d447415a0b778",
+    "gui/Validation/ValidationMain.swift": "e5bc63db19a50ec6a234e7ef20f443adff97f0c80f813795f6a1e1b76e80de9b",
+    "gui/Validation/compact_session.py": "9d499aac1da2ff6efb61cc9d3bb44fbfd0560005d567cf8a5b2c1da27ba94ade",
+    "gui/Validation/conflict_offline.py": "a7907c545142e21688a6963250df655cb46e9a24df13d230ba849501002f18df",
+    "gui/Validation/export_offline.py": "478d68223dfa987e1a54e26235e6b78bb505f270042c7e7b984daf94067e6883",
+    "gui/Validation/physical_check.py": "df20c7f7e6cffad725461a2fda1925bd1230a6bd7f94b3518194ac30e1d929a0",
+    "gui/Validation/process_check.py": "6c7d294509a3fcccef7ab89c76450dc0815da248236d7875d3d32194a7c6b49e",
+    "gui/Validation/release_check.py": "eea24bb93fed335da025ceaa811282f03574998967989b6a707ea5d9401f87ed",
+    "gui/Validation/vat_export.py": "37eb1111ec3515343249b9c726433e5f5f7a5be70d4c2dad207cc4d99a9a8e98",
+    "gui/Validation/windows_return_check.py": "24c7f6fda4f6033a15103452b05af16e3daca400376cc63753a94357db955ddd",
+    "gui/scripts/build.sh": "dda9413010d2a66a97af2ac255d17b1ce02611648978298e11c15874074882d7",
+    "gui/scripts/cli-regression.py": "52ebf82b90a40903a5d5f2b90f0718d5e76e0a8525803f63f361c1ceeb34237f",
+    "gui/scripts/collect-evidence.py": "eac056d54b794fadc63a174a68b44230180edb85ea0014a9f96c39af96ed7c64",
+    "gui/scripts/icon-pack.py": "3127898492cb20fb14b7a028572b8d200f46e3597466fbfb209cababaf9a8236",
+    "gui/scripts/icon.swift": "44740d4ec114f6a45891b3502d15e87eb336746ed84d75079485e5a308662d31",
+    "gui/scripts/install-local.py": "41f3f52fa084b5e3be89601ff2b88a7427f6ca5d4ab182d8588077a41ce552bb",
+    "gui/scripts/package.py": "d8bb8550d7bc8b810784946bfbab1588c6d7cbcf386296ad9c311a26b418e13c",
+    "gui/scripts/release.sh": "fcdfb3bea71f3c6d9efbfc66c297ce89dc641c121859deb7d78a4a23e351f554",
+    "gui/scripts/restore-reference.py": "e9feaf3d4e43b41121b07974688fdd970d3c44272bfa6e56153d1288cbd52cd2",
+    "gui/scripts/test.sh": "530df33b8c38f121d345e4d291e6b0275252a385db921805f3cca848469d9b0c",
+    "scripts/admin-run.sh": "f9e6b1046371c98a1f182a50416b52359a7813b42b1d1d4c057e12f354380039",
+    "scripts/build-cdrecord.py": "efa40c8f51f0ac8a23e492ce719a1fad2b3328b10107d89461b5b03d53a987c0",
+    "scripts/windows-verify.ps1": "e7d76a1dd6a164a02e8fea184fa9384a27c56da2ebf1e85fc54b92f09aed930e",
+    "src/DiscScanner.cpp": "daceab7e0feed55602236e02a82fabdc981209f582bcb3b7a43dce54d209a2f4",
+    "src/DiscScanner.hpp": "a86d3af8fa995ef28c47f87577544d318dc2f43b3590a43d3f515371862d6d88",
+    "src/DiskArbitrationGuard.cpp": "0a0ffa21ed7530926380637b1b87db552dcadc9c38ce72a72e445eedabd9645d",
+    "src/DiskArbitrationGuard.hpp": "9e557a25a35e5cb0ac561b2cac6236545f5acdd6f49caad4112ec82b94fa8c58",
+    "src/GeneratedMetadata.cpp": "804153af850fdb55cdcae2a765004d94cfbe27e3f52b30f818ab882185658109",
+    "src/GeneratedMetadata.hpp": "9635d67df7cf40246a43e42a1522c158d1726918a38baa9fe1fb7e2de3605ef4",
+    "src/IsoCore.cpp": "281f34f92f86f236b1f21c0cd2f5fd2bcfd2b8c5334caca559ac49e8e4776663",
+    "src/IsoCore.hpp": "437b60b98d27baf7e092e0ddb703af46a3d456d6204095bee9638ed3d7536b0d",
+    "src/IsoInitial.cpp": "62b1c31d70b5599c9b27d730bce06692d93429a1c45b75fa365a29ae207481f5",
+    "src/IsoVerifier.cpp": "d1958aca171a0b49d482f13a353b0ea957cd378aef43e53e2df6025f26dcf092",
+    "src/IsoVerifier.hpp": "79220aebc4da82199304d0c30c76208a3b47eeb42c67ed54e018713c5a3711de",
+    "src/OpticalDrive.cpp": "1deb675239d3ce4fe44df821a7a4e8e82bc2491bf3717463e1e11981e4a5daf4",
+    "src/OpticalDrive.hpp": "58437e9de4610390cd6adfd2152b89bae37ffddad26986a85f0f3213d3cb2148",
+    "src/UdfReader.cpp": "28d3113941ff2fedf5fc343d68f25a5ee88ce7cca573ab1ef75702a4b06131ef",
+    "src/UdfReader.hpp": "ea245ec57f5aaa4176135c5d13606ce2c9dec68a102ffd259a9f2709c743ff48",
+    "src/UdfSession.cpp": "17971b356075ffe536f45c87eb670d140052a13af3237ad9204ea62359c2b9ee",
+    "src/UdfSession.hpp": "0ae7a4a5baf99dd020a37e4997f6eb5bd7b2338fddeff01c3f6628279c8ae049",
+    "src/UdfVat.cpp": "9a3cdeb74678b14ae6800a9d8c3b7249dac8323c2fafe595b61621fff95719b5",
+    "src/UdfVat.hpp": "67a4dbce7a0e6e21d17937a5112388a66e7363ff2bf2cfdc8d10d54797a298b0",
+    "src/Util.cpp": "f4b60701091fcfbc4b0fbc9919d62f9636e6e5a53dbe9a5c3275d59598654743",
+    "src/Util.hpp": "d150760e02f3fcee1530951d0763b586decc9bb169d64438077ff2c223717e8d",
+    "src/main.cpp": "e74c4014545765914369ee51a09c72da08531289d0815df50bba5ba75b7c3517",
+    "tests/backend_target.cpp": "ca3bb56d38e190c9b939c51a6ecce9471a5077d3b6ed9f7f9d6e45b3239414a7",
+    "tests/drive_selection.cpp": "40ffb7be8535a675a63bcd62c5c1d7e1b92723c525a70e052da2ce1e707974ff",
+    "tests/guard_recovery.cpp": "39b251677666762eb15bbf09f7c9e3632533362cf97596f4d8896065c8f44ad9",
+    "tests/initial.py": "e4a1a75f9e90235345559bca54064cec09bb54016008043e299977f94835f289",
+    "tests/offline.py": "8b14dda32f97a76fdfbf66f37ad77d7fe31d95337151c5a3aaadade05d82c52f",
+    "tests/recovery_image.cpp": "519935aee2aa0caa12451f888c612b39ed6ef3ec2a136edd60912866941b6e54",
+    "tests/udf_offline.py": "bf5b8a34ada882910f0315a44434581c0d649cc891586e594d1c298a07219e44",
+    "tests/vat_fixture.py": "a735f04934c7d45cfd6a4720ea7dfebe1f82b278ceb3c05dfd5235f1113495c1",
+    "tests/vat_offline.py": "563028f45d833c39678f33aa6f3fc65e729c85007374ca788da1268d40492959",
+    "tests/vat_oracle.py": "ed83ee729146651fb85608305ca1c20ec62a5e5916f3739feb5029d4b548858a",
+    "CMakeLists.txt": "359f25fa32db25772853f5e39b99eb6479f8ed0f8d3c738f57b246f0b0b6ac31"
+  },
+  "sourceAggregateSHA256": "48b2632fbc4e6445dbbcf3c6b1e660f2cc0c3d4c30482830be50c845600cf84e",
+  "sourceBindingMethod": "all 75 current source hashes equal immutable pre-restart checkpoint; aggregate inherited from that verified source set",
+  "priorCheckpoint": "docs/evidence/udf201-gui-continuation-fix-20261012.json",
+  "priorCheckpointSHA256": "2dbb517dfe1d1f48ca4252e4a1c0f83e0f286a37a119fdf17deef2090ebbedce",
+  "preservedCheckpointDocuments": {
+    "README.md": {
+      "path": "artifacts/udf201-gui-fix/20261012-165222-restart/preserved-checkpoint-documents/README.md",
+      "sha256": "d2a8fc4c5286c8f4772385a62dadd1b84e956c32c6e88ae5c3754b921e40908f"
+    },
+    "docs/implementation.md": {
+      "path": "artifacts/udf201-gui-fix/20261012-165222-restart/preserved-checkpoint-documents/docs/implementation.md",
+      "sha256": "4d0206c59df3555ebdfa7c9d6b8e6f4bad3aaf5d88309dfa6e402d34ad9aa6ec"
+    },
+    "gui/README.md": {
+      "path": "artifacts/udf201-gui-fix/20261012-165222-restart/preserved-checkpoint-documents/gui/README.md",
+      "sha256": "8eac314a3f8023d62d9f4524daf45d3107c41e46c4489d017706ce01dff8091a"
+    }
+  },
+  "buildHashes": {
+    "build-udf201-history-cli/appendcd": "e653b46ab2c97082074596c612725ff4f776446b9d2efb1067a51bb4a6491f6e",
+    "build-udf201-history-asan/appendcd": "8153768ebbe7030f6d3798d8ed2058e6c0d5d73236e3f6da9eac746ef5630899",
+    "build-udf201-gui-history/output/BurnLight.app/Contents/MacOS/appendcd": "50f44fc8435cddb9347c7d9ee8558b9bd8f4c1f99b681495a7a1f5fd2c749b7a",
+    "build-udf201-gui-history/output/BurnLight.app/Contents/MacOS/burnlight-export": "8ce639e7e5159a17a770af008e1161b7e96f72a09fc6afc800ed8fd8a5789421",
+    "build-udf201-gui-history-write/output/BurnLight.app/Contents/MacOS/BurnLight": "30cd46d1b8e604c22aff4e2a64fd0b978a760ed1efdbf4e34f66ad41350471fc"
+  },
+  "protectedBaseline": {
+    "/Users/luzove/Documents/Projects/BurnLight/build/appendcd": {
+      "expected": "306bfd58e78847e2ed9d157849c8269a2f6ca04912fcd185ef3f35a443b2a587",
+      "actual": "306bfd58e78847e2ed9d157849c8269a2f6ca04912fcd185ef3f35a443b2a587",
+      "match": true
+    },
+    "/Users/luzove/.local/libexec/appendcd/appendcd-cdrecord": {
+      "expected": "588515140fb7e5f74dc064f31f561a6a96be8178cda5f414e0f16ada44e63d17",
+      "actual": "588515140fb7e5f74dc064f31f561a6a96be8178cda5f414e0f16ada44e63d17",
+      "match": true
+    },
+    "/Users/luzove/.local/libexec/appendcd/appendcd-initial-cdrecord": {
+      "expected": "c8c69b90718bdeb02dee95810b0a3f1be9e1df6e3334f2eeb339a0ec4c4c424e",
+      "actual": "c8c69b90718bdeb02dee95810b0a3f1be9e1df6e3334f2eeb339a0ec4c4c424e",
+      "match": true
+    },
+    "/Users/luzove/.local/libexec/appendcd/provenance.json": {
+      "expected": "db99da46240c8bcceb83b7f044b2f112fab4bed4fef9f6df3a3a400362e28d06",
+      "actual": "db99da46240c8bcceb83b7f044b2f112fab4bed4fef9f6df3a3a400362e28d06",
+      "match": true
+    },
+    "/Users/luzove/.local/libexec/appendcd/initial-provenance.json": {
+      "expected": "70714194d3cf604b9bd677546ab3c3e36f3d7258d0abf3c73e3ecfdb2c5aeb9c",
+      "actual": "70714194d3cf604b9bd677546ab3c3e36f3d7258d0abf3c73e3ecfdb2c5aeb9c",
+      "match": true
+    }
+  },
+  "currentDisc": {
+    "device": "1,0,0",
+    "registryID": "4294972320",
+    "bsdNode": "/dev/disk4",
+    "drive": "Lenovo Ultraslim DVD XL6M",
+    "volume": "10 10 2026",
+    "filesystem": "udf2.01+vat",
+    "sessions": 6,
+    "tracks": 6,
+    "latestSession": 133718,
+    "nextWritable": 140918,
+    "recordedRanges": [
+      [
+        0,
+        352,
+        1,
+        1
+      ],
+      [
+        11754,
+        12330,
+        2,
+        2
+      ],
+      [
+        19232,
+        19532,
+        3,
+        3
+      ],
+      [
+        26434,
+        27010,
+        4,
+        4
+      ],
+      [
+        33912,
+        126816,
+        5,
+        5
+      ],
+      [
+        133718,
+        134016,
+        6,
+        6
+      ]
+    ],
+    "freeBlocks": 218925,
+    "freeBytes": 448358400,
+    "appendable": true,
+    "unfinishedSession": false,
+    "viewIdentity": "9154a4495dc1984fc68fcff2007a584adcc8391ae937725b2e48e27f252aa7dc",
+    "compatibility": "windows-fid-location-v1",
+    "strictConformance": false
+  },
+  "actualReading": {
+    "result": "PASS_ACTUAL_LATEST_SIX_SESSION_FIVE_FILES_TWO_FRESH_READS",
+    "input": "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W",
+    "latestSession": 133718,
+    "latestVAT": 134015,
+    "previousVAT": 126815,
+    "mainVDS": 26466,
+    "compatibility": "windows-fid-location-v1",
+    "strictConformance": false,
+    "physicalWrites": 0,
+    "WindowsSourceSHA256ForNewJar": "NOT_COLLECTED",
+    "reads": {
+      "source-read": {
+        "input": "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/source-read/disc-cache.iso",
+        "validBlocks": 92936,
+        "issues": [
+          {
+            "directory": "",
+            "byteOffset": 8192,
+            "expected": 133694,
+            "recorded": 26439
+          },
+          {
+            "directory": "",
+            "byteOffset": 10240,
+            "expected": 133695,
+            "recorded": 0
+          },
+          {
+            "directory": "",
+            "byteOffset": 10288,
+            "expected": 133695,
+            "recorded": 0
+          }
+        ],
+        "independentOracle": "tests/vat_oracle.py",
+        "oracleSHA256": "ed83ee729146651fb85608305ca1c20ec62a5e5916f3739feb5029d4b548858a",
+        "allFileContentsAndExtentsMatch": true
+      },
+      "verification-read": {
+        "input": "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/verification-read/disc-cache.iso",
+        "validBlocks": 92936,
+        "issues": [
+          {
+            "directory": "",
+            "byteOffset": 8192,
+            "expected": 133694,
+            "recorded": 26439
+          },
+          {
+            "directory": "",
+            "byteOffset": 10240,
+            "expected": 133695,
+            "recorded": 0
+          },
+          {
+            "directory": "",
+            "byteOffset": 10288,
+            "expected": 133695,
+            "recorded": 0
+          }
+        ],
+        "independentOracle": "tests/vat_oracle.py",
+        "oracleSHA256": "ed83ee729146651fb85608305ca1c20ec62a5e5916f3739feb5029d4b548858a",
+        "allFileContentsAndExtentsMatch": true
+      }
+    },
+    "files": {
+      "20261010更新步骤.docx": {
+        "sha256": "7e0e6e9e44fca400aa9c4e7a4cf27b171a6046d8acac0ea88e5260414427dc39",
+        "sections": [
+          [
+            327,
+            14336,
+            0
+          ]
+        ],
+        "uniqueId": 16,
+        "bytes": 14336
+      },
+      "MybatisCodeHelperConfig.json": {
+        "sha256": "80b979156dc47c0a217974d2e8fcfa25c135a3c2596d2e14801ee2d144240a61",
+        "sections": [
+          [
+            19496,
+            11266,
+            0
+          ]
+        ],
+        "uniqueId": 18,
+        "bytes": 11266
+      },
+      "burnlight-vat-mac-20261012.txt": {
+        "sha256": "faaabcbc28a26670d4b26b2a47b350d98d8a03c7778e22274931e636c6778b37",
+        "sections": [
+          [
+            12046,
+            56,
+            0
+          ]
+        ],
+        "uniqueId": 17,
+        "bytes": 56
+      },
+      "burnlight-vat-post-windows-offline.txt": {
+        "sha256": "d839c5541edb618dc95092caed380bc30829b670d7ee5ca7605e0f506ed28928",
+        "sections": [
+          [
+            26728,
+            46,
+            0
+          ]
+        ],
+        "uniqueId": 19,
+        "bytes": 46
+      },
+      "lssjk.jar": {
+        "sha256": "697bc1ced0869f1203c8b07996494b699b7ff8e184baa4f7c1f0ea5f22b35e60",
+        "sections": [
+          [
+            34176,
+            23068672,
+            0
+          ],
+          [
+            45442,
+            31518720,
+            0
+          ],
+          [
+            60838,
+            29347840,
+            0
+          ],
+          [
+            75170,
+            105377792,
+            0
+          ],
+          [
+            126631,
+            307600,
+            0
+          ]
+        ],
+        "uniqueId": 20,
+        "bytes": 189620624
+      }
+    },
+    "defaultStrictOracle": "REJECTS_WINDOWS_TAG_LOCATION_DEVIATION_AS_EXPECTED",
+    "jarZipCRC": {
+      "result": "PASS",
+      "entries": 368
+    },
+    "fourPriorFilesHashesExtentsUniqueIDsUnchanged": true,
+    "deletedFIDNotInLiveNamespace": true
+  },
+  "nativeGUI": {
+    "observationTool": "mcp__cua_repl.js fixedBurnLight.getAXState(disableDiffing:true)",
+    "time": "2026-10-12T17:06:50.359233+08:00",
+    "nativeWindow": "BurnLight",
+    "filesystem": "UDF 2.01 / VAT",
+    "mediaStatus": "6 Sessions · 6 Tracks 可追加",
+    "message": "介质检查完成。已读取最新 Session 目录。",
+    "fileCount": 5,
+    "visibleRows": [
+      "20261010更新步骤.docx — 14 KB",
+      "MybatisCodeHelperConfig.json — 11 KB",
+      "burnlight-vat-mac-20261012.txt — 56 bytes",
+      "burnlight-vat-post-windows-offline.txt — 46 bytes",
+      "lssjk.jar — 189.6 MB"
+    ],
+    "compatibilityMessage": "此盘使用 Windows 兼容视图，已校验文件引用；格式偏差记录在日志中。",
+    "GUIJob": "BEF53587-1C46-43E7-8ED7-E19357DC2455",
+    "CLICommands": [
+      {
+        "directory": "/private/tmp/burnlight-job-BEF53587-1C46-43E7-8ED7-E19357DC2455/command-214E379A-A61E-43D4-A751-68C9BDB63861",
+        "request": {
+          "arguments": [
+            "inspect",
+            "--device",
+            "1,0,0",
+            "--work-dir",
+            "/private/tmp/burnlight-job-BEF53587-1C46-43E7-8ED7-E19357DC2455/optical"
+          ],
+          "operation": "inspect"
+        },
+        "transport": {
+          "arguments": [
+            "inspect",
+            "--device",
+            "1,0,0",
+            "--work-dir",
+            "/private/tmp/burnlight-job-BEF53587-1C46-43E7-8ED7-E19357DC2455/optical"
+          ],
+          "authorizationCancelled": false,
+          "exitCode": 0,
+          "operation": "inspect",
+          "workerStateUnknown": false
+        }
+      },
+      {
+        "directory": "/private/tmp/burnlight-job-BEF53587-1C46-43E7-8ED7-E19357DC2455/command-2B3E8E4F-5D0C-438C-838A-27EBD920CD2B",
+        "request": {
+          "arguments": [
+            "drives"
+          ],
+          "operation": "drives"
+        },
+        "transport": {
+          "arguments": [
+            "drives"
+          ],
+          "authorizationCancelled": false,
+          "exitCode": 0,
+          "operation": "drives",
+          "workerStateUnknown": false
+        }
+      },
+      {
+        "directory": "/private/tmp/burnlight-job-BEF53587-1C46-43E7-8ED7-E19357DC2455/command-7905A884-D716-4EA2-80F7-495B4384FEA1",
+        "request": {
+          "arguments": [
+            "list",
+            "--device",
+            "1,0,0",
+            "--work-dir",
+            "/private/tmp/burnlight-job-BEF53587-1C46-43E7-8ED7-E19357DC2455/optical"
+          ],
+          "operation": "list"
+        },
+        "transport": {
+          "arguments": [
+            "list",
+            "--device",
+            "1,0,0",
+            "--work-dir",
+            "/private/tmp/burnlight-job-BEF53587-1C46-43E7-8ED7-E19357DC2455/optical"
+          ],
+          "authorizationCancelled": false,
+          "exitCode": 0,
+          "operation": "list",
+          "workerStateUnknown": false
+        }
+      }
+    ],
+    "result": "PASS_NATIVE_VISIBLE_LATEST_FIVE_FILE_LIST",
+    "physicalWrites": 0,
+    "copyBoundary": "Two root-owned working-directory toc.dat copies omitted; raw before-toc.txt and before-fulltoc.txt preserved in optical run evidence; original workspace/archive retained."
+  },
+  "installationEvidence": "installation.json",
+  "installedApp": "/Users/luzove/Applications/BurnLight.app",
+  "backupApp": "/Users/luzove/Applications/BurnLight-previous-20261012-170149-3d6f90f5.app",
+  "installedTrustedHashes": {
+    "Frameworks/libisofs.6.dylib": "c718e7b716cd51cd19f58183d3117241366dff0bb8d5a9dd66aedcbdb2ac08ec",
+    "Frameworks/libudfread.3.dylib": "d77a290a6c72bd3c558284fb500d38ddab9399362f2bb0cb2ab6c2150bfd8580",
+    "MacOS/appendcd": "50f44fc8435cddb9347c7d9ee8558b9bd8f4c1f99b681495a7a1f5fd2c749b7a",
+    "MacOS/appendcd-cdrecord": "11c4f0d0bca59d5fb1e1efea706aabfb228681df32cea66cd0ee48009d8879ec",
+    "MacOS/appendcd-initial-cdrecord": "60a8f03459c5d4ba6adbaa5bfd4a24e3afcbd7b021f97129ccc3cf95c568911d",
+    "MacOS/appendcd-vat-cdrecord": "7a7fcb81577d48fab581160dfb59661275a002f11905f191042a585332ed1026",
+    "MacOS/burnlight-export": "8ce639e7e5159a17a770af008e1161b7e96f72a09fc6afc800ed8fd8a5789421",
+    "MacOS/readcd": "b9679cc60652aa9ebbcffb0200f469865ddedbd46e2849115b70eeaeb69f4c18"
+  },
+  "GUIResults": {
+    "gui": {
+      "checks": [
+        "same-path files detected but directories merge",
+        "conflict choices reject directory versus file",
+        "duplicate imported paths cannot trap",
+        "replace option is a discrete argv pair",
+        "default CLI arguments preserve rejection contract",
+        "init never receives append conflict choice",
+        "single drive identity",
+        "no native drive exit 1 recognized",
+        "arbitrary drive failure not no-device",
+        "duplicate drive identity",
+        "partial discovery disabled",
+        "same model two distinct identities",
+        "blank maps only to init",
+        "existing complete disc maps only to burn",
+        "closed disc disables writing",
+        "unfinished Session disables writing",
+        "full disc disables writing",
+        "unknown media disables writing",
+        "duplicate field rejected",
+        "missing field rejected",
+        "identity change rejected",
+        "unknown output rejected",
+        "inconsistent capacity rejected",
+        "overflow rejected without trap",
+        "std quoted spaces Chinese quotes dollars",
+        "unclosed quote rejected",
+        "inline unmapped not silently omitted",
+        "duplicate file rejected",
+        "VAT format and transaction identity parsed",
+        "Windows compatibility is explicit and part of disc binding",
+        "unknown UDF compatibility profile rejected",
+        "duplicate UDF compatibility profile rejected",
+        "Windows profile forbidden on UDF 1.02",
+        "VAT format requires transaction identity",
+        "unsupported UDF format rejected",
+        "VAT expected view travels with burn conflict policy",
+        "VAT expected view travels with export",
+        "VAT expected view forbidden for init",
+        "listed tree bound to matching inspected disc",
+        "listed tree rejects changed Last session LBA: 11702",
+        "listed tree rejects changed Next writable LBA: 18904",
+        "listed tree rejects changed Sessions: 2",
+        "listed tree rejects changed Tracks: 2",
+        "listed tree rejects changed Registry ID: 4295022013",
+        "listed tree requires identity and geometry headers",
+        "physical argv explicit device without LBA",
+        "init-build has no physical options",
+        "physical operation needs explicit device",
+        "inspect requires global lease",
+        "list requires global lease",
+        "build requires global lease",
+        "readback requires global lease",
+        "init requires global lease",
+        "burn requires global lease",
+        "export requires global lease",
+        "successful physical marker plus Session increment",
+        "cdrecord exit zero alone is not success",
+        "same Session count is not completion",
+        "result file without optical verification rejected",
+        "substring success text not accepted as final marker",
+        "evidence bounded to dedicated task",
+        "outside evidence path rejected",
+        "snapshot preserves relative paths and hashes",
+        "Finder cache excluded recursively",
+        "snapshot survives complete revalidation",
+        "snapshot independent of later source edits",
+        "symlink rejected before copying",
+        "special file rejected without blocking",
+        "staging cancellation stays before submit",
+        "source changes during copying rejected",
+        "another GUI instance cannot start physical task",
+        "unknown worker marker survives GUI lease destruction",
+        "known completion removes active marker",
+        "shell transport roundtrips hostile filenames literally",
+        "shell writes distinct CLI exit receipt",
+        "no command substitution executed",
+        "AppleScript encoding roundtrips quotes and backslash",
+        "export directory selection includes descendants",
+        "export nested file includes parent directory",
+        "empty selection exports all",
+        "unknown selected file rejected",
+        "unsafe export path rejected: \"../outside\"",
+        "unsafe export path rejected: \"/absolute\"",
+        "unsafe export path rejected: \"a//b\"",
+        "unsafe export path rejected: \"a/../b\"",
+        "unsafe export path rejected: \"a\\\\b\"",
+        "unsafe export path rejected: \"a\\nb\"",
+        "export is readonly explicit target without LBA args",
+        "local export preserves zero Chinese nested Finder cache files",
+        "export never overwrites an existing final folder",
+        "existing exported content unchanged",
+        "changed optical cache blocked before local commit",
+        "receipt success alone cannot replace CLI success",
+        "missing optical success marker rejected",
+        "archive preserves every dependency and snapshot hash",
+        "archive retains logical sparse cache size",
+        "cache copy preserves allocation bound on this filesystem",
+        "archive leaves absolute manifest references verbatim",
+        "restore rebuilds original cache and block-map paths",
+        "restored staging remains read-only",
+        "restore does not overwrite different existing files",
+        "restore conflict leaves existing bytes intact",
+        "corrupt archived payload blocks restore",
+        "archive cannot redirect another private snapshot",
+        "history survives a new store instance",
+        "malformed history isolated with visible warnings",
+        "recovery cannot bypass a live GUI lease",
+        "missing exit receipt never unlocks worker",
+        "invalid exit receipt never unlocks worker",
+        "live worker or abnormal daemon keeps receipt locked",
+        "refused recovery retains active evidence",
+        "known exit recovery preserves actual failure code",
+        "known exit recovers only original write image conservatively",
+        "ambiguous original image is never guessed",
+        "recovered receipt cannot alter unrelated history",
+        "bundled configuration resolves only relative dependencies",
+        "real CLI offline init-build with staged hostile path",
+        "real CLI verifies generated metadata and payload hashes",
+        "readback image captured under user permissions",
+        "readback manifest preserved verbatim",
+        "real native drive text accepted",
+        "read-only delivery blocks init before admin launch",
+        "read-only delivery blocks burn before admin launch",
+        "changed CLI hash rejected before process start",
+        "large stdout stderr do not block and retain exit code",
+        "GUI blocks unresolved file conflict before CLI build",
+        "GUI skip choice reaches preview argv",
+        "changed conflict choice invalidates verified preview",
+        "GUI replacement reaches writer and retains failed write lock",
+        "history persists user conflict decision",
+        "single drive auto-selected",
+        "GUI model optical export completes and keeps write failure lock",
+        "export history records local destination",
+        "model export requested zero writes",
+        "model requires inspected target and verified preview",
+        "write failure enters inspection and blocks burn",
+        "no automatic retry or init fallback",
+        "failed job persists original image and snapshot",
+        "original image readback resolves matching failure only",
+        "readback did not create second write request",
+        "worker unknown locks subsequent physical tasks",
+        "blank flow uses explicit init and full mocked readback",
+        "known authorization cancellation stays before write",
+        "multiple devices require explicit selection",
+        "device change invalidates old ready state",
+        "tampered staged payload blocks before write"
+      ],
+      "count": 146,
+      "physicalWrites": 0,
+      "realAdminBridgeTestedHere": false,
+      "result": "PASS",
+      "root": "/private/tmp/burnlight-validation-FC55F03F-99F9-4563-9AFE-B642536F78C8"
+    },
+    "cli": {
+      "exitCode": 0,
+      "source": "six existing CTest groups and VAT group, bundled CLI and separately compiled core tests; isolated fixture outputs",
+      "bundledCLIsha256": "50f44fc8435cddb9347c7d9ee8558b9bd8f4c1f99b681495a7a1f5fd2c749b7a",
+      "scratch": "/private/tmp/burnlight-original-regression-pxlq2s_a",
+      "physicalWrites": 0,
+      "originalCLIsha256": "306bfd58e78847e2ed9d157849c8269a2f6ca04912fcd185ef3f35a443b2a587"
+    },
+    "vatExport": {
+      "result": "PASS",
+      "checks": [
+        "current-eight-session-all-inline-physical-Chinese-empty",
+        "inline-old-original-ICB",
+        "Chinese-empty-nested",
+        "stale-VAT-transaction-rejected",
+        "Windows-profile-export-receipt-explicit",
+        "Windows-carried-origin-and-deleted-FID-export"
+      ],
+      "count": 6,
+      "cliSHA256": "50f44fc8435cddb9347c7d9ee8558b9bd8f4c1f99b681495a7a1f5fd2c749b7a",
+      "adapterSHA256": "8ce639e7e5159a17a770af008e1161b7e96f72a09fc6afc800ed8fd8a5789421",
+      "fixture": "tests/vat_fixture.py",
+      "oracle": "tests/vat_oracle.py",
+      "scratch": "/private/tmp/burnlight-vat-export-5x5e6ee0",
+      "physicalWrites": 0
+    },
+    "adapter-offline": {
+      "result": "PASS",
+      "count": 10,
+      "checks": [
+        "Joliet-all-old-payload-nested-Chinese-empty-Finder-cache",
+        "Joliet-selected-folder-includes-descendants",
+        "Joliet-selected-nested-file-includes-ancestors",
+        "UDF-multisession-retained-extents-and-new-files",
+        "saved-real-CD-Windows-session-and-Mac-old-extents",
+        "missing-selection-path-rejected",
+        "path-traversal-rejected",
+        "wrong-file-size-rejected",
+        "physical-LBA-option-rejected-before-any-device-access",
+        "write-command-rejected-without-CLI-fallback"
+      ],
+      "scratch": "/private/tmp/burnlight-export-offline-xzkm2qqg",
+      "physicalWrites": 0,
+      "actualOpticalRead": false
+    },
+    "compact-session": {
+      "result": "PASS",
+      "count": 8,
+      "checks": [
+        "fixture is a complete 31-block volume",
+        "compact Joliet list imports expected file",
+        "independent descriptors and path tables accept compact volume",
+        "compact source exported payload matches independent oracle",
+        "compact source continuation generated without reading old payload",
+        "generated continuation still passes strict verify",
+        "descriptor outside reported volume remains rejected",
+        "rebinding hash cannot weaken generated 32-block minimum"
+      ],
+      "scratch": "/private/tmp/burnlight-compact-zxbgpg4c",
+      "physicalWrites": 0,
+      "cliSHA256": "50f44fc8435cddb9347c7d9ee8558b9bd8f4c1f99b681495a7a1f5fd2c749b7a"
+    },
+    "conflict-offline": {
+      "result": "PASS",
+      "checks": [
+        "joliet default rejects exact file conflict",
+        "joliet skip writer uses no old payload while generating",
+        "joliet skip independent verify passes",
+        "joliet skip retained entries remain old extents",
+        "joliet skip collision origin matches choice",
+        "joliet skip actual listing reuses retained.bin",
+        "joliet skip actual listing reuses 目录/keep.txt",
+        "joliet skip all payload bytes match choice",
+        "joliet replace writer uses no old payload while generating",
+        "joliet replace independent verify passes",
+        "joliet replace retained entries remain old extents",
+        "joliet replace collision origin matches choice",
+        "joliet replacement hashes include empty and nested files",
+        "joliet replace actual listing reuses retained.bin",
+        "joliet replace actual listing reuses 目录/keep.txt",
+        "joliet replace all payload bytes match choice",
+        "joliet all skipped rejects empty append",
+        "joliet skip case collision remains rejected",
+        "joliet skip type collision remains rejected",
+        "joliet replace case collision remains rejected",
+        "joliet replace type collision remains rejected",
+        "udf default rejects exact file conflict",
+        "udf skip writer uses no old payload while generating",
+        "udf skip independent verify passes",
+        "udf skip retained entries remain old extents",
+        "udf skip collision origin matches choice",
+        "udf skip actual listing reuses retained.bin",
+        "udf skip actual listing reuses 目录/keep.txt",
+        "udf skip all payload bytes match choice",
+        "udf replace writer uses no old payload while generating",
+        "udf replace independent verify passes",
+        "udf replace retained entries remain old extents",
+        "udf replace collision origin matches choice",
+        "udf replacement hashes include empty and nested files",
+        "udf replace actual listing reuses retained.bin",
+        "udf replace actual listing reuses 目录/keep.txt",
+        "udf replace all payload bytes match choice",
+        "udf all skipped rejects empty append",
+        "udf skip case collision remains rejected",
+        "udf skip type collision remains rejected",
+        "udf replace case collision remains rejected",
+        "udf replace type collision remains rejected",
+        "invalid policy rejected",
+        "policy cannot leak into init",
+        "policy cannot leak into init-build",
+        "policy cannot leak into readback",
+        "policy cannot leak into recover",
+        "policy cannot leak into list",
+        "policy cannot leak into verify",
+        "policy cannot leak into help"
+      ],
+      "count": 50,
+      "scratch": "/private/tmp/burnlight-conflict-h24liggj",
+      "physicalWrites": 0,
+      "cliSHA256": "50f44fc8435cddb9347c7d9ee8558b9bd8f4c1f99b681495a7a1f5fd2c749b7a"
+    },
+    "vat-export": {
+      "result": "PASS",
+      "checks": [
+        "current-eight-session-all-inline-physical-Chinese-empty",
+        "inline-old-original-ICB",
+        "Chinese-empty-nested",
+        "stale-VAT-transaction-rejected",
+        "Windows-profile-export-receipt-explicit",
+        "Windows-carried-origin-and-deleted-FID-export"
+      ],
+      "count": 6,
+      "cliSHA256": "50f44fc8435cddb9347c7d9ee8558b9bd8f4c1f99b681495a7a1f5fd2c749b7a",
+      "adapterSHA256": "8ce639e7e5159a17a770af008e1161b7e96f72a09fc6afc800ed8fd8a5789421",
+      "fixture": "tests/vat_fixture.py",
+      "oracle": "tests/vat_oracle.py",
+      "scratch": "/private/tmp/burnlight-vat-export-5x5e6ee0",
+      "physicalWrites": 0
+    },
+    "trusted": {
+      "Frameworks/libisofs.6.dylib": "c718e7b716cd51cd19f58183d3117241366dff0bb8d5a9dd66aedcbdb2ac08ec",
+      "Frameworks/libudfread.3.dylib": "d77a290a6c72bd3c558284fb500d38ddab9399362f2bb0cb2ab6c2150bfd8580",
+      "MacOS/appendcd": "50f44fc8435cddb9347c7d9ee8558b9bd8f4c1f99b681495a7a1f5fd2c749b7a",
+      "MacOS/appendcd-cdrecord": "11c4f0d0bca59d5fb1e1efea706aabfb228681df32cea66cd0ee48009d8879ec",
+      "MacOS/appendcd-initial-cdrecord": "60a8f03459c5d4ba6adbaa5bfd4a24e3afcbd7b021f97129ccc3cf95c568911d",
+      "MacOS/appendcd-vat-cdrecord": "7a7fcb81577d48fab581160dfb59661275a002f11905f191042a585332ed1026",
+      "MacOS/burnlight-export": "8ce639e7e5159a17a770af008e1161b7e96f72a09fc6afc800ed8fd8a5789421",
+      "MacOS/readcd": "b9679cc60652aa9ebbcffb0200f469865ddedbd46e2849115b70eeaeb69f4c18"
+    },
+    "configurationChangesOnly": [
+      "allowPhysicalWrites",
+      "outer ad-hoc signature"
+    ],
+    "physicalWrites": 0
+  },
+  "sanitizers": {
+    "sameSourceCheckpointEvidence": "artifacts/udf201-gui-fix/20261012-151937/asan-ctest.log",
+    "sourceUnchanged": true,
+    "ASAN_OPTIONS": "detect_leaks=0",
+    "UBSAN_OPTIONS": "halt_on_error=1",
+    "count": 89,
+    "ctest": "7/7 PASS",
+    "leakDetection": "NOT_SUPPORTED_NOT_PASS"
+  },
+  "criteria": {
+    "CURRENT_8SESSION_READ_PASS": {
+      "status": "NOT_PASS_MEDIUM_ERROR_ORIGINAL_SAMPLE",
+      "input": "artifacts/compatibility-assessment/20261010-udf201-eight-sessions-8scr6h59",
+      "binding": "docs/evidence/udf201-acceptance-20261012.json",
+      "currentSixSessionCannotFillOriginalEight": true
+    },
+    "CROSS_SESSION_REFERENCE_PASS": {
+      "status": "PASS_CURRENT_SIX_SESSION_ACTUAL_AND_INDEPENDENT_EIGHT_SESSION_FIXTURE",
+      "input": "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W",
+      "evidence": "actual-six-session-independent.json",
+      "fixture": "tests/vat_fixture.py"
+    },
+    "SINGLE_SESSION_REGRESSION_PASS": {
+      "status": "PASS_OFFLINE_SAME_SOURCE",
+      "evidence": "../20261012-151937/cli-vat-result.json",
+      "realSingleSessionRecheckThisStage": false
+    },
+    "VAT_OFFLINE_APPEND_PASS": {
+      "status": "PASS_89_CHECKS_SAME_SOURCE",
+      "evidence": "gui-regression/cli-regression.json",
+      "priorSameSourceEvidence": "../20261012-151937/cli-vat-result.json"
+    },
+    "EXISTING_FEATURE_REGRESSION_PASS": {
+      "status": "PASS_SEVEN_GROUPS_AND_GUI_OFFLINE_REGRESSIONS",
+      "evidence": "gui-offline-result.json",
+      "additionalActualUdf102List": "fresh-cli-list/stdout.log",
+      "historicalPhysicalMaterialsNotReexecuted": true
+    },
+    "GUI_INTEGRATION_PASS": {
+      "status": "PASS_NATIVE_CURRENT_FIVE_FILE_LIST_AND_ACTUAL_ADAPTER_EXPORT",
+      "evidence": "native-gui-visible-result.json",
+      "actualExport": "actual-six-session-independent.json",
+      "installedCLIsha256": "50f44fc8435cddb9347c7d9ee8558b9bd8f4c1f99b681495a7a1f5fd2c749b7a"
+    },
+    "MAC_PHYSICAL_APPEND_PASS": {
+      "status": "NOT_RUN_THIS_BUILD",
+      "priorScope": "vat9 Session4 normal actual burn PASS on prior source/binary",
+      "priorEvidence": "docs/evidence/udf201-vat9-normal-burn-20261012.json",
+      "physicalWritesThisStage": 0
+    },
+    "WINDOWS_READ_AND_REAPPEND_PASS": {
+      "status": "PRIOR_REPLACEMENT_MANUAL_READ_AND_EXPLORER_APPEND_RETAINED_CURRENT_MAC_READ_VERIFIED",
+      "priorEvidence": "docs/evidence/udf201-vat9-normal-burn-20261012.json",
+      "latestHumanReport": "在 Windows 资源管理器追加了文件",
+      "WindowsAutomaticReport": "NOT_COLLECTED",
+      "newJarWindowsSourceSHA256": "NOT_COLLECTED"
+    },
+    "MAC_RETURN_READBACK_PASS": {
+      "status": "PASS_CURRENT_SIX_SESSION_FIVE_FILES_TWO_FRESH_READS",
+      "input": "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W",
+      "evidence": "actual-six-session-independent.json",
+      "mountedViewComparisonThisStage": "NOT_RUN"
+    }
+  },
+  "evidenceRoot": "artifacts/udf201-gui-fix/20261012-165222-restart",
+  "gitDiffCheck": 0,
+  "gitStatusEvidence": "artifacts/udf201-gui-fix/20261012-165222-restart/final-git-status.txt",
+  "serviceEvidence": "final-services-workers.txt",
+  "finalActiveMarkerExists": false,
+  "scope": "current GUI continuation read bug fixed; no new physical write, no original damaged eight-session full-content PASS, no Windows automatic source-hash report",
+  "documentHashes": {
+    "README.md": "3e3edda6f77c243739cc39e103176a6d0074fdf95a7d842be5d4405afc3b36b7",
+    "docs/implementation.md": "f27ea3aa32bcd51f633af38bd4e8c20a11e4cc2faad832e331b187af9f909477",
+    "gui/README.md": "69aa19b9d4c14500fb8447cca68e6dd5bc3499e92334338c9efd37997d73fcd5",
+    "docs/udf201-gui-six-session-readback-20261012.md": "ce72a07403b94ac3020e64604218549dd71f552e8f1b8d2c00687da11e99e1b6"
+  },
+  "evidenceHashes": {
+    "artifacts/udf201-gui-fix/20261012-165222-restart/actual-six-session-independent.json": "5cd2e24790a93ca7b89a7394b7344e1c5eb415bf9f02f5668aa4265684258694",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/actual-six-session-independent.log": "5cd2e24790a93ca7b89a7394b7344e1c5eb415bf9f02f5668aa4265684258694",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/final-git-diff-check.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/final-git-status.txt": "0473ae6b26071e6709f3e2864bf7fb79039b06c7bd84f6e9ad924143ed364b44",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/final-services-workers.txt": "75208e0e7bd97e6c7119b17481562e3cb9e29774723211f977e1fb22db32f3d1",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/bridge-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/bridge-stdout.log": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/exit.code": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/optical/run-Ut3IwF/before-atip.txt": "adfc49a5d5c98da1917d1c89a4acf2d0210e7a523789572bb2b813b3caae6205",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/optical/run-Ut3IwF/before-backend-probe.txt": "d5d5c871b5c4b8f6be51864eb8adb28f72e14686af523e9d80d30384ead81bd7",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/optical/run-Ut3IwF/before-device-identity.txt": "0b355b6e64085a21c9290e87abd60015c2e0e1067f8a7d533fc7594e7d615de0",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/optical/run-Ut3IwF/before-drive-info-xml.txt": "a32d27a3d1bd2d4ec37f2f72ce7c1e759feb69bdded89684619c3c525d4c3630",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/optical/run-Ut3IwF/before-drive-info.txt": "f480e94e703e78b3d3d8a727de83f844f840005a1f0334c20f88a0bc2cf71e4f",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/optical/run-Ut3IwF/before-drutil.txt": "4f1bbe7d6ffc20c4d549d5b0a2f04e1c816048b0883b1ec9d600c14200132467",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/optical/run-Ut3IwF/before-fulltoc.txt": "c65ad7cd1b8e85041c67a3437efc6325b2e557cdede8d56c21851fe99e09b184",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/optical/run-Ut3IwF/before-inquiry.txt": "e59d48da843bc95f70cc57a8d36d18407451316aa863ca35f673ec7aa3fd0682",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/optical/run-Ut3IwF/before-minfo.txt": "64ae0151100b186c1f1457a9a49ba4cc7cc528790d8d9eab3dac05f3d4308d2f",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/optical/run-Ut3IwF/before-msinfo.txt": "97b61a4d8ddb09d0a05c0645992674ce1a9e68f92b81b7294dec9b8420726334",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/optical/run-Ut3IwF/before-read/disc-cache.iso": "cb8d4e0fdde804ffbf69d794026f5bbcdb07fa8f1cecbf6c46ee9fcbd2a37164",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/optical/run-Ut3IwF/before-read/disc-cache.iso.blocks": "47ced138a48d9fa764b6339fd65bac1036ee590ac1494a840d6e7e2268f53709",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/optical/run-Ut3IwF/before-read/disc-cache.iso.tracks": "251002cfa6fc39aac64f0fc7fb378b18272db706d221c25f7a3c1e810dae163b",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/optical/run-Ut3IwF/before-read/last-readcd.txt": "4182f4de8a9d22b979ed778ebf8c008ba7108a04ae65c2781586f9fa8182de9e",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/optical/run-Ut3IwF/before-read/sector.bin": "eb2b649f123616d9fd024512571cf089315b18645ca373d3e7480a4b0eed6705",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/optical/run-Ut3IwF/before-toc.txt": "3bf6a20be5f97a426e338b983247956283bbb81fea862dd8b97b9df4134f4c64",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/optical/run-Ut3IwF/filesystem-probe.txt": "c7ab1a340dd5d8264dcb2b1189354eb5d906a9d22a58f898af2f92baa3a5bf0e",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/optical/run-Ut3IwF/udf-view.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/request.json": "51c780a80a7dfa42f1949a0ceef2577ab55e4f56033c1064aa4957637cd3adf5",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/shell-command.txt": "77a1551ec85bcf58d622eacf206ccbe482b79e8cf7c62523b59e6c892b33aca1",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/stderr.log": "8e7ac5dd0e271bddf55d211b0a719a4d167d6ca9f4dee7531b5c248ad347da57",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/stdout.log": "cf87af8358e22d32a3db8a6ee91fa1609d5f2c81420e9ab7ee4f9970df37309a",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-cli-list/transport.json": "b662ee9f38f61fe6ab3255cc7c26a2fbbf2d444edecff4a5633cbdf6209d4067",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/fresh-drives.txt": "c2a7f1cc9f525834a372cd407d8248760721f941ffbbd76fd9625235b10e9f7e",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/gui/validation.json": "9dcaab72260a6cfb0a12f4c0b02e534d50684ce23e79330e632112872bb6ab86",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/gui-adapter/adapter-offline.json": "e2dd8cfa18beb1a01d7c1832f10ef284b17fabd696f65274ddd0a24909b76b15",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/gui-adapter/adapter-offline.log": "01cd8d4d1fcb78538c1189c3053b96e15e58190dce1d0dc2675f522993bcfbb4",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/gui-adapter/compact-session.json": "894f0f8bc8e11b5debd80129403ee973fd384dd6fda9394c0ebdf96ea002b90f",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/gui-adapter/compact-session.log": "594c821e8c0ccbac8c2935edbf45a9eef9876427842827a19c77b238be46d257",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/gui-adapter/conflict-offline.json": "27335e37f5da5a90ef14d922a07aab26275ad8440a63ebae681e63ff26a50ee6",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/gui-adapter/conflict-offline.log": "4afd974d04de4978423ab10e4f5a1957aefb403099cba0ede0d8ad8a6fa0423e",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/gui-adapter/vat-export.json": "10eab25b28ca65f7c26df1229405228decf390ff21c94944cbb73d8e814fb76b",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/gui-adapter/vat-export.log": "3e9b1fef46535e5304e3789f8e0d4a48762f7d97388513fdfbae65b2088967cd",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/gui-build-test.log": "2ca92dfe4a315d7d81cf30fd74d041dbc44ef08ac3e26f3779fa97fdca14a3ca",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/gui-cli-regression-corrected.log": "fd19a5cf31a0e707cd532423194894bc57a66e86b705db2c803e4eb06b4b6203",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/gui-cli-regression.log": "322f11fa8258e29240d1ab8c5292bf772df036397bc5233b3099c580b57098d5",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/gui-compact.log": "573d06ad85d0cdbe9e20527bc0d19c3a40923477fed5378cb5af8a5b43a77bd5",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/gui-conflict.log": "95ca4f33fde29e59e9abecf13f91f4598e4c7bd3d7eacd7d6cf45f2ebe4077f1",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/gui-export.log": "2f75fb320067fd858780dbdff963cd3b2409b928476f986443cad43853ec5a36",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/gui-offline-result.json": "c7d4149e84f57f6222cb18593bdf259f07a9dac9627ec46f10216b97ecc349ab",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/gui-regression/cli-regression-configure.log": "d6e62bdecbc53c3dc1472ce458d061650d806628d5d4bdffd6f60f3e3e1753e1",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/gui-regression/cli-regression.json": "b54f23f39b255ca59c91f77e3169d6945bd7f2c0ded3ca4132c5390a0d084ca4",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/gui-regression/cli-regression.log": "03fefc2ec13505c57b0439f3f69b60cf4490077811a22fc19b4ba02ce746fc3d",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/gui-vat-export.log": "9865cd4bfc1de34548dbf1e21d872958c4fcc51baef49f12a33f03a446370280",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/installation.json": "74a9821c3bb04416070fcbb11ed34e46e56c2e7de513463e33f7d3b195ea34b2",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-record.json": "0f29edf8f199451ee1c39ff30f6a5d44032122205e0c428038c5e30f163991a7",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-visible-result.json": "0b8d71c1724c3d7e1cd1b02c1e784a37fbf95e2339e6604f7cb696ce4e53d017",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-214E379A-A61E-43D4-A751-68C9BDB63861/bridge.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-214E379A-A61E-43D4-A751-68C9BDB63861/bridge.stdout.log": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-214E379A-A61E-43D4-A751-68C9BDB63861/exit.code": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-214E379A-A61E-43D4-A751-68C9BDB63861/request.json": "e9212390f2fdbf5079a5845be606c0152a856641f6f2eeb01a487ba9535f9ab6",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-214E379A-A61E-43D4-A751-68C9BDB63861/stderr.log": "0c7a56587f8909cd114479aae6f08a7fb924ed20a58c23acd811eadedd3268c6",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-214E379A-A61E-43D4-A751-68C9BDB63861/stdout.log": "4ec4ff36ca712cba866eaab9dda21390080a6588ac2fbf1ef30e7563335dc7d4",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-214E379A-A61E-43D4-A751-68C9BDB63861/transport.json": "5ecbb50f4a9d8a52d1e830611252cba66366e7d1d3e122a62524c3c4ff8a7ab9",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-2B3E8E4F-5D0C-438C-838A-27EBD920CD2B/bridge.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-2B3E8E4F-5D0C-438C-838A-27EBD920CD2B/bridge.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-2B3E8E4F-5D0C-438C-838A-27EBD920CD2B/exit.tmp": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-2B3E8E4F-5D0C-438C-838A-27EBD920CD2B/request.json": "b97c41a3461c5e6050785e09231d654022fb856b0752a0a7b4c06a7b390493a1",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-2B3E8E4F-5D0C-438C-838A-27EBD920CD2B/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-2B3E8E4F-5D0C-438C-838A-27EBD920CD2B/stdout.log": "c2a7f1cc9f525834a372cd407d8248760721f941ffbbd76fd9625235b10e9f7e",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-2B3E8E4F-5D0C-438C-838A-27EBD920CD2B/transport.json": "f19133ef9b4e78f9db41b7a28c4fdbc47cfdfa84a26768fa3e9f232e8ccea9c9",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-7905A884-D716-4EA2-80F7-495B4384FEA1/bridge.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-7905A884-D716-4EA2-80F7-495B4384FEA1/bridge.stdout.log": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-7905A884-D716-4EA2-80F7-495B4384FEA1/exit.code": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-7905A884-D716-4EA2-80F7-495B4384FEA1/request.json": "3c145af0c4b4b94078464540b2c325bc6d286f1fcbee751d51daa6acb8026817",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-7905A884-D716-4EA2-80F7-495B4384FEA1/stderr.log": "0b3b93fc5d1ab7083a894300eeac5587c02feb019bb54b5f0df1940caae7b4c4",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-7905A884-D716-4EA2-80F7-495B4384FEA1/stdout.log": "e4aacef3b527b84c6ee0b2ab1fd02746386b17bdda7aec1de022e1df89a84e1b",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/command-7905A884-D716-4EA2-80F7-495B4384FEA1/transport.json": "e330ba82a1e65ce826c535489475205009f4ca1938364431f7e2604c06e406f4",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-NinHEN/before-atip.txt": "5eb73df52abd28856d6c677bb9105b5e20c7ad886a6117770a336042c976b145",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-NinHEN/before-backend-probe.txt": "6adecd599dd8667ac8de37b4668c0dffc817f2b609808b356b5d76157488e0f1",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-NinHEN/before-device-identity.txt": "f5fcbd77c0c65659b69b9d8d7cfd444d36a5f6ec11b983524f94b7fa7a15980b",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-NinHEN/before-drive-info-xml.txt": "a32d27a3d1bd2d4ec37f2f72ce7c1e759feb69bdded89684619c3c525d4c3630",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-NinHEN/before-drive-info.txt": "f480e94e703e78b3d3d8a727de83f844f840005a1f0334c20f88a0bc2cf71e4f",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-NinHEN/before-drutil.txt": "c506b5b2bd031e60e817619180eee9110b00a9b366af253f45cc384dd8269a9c",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-NinHEN/before-fulltoc.txt": "b0a44726723e6ad20823efebe5a229ba5abfe996fcf9ff9acc314f249ad2c5f6",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-NinHEN/before-inquiry.txt": "e59d48da843bc95f70cc57a8d36d18407451316aa863ca35f673ec7aa3fd0682",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-NinHEN/before-minfo.txt": "5dd689e1fc8e01d1187d424c79b6ec6c0ed4fc711c39719bf5022885d0c2c470",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-NinHEN/before-msinfo.txt": "fc51bfac78ccbe4a399aa07a65d7fa10f4febc88d3bc08ccad186c6a6fdea872",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-NinHEN/before-read/disc-cache.iso": "4e0abf475968b83edf7faf74abbbd1f60dd0a6e6865622d4ff639b38ce50081a",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-NinHEN/before-read/disc-cache.iso.blocks": "e6dfc51bd816a52296cb9fce612a270dad9680776bff6a003d01686b526b7645",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-NinHEN/before-read/disc-cache.iso.tracks": "155780a62171b17c9df0dc90793e1f0dee2fe5d7b9a7214a002ff3aa78aafda5",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-NinHEN/before-read/last-readcd.txt": "50bd9aee84a8b9e0b5d4216e429e4f7f162355eb64d30188a389e0a9ba98a8c6",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-NinHEN/before-read/sector.bin": "18c55812caaf4c4787c89ea757e1782da48b4f0ea55d3150e9189002c93089f9",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-NinHEN/before-toc.txt": "e30ed3055d413fcb3d2a6fa57c2dd751415f75e87bf939776ea225c17f30de01",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-NinHEN/filesystem-probe.txt": "0a6e7e052eb13af0236b38e246fd7d4e58a43c206e53970b68acfefa390f9640",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-NinHEN/udf-view.txt": "96a33baeb00a6688d2b44b6bbd36f28db00af0530c3a3b104430bdceb0f6f01d",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-rfh1ij/before-atip.txt": "5eb73df52abd28856d6c677bb9105b5e20c7ad886a6117770a336042c976b145",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-rfh1ij/before-backend-probe.txt": "6adecd599dd8667ac8de37b4668c0dffc817f2b609808b356b5d76157488e0f1",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-rfh1ij/before-device-identity.txt": "21f1b00c14849f8e72398de5d19b8ead8517c0357e89dd8d2ae56bb96238c779",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-rfh1ij/before-drive-info-xml.txt": "a32d27a3d1bd2d4ec37f2f72ce7c1e759feb69bdded89684619c3c525d4c3630",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-rfh1ij/before-drive-info.txt": "f480e94e703e78b3d3d8a727de83f844f840005a1f0334c20f88a0bc2cf71e4f",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-rfh1ij/before-drutil.txt": "c506b5b2bd031e60e817619180eee9110b00a9b366af253f45cc384dd8269a9c",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-rfh1ij/before-fulltoc.txt": "b0a44726723e6ad20823efebe5a229ba5abfe996fcf9ff9acc314f249ad2c5f6",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-rfh1ij/before-inquiry.txt": "e59d48da843bc95f70cc57a8d36d18407451316aa863ca35f673ec7aa3fd0682",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-rfh1ij/before-minfo.txt": "5dd689e1fc8e01d1187d424c79b6ec6c0ed4fc711c39719bf5022885d0c2c470",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-rfh1ij/before-msinfo.txt": "fc51bfac78ccbe4a399aa07a65d7fa10f4febc88d3bc08ccad186c6a6fdea872",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-rfh1ij/before-read/disc-cache.iso": "4e0abf475968b83edf7faf74abbbd1f60dd0a6e6865622d4ff639b38ce50081a",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-rfh1ij/before-read/disc-cache.iso.blocks": "e6dfc51bd816a52296cb9fce612a270dad9680776bff6a003d01686b526b7645",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-rfh1ij/before-read/disc-cache.iso.tracks": "155780a62171b17c9df0dc90793e1f0dee2fe5d7b9a7214a002ff3aa78aafda5",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-rfh1ij/before-read/last-readcd.txt": "2d0e3913a9734d3bab905d216976df53f18e837f5b0f79597dedf7bb5688d960",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-rfh1ij/before-read/sector.bin": "18c55812caaf4c4787c89ea757e1782da48b4f0ea55d3150e9189002c93089f9",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-rfh1ij/before-toc.txt": "4c3c13bd8ce554b0bbfe6282db159cfc484dda35437e4da01b2343e72e801c15",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-rfh1ij/filesystem-probe.txt": "0a6e7e052eb13af0236b38e246fd7d4e58a43c206e53970b68acfefa390f9640",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/native-gui-workspace/optical/run-rfh1ij/udf-view.txt": "96a33baeb00a6688d2b44b6bbd36f28db00af0530c3a3b104430bdceb0f6f01d",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/old-cli-actual-cache-reproduction.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/old-cli-actual-cache-reproduction.stderr": "500b61207b255bef77eb59bc5d30bf5b6d89bc5e6bab863c447114600cbf4145",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/old-cli-actual-cache-reproduction.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/preserved-checkpoint-documents/README.md": "d2a8fc4c5286c8f4772385a62dadd1b84e956c32c6e88ae5c3754b921e40908f",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/preserved-checkpoint-documents/docs/implementation.md": "4d0206c59df3555ebdfa7c9d6b8e6f4bad3aaf5d88309dfa6e402d34ad9aa6ec",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/preserved-checkpoint-documents/gui/README.md": "8eac314a3f8023d62d9f4524daf45d3107c41e46c4489d017706ce01dff8091a",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/restart-audit.json": "61ecd20652a1d3acd61ad0653dfa76c980c753b559e920ce5b0622223068d167",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/user-payload-git-ignore-check.txt": "bd0ea1df2ce1a1af771a803a20e54911036fd71ffbacc52b0fae3cb87e71292b",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-current-selection.txt": "b71b525002c1129649d119dfea2988f2ae5562558f20decd6e92c9a823dc5570",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/bridge-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/bridge-stdout.log": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/exit.code": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/optical/run-ax0R6y/before-atip.txt": "5eb73df52abd28856d6c677bb9105b5e20c7ad886a6117770a336042c976b145",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/optical/run-ax0R6y/before-backend-probe.txt": "6adecd599dd8667ac8de37b4668c0dffc817f2b609808b356b5d76157488e0f1",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/optical/run-ax0R6y/before-device-identity.txt": "3e3aaa2e1cff855d6463d8f0b8d687d697adb5d7756eb703b8f474d28cba8dc5",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/optical/run-ax0R6y/before-drive-info-xml.txt": "a32d27a3d1bd2d4ec37f2f72ce7c1e759feb69bdded89684619c3c525d4c3630",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/optical/run-ax0R6y/before-drive-info.txt": "f480e94e703e78b3d3d8a727de83f844f840005a1f0334c20f88a0bc2cf71e4f",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/optical/run-ax0R6y/before-drutil.txt": "c506b5b2bd031e60e817619180eee9110b00a9b366af253f45cc384dd8269a9c",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/optical/run-ax0R6y/before-fulltoc.txt": "066d7585b110e7b34e2f1ab7f04085e0a20479cf5b77e86a1f99ccad8166a39c",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/optical/run-ax0R6y/before-inquiry.txt": "e59d48da843bc95f70cc57a8d36d18407451316aa863ca35f673ec7aa3fd0682",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/optical/run-ax0R6y/before-minfo.txt": "5dd689e1fc8e01d1187d424c79b6ec6c0ed4fc711c39719bf5022885d0c2c470",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/optical/run-ax0R6y/before-msinfo.txt": "fc51bfac78ccbe4a399aa07a65d7fa10f4febc88d3bc08ccad186c6a6fdea872",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/optical/run-ax0R6y/before-read/disc-cache.iso": "4e0abf475968b83edf7faf74abbbd1f60dd0a6e6865622d4ff639b38ce50081a",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/optical/run-ax0R6y/before-read/disc-cache.iso.blocks": "e6dfc51bd816a52296cb9fce612a270dad9680776bff6a003d01686b526b7645",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/optical/run-ax0R6y/before-read/disc-cache.iso.tracks": "155780a62171b17c9df0dc90793e1f0dee2fe5d7b9a7214a002ff3aa78aafda5",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/optical/run-ax0R6y/before-read/last-readcd.txt": "78fb1a1eda29b29d83b4a65bce3857775a39fc8ae1402ef9d322a0a964fe6df1",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/optical/run-ax0R6y/before-read/sector.bin": "18c55812caaf4c4787c89ea757e1782da48b4f0ea55d3150e9189002c93089f9",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/optical/run-ax0R6y/before-toc.txt": "d2ea2f614716b4e37c6cdfdee619aff50a82555844090af942c4d17eedbe6fb0",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/optical/run-ax0R6y/filesystem-probe.txt": "0a6e7e052eb13af0236b38e246fd7d4e58a43c206e53970b68acfefa390f9640",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/optical/run-ax0R6y/udf-view.txt": "96a33baeb00a6688d2b44b6bbd36f28db00af0530c3a3b104430bdceb0f6f01d",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/request.json": "13a4de6ae6d85a196ac21a09358d4adf7ddca3a24c01dd3d32ebe99bf952b865",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/shell-command.txt": "e6960242c599dcaab5b16690f4e27515783aa6e889b248e741871186d5362ce9",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/stderr.log": "896fbb101a25d87a7fba6208584a436ab117498679a97fc19906ce9136845e2c",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/stdout.log": "a3684a5e6316efc3a8e254d7e085db026a09ddd751e2558ae8949d6cfb8c552b",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-cli-list/transport.json": "c5493244bb7234ca076c96dd7aa4d6d2d33cedd21006699dbd4749b7a263a00a",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-fresh-drives.txt": "c2a7f1cc9f525834a372cd407d8248760721f941ffbbd76fd9625235b10e9f7e",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/bridge-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/bridge-stdout.log": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/exit.code": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/export-selection.txt": "b71b525002c1129649d119dfea2988f2ae5562558f20decd6e92c9a823dc5570",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/before-atip.txt": "5eb73df52abd28856d6c677bb9105b5e20c7ad886a6117770a336042c976b145",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/before-backend-probe.txt": "6adecd599dd8667ac8de37b4668c0dffc817f2b609808b356b5d76157488e0f1",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/before-device-identity.txt": "26992edb6be84341fd7ce5d95c435b0f7868690c5183a29da8194f6773c191c0",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/before-drive-info-xml.txt": "a32d27a3d1bd2d4ec37f2f72ce7c1e759feb69bdded89684619c3c525d4c3630",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/before-drive-info.txt": "f480e94e703e78b3d3d8a727de83f844f840005a1f0334c20f88a0bc2cf71e4f",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/before-drutil.txt": "c506b5b2bd031e60e817619180eee9110b00a9b366af253f45cc384dd8269a9c",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/before-fulltoc.txt": "066d7585b110e7b34e2f1ab7f04085e0a20479cf5b77e86a1f99ccad8166a39c",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/before-inquiry.txt": "e59d48da843bc95f70cc57a8d36d18407451316aa863ca35f673ec7aa3fd0682",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/before-minfo.txt": "5dd689e1fc8e01d1187d424c79b6ec6c0ed4fc711c39719bf5022885d0c2c470",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/before-msinfo.txt": "fc51bfac78ccbe4a399aa07a65d7fa10f4febc88d3bc08ccad186c6a6fdea872",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/before-toc.txt": "d2ea2f614716b4e37c6cdfdee619aff50a82555844090af942c4d17eedbe6fb0",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/export.json": "eaf3415f74c7e406d32c15187273cf5feebee05d18026102023384773e8f8e53",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/files/20261010更新步骤.docx": "7e0e6e9e44fca400aa9c4e7a4cf27b171a6046d8acac0ea88e5260414427dc39",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/files/MybatisCodeHelperConfig.json": "80b979156dc47c0a217974d2e8fcfa25c135a3c2596d2e14801ee2d144240a61",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/files/burnlight-vat-mac-20261012.txt": "faaabcbc28a26670d4b26b2a47b350d98d8a03c7778e22274931e636c6778b37",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/files/burnlight-vat-post-windows-offline.txt": "d839c5541edb618dc95092caed380bc30829b670d7ee5ca7605e0f506ed28928",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/files/lssjk.jar": "697bc1ced0869f1203c8b07996494b699b7ff8e184baa4f7c1f0ea5f22b35e60",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/result.txt": "dc3b1f59f83580890047f97b72078e1e7eecf71ef739a5367e0b24a9925f7852",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/source-read/disc-cache.iso": "ad39de57a377dc48e50ac59adf2377421093f9f18a3f60b02a0c04278adecb15",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/source-read/disc-cache.iso.blocks": "26d6ee628236aac977f95e9adf259c32608051a36d871e9ccc5c2e320a386aec",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/source-read/disc-cache.iso.tracks": "155780a62171b17c9df0dc90793e1f0dee2fe5d7b9a7214a002ff3aa78aafda5",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/source-read/last-readcd.txt": "7e00b68f44d7954cc2f4afa6c73f80391a15b08d1166afce156c3fdc7a744886",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/source-read/sector.bin": "0f945cea7bebff5eb36364179a1c5bf519f77a3d1a0447ac10c29f2b5681ef94",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/udf-view.txt": "96a33baeb00a6688d2b44b6bbd36f28db00af0530c3a3b104430bdceb0f6f01d",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/verification-read/disc-cache.iso": "ad39de57a377dc48e50ac59adf2377421093f9f18a3f60b02a0c04278adecb15",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/verification-read/disc-cache.iso.blocks": "8541b1b8251baf3ccef0758a729c6d20e690875f69ed8f2c24bca54fb08181d8",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/verification-read/disc-cache.iso.tracks": "155780a62171b17c9df0dc90793e1f0dee2fe5d7b9a7214a002ff3aa78aafda5",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/verification-read/last-readcd.txt": "f662f6fe13f86056fab4ee1e923925c5b05f38a7fb6e68592504f773487fbaf9",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/optical/run-EPfd7W/verification-read/sector.bin": "b2ea4d79483c1398acb7f11c7c8da28a62d368495462562b6aafdb52e7f03520",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/request.json": "57fc29471b3da27e3e5bf205a2fcf38b6406b3a09668e1fabb510972fb044493",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/shell-command.txt": "5559a29af0309b1bc986bf750eb53c8072eb1de1663bc21e1324e0cc9a1767f5",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/stderr.log": "62c329005011b19a196922f0f35cb012d2c78511d0d4f3ee953ff5ea973ee343",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/stdout.log": "1bedacff345050dc873816eb0f52d2e1a0ad95641360d23fa62d7a547a9faa74",
+    "artifacts/udf201-gui-fix/20261012-165222-restart/vat-disc-full-export/transport.json": "9e0da5d1fe67cecdc73cd267c40b0d788cb35a259987485eef19e6ce241b90a6"
+  }
+}

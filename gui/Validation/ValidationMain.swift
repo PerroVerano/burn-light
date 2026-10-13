@@ -92,6 +92,7 @@ struct ValidationMain {
             try locksAndShell(checks, root)
             try exports(checks, root)
             try archivesAndRecovery(checks, root)
+            try cleanup(checks, root)
             try await offline(checks, root, snapshot)
             try await models(checks, root, snapshot)
             let output: [String: Any] = ["result": "PASS", "checks": checks.names, "count": checks.names.count, "root": root.path, "physicalWrites": 0, "realAdminBridgeTestedHere": false]
@@ -140,6 +141,28 @@ struct ValidationMain {
         try c.rejects("inline unmapped not silently omitted", { _ = try TextContract.tree(result("INLINE/UNMAPPED: \"x\"\n")) })
         try c.rejects("duplicate file rejected", { _ = try TextContract.tree(result("FILE \"x\" bytes=1 LBA=1+1\nFILE \"x\" bytes=1 LBA=1+1\n")) })
         let inspected = try TextContract.disc(result(discText()), selected: drive)
+        let vatView = String(repeating: "a", count: 64)
+        let vatHeader = discText() + "Filesystem: udf2.01+vat\nFilesystem view: \(vatView)\n"
+        let vatDisc = try TextContract.disc(result(vatHeader), selected: drive)
+        try c.expect("VAT format and transaction identity parsed", vatDisc.filesystem == "udf2.01+vat" && vatDisc.filesystemView == vatView)
+        let dvdDrive = try TextContract.drives(result(driveText.replacingOccurrences(of: "CD-R", with: "DVD-R")))[0]
+        let dvdVAT = try TextContract.disc(result(vatHeader.replacingOccurrences(of: "CD-R", with: "DVD-R")), selected: dvdDrive)
+        try c.expect("DVD-R VAT inspection keeps append admission and transaction binding", dvdVAT.writeCLIOperation == .burn && dvdVAT.filesystemView == vatView)
+        let dvdRequest = try CLIRequest(.burn, input: root, drive: dvdDrive, evidence: root, expectedView: dvdVAT.filesystemView)
+        try c.expect("DVD-R VAT burn carries inspected target and expected view", dvdRequest.arguments.contains("--device") && dvdRequest.arguments.contains(dvdDrive.device) && dvdRequest.arguments.contains("--expected-view") && dvdRequest.arguments.contains(vatView))
+        let compatibleHeader = vatHeader + "UDF compatibility: windows-fid-location-v1\n"
+        let compatibleDisc = try TextContract.disc(result(compatibleHeader), selected: drive)
+        try c.expect("Windows compatibility is explicit and part of disc binding", compatibleDisc.udfCompatibility == "windows-fid-location-v1" && compatibleDisc != vatDisc)
+        try c.rejects("unknown UDF compatibility profile rejected", { _ = try TextContract.disc(result(vatHeader + "UDF compatibility: arbitrary\n"), selected: drive) })
+        try c.rejects("duplicate UDF compatibility profile rejected", { _ = try TextContract.disc(result(compatibleHeader + "UDF compatibility: windows-fid-location-v1\n"), selected: drive) })
+        try c.rejects("Windows profile forbidden on UDF 1.02", { _ = try TextContract.disc(result(discText() + "Filesystem: udf1.02\nUDF compatibility: windows-fid-location-v1\n"), selected: drive) })
+        try c.rejects("VAT format requires transaction identity", { _ = try TextContract.disc(result(discText() + "Filesystem: udf2.01+vat\n"), selected: drive) })
+        try c.rejects("unsupported UDF format rejected", { _ = try TextContract.disc(result(discText() + "Filesystem: udf2.50\n"), selected: drive) })
+        let vatRequest = try CLIRequest(.burn, input: root, drive: drive, evidence: root, conflictPolicy: .skip, expectedView: vatView)
+        try c.expect("VAT expected view travels with burn conflict policy", vatRequest.arguments.contains("--expected-view") && vatRequest.arguments.contains(vatView) && vatRequest.arguments.contains("skip"))
+        let vatExport = try CLIRequest(.export, input: root, drive: drive, evidence: root, expectedView: vatView)
+        try c.expect("VAT expected view travels with export", vatExport.arguments.contains(vatView))
+        try c.rejects("VAT expected view forbidden for init", { _ = try CLIRequest(.initialize, input: root, drive: drive, evidence: root, expectedView: vatView) })
         let fileLine = "FILE \"x\" bytes=1 LBA=33+1\n"
         try c.expect("listed tree bound to matching inspected disc", TextContract.tree(result(discText() + fileLine), selected: drive, matching: inspected).count == 1)
         for field in ["Last session LBA: 11702", "Next writable LBA: 18904", "Sessions: 2", "Tracks: 2", "Registry ID: 4295022013"] {
@@ -226,9 +249,11 @@ struct ValidationMain {
     }
     static func offline(_ c: Checks, _ root: URL, _ snapshot: InputSnapshot) async throws {
         let project = URL(fileURLWithPath: CommandLine.arguments[2])
-        let config = try Configuration.bundled(contents: project.appendingPathComponent("gui/output/BurnLight.app/Contents"), storage: root.appendingPathComponent("local-storage"))
+        let testedApp = ProcessInfo.processInfo.environment["BURNLIGHT_TEST_APP"].map { URL(fileURLWithPath: $0) } ?? project.appendingPathComponent("gui/output/BurnLight.app")
+        let config = try Configuration.bundled(contents: testedApp.appendingPathComponent("Contents"), storage: root.appendingPathComponent("local-storage"))
         try config.validate()
-        try c.expect("bundled configuration resolves only relative dependencies", config.cli.hasSuffix("Contents/MacOS/appendcd") && config.trustedFiles.count == 7 && !config.allowPhysicalWrites)
+        let trustedNames = Set(config.trustedFiles.keys.map { URL(fileURLWithPath: $0).lastPathComponent })
+        try c.expect("bundled configuration resolves only relative dependencies", config.cli.hasSuffix("Contents/MacOS/appendcd") && ["appendcd", "burnlight-export", "appendcd-cdrecord", "appendcd-initial-cdrecord", "readcd", "libisofs.6.dylib", "libudfread.3.dylib"].allSatisfy(trustedNames.contains) && trustedNames.isSubset(of: ["appendcd", "burnlight-export", "appendcd-cdrecord", "appendcd-initial-cdrecord", "appendcd-vat-cdrecord", "readcd", "libisofs.6.dylib", "libudfread.3.dylib"]) && !config.allowPhysicalWrites)
         let runner = CLIRunner(configuration: config)
         let image = root.appendingPathComponent("actual-initial.iso")
         let built = try await runner.run(CLIRequest(.initialBuild, input: snapshot.directory, image: image), directory: root.appendingPathComponent("init-build"))
@@ -379,9 +404,167 @@ struct ValidationMain {
         try c.rejects("recovered receipt cannot alter unrelated history", { _ = try proof.record(existing: JobRecord()) })
         _ = lease
     }
+    static func cleanup(_ c: Checks, _ root: URL) throws {
+        let base = root.appendingPathComponent("cleanup"); try JobStore.secureDirectory(base)
+        func environment() throws -> (JobStore, CleanupManager, URL) {
+            let location = base.appendingPathComponent(UUID().uuidString)
+            let store = try JobStore(directory: location.appendingPathComponent("Records"))
+            let lock = location.appendingPathComponent("Lock")
+            return (store, CleanupManager(store: store, lockRoot: lock, idle: { true }), lock)
+        }
+        func job(_ store: JobStore, phase: JobPhase = .completed, operation: CLIOperation = .build,
+                 snapshot: InputSnapshot? = nil, archived: Bool = true) throws -> JobRecord {
+            var record = JobRecord(phase: phase, message: "cleanup fixture")
+            record.operation = operation
+            let workspace = try JobStore.temporaryJob(record.id)
+            record.workspacePath = workspace.path; record.snapshotPath = snapshot?.directory.path
+            try Data("cleanup fixture\n".utf8).write(to: workspace.appendingPathComponent("payload.bin"))
+            if archived { record.archivePath = try store.archive(record, workspace: workspace).path }
+            try store.save(record); return record
+        }
+        let source = base.appendingPathComponent("original"); try JobStore.secureDirectory(source)
+        try Data("original stays\n".utf8).write(to: source.appendingPathComponent("keep.txt"))
+        let snapshot = try Staging.create(source: source)
+        let (store, manager, lock) = try environment()
+        let a = try job(store, snapshot: snapshot), b = try job(store, snapshot: snapshot)
+        let guarded = try manager.scan(protectedIDs: [b.id], protectedPaths: [snapshot.directory.path])
+        try c.expect("cleanup protects current job and shared live snapshot", guarded.items.map { $0.id } == [a.id] && !guarded.items[0].paths.contains(snapshot.directory.deletingLastPathComponent().path))
+        _ = try manager.clean(guarded, selectedIDs: [a.id], protectedIDs: [b.id], protectedPaths: [snapshot.directory.path])
+        try c.expect("temporary cleanup retains complete archive and task index", !FileManager.default.fileExists(atPath: a.workspacePath!) && FileManager.default.fileExists(atPath: a.archivePath!) && store.records().count == 2)
+        try store.restore(a)
+        try c.expect("cleaned temporary job can restore from verified archive", Data(contentsOf: URL(fileURLWithPath: a.workspacePath!).appendingPathComponent("payload.bin")) == Data("cleanup fixture\n".utf8))
+        var lease: PhysicalLease? = try PhysicalLease(jobDirectory: root, root: lock)
+        try c.rejects("cleanup shares physical lock without bypass", { _ = try manager.scan() })
+        try lease!.finish(); lease = nil
+        try Data("unknown".utf8).write(to: lock.appendingPathComponent("active.json"))
+        try c.rejects("cleanup never removes unknown active marker", { _ = try manager.scan() })
+        try c.expect("unknown marker survives cleanup rejection", FileManager.default.fileExists(atPath: lock.appendingPathComponent("active.json").path))
+        try FileManager.default.removeItem(at: lock.appendingPathComponent("active.json"))
+        let plan = try manager.scan()
+        try c.expect("shared snapshot counted once across task candidates", plan.items.flatMap { $0.paths }.filter { $0 == snapshot.directory.deletingLastPathComponent().path }.count == 1)
+        _ = try manager.clean(plan, selectedIDs: Set(plan.items.map { $0.id }))
+        try c.expect("readonly snapshot cleanup leaves original source intact", !FileManager.default.fileExists(atPath: snapshot.directory.path) && Data(contentsOf: source.appendingPathComponent("keep.txt")) == Data("original stays\n".utf8))
+        try store.restore(b); try Staging.validate(snapshot)
+        try c.expect("shared snapshot remains recoverable from retained archive", FileManager.default.fileExists(atPath: snapshot.directory.path))
+        let (partialStore, partialManager, _) = try environment()
+        let partialSnapshot = try Staging.create(source: source)
+        let full = try job(partialStore, snapshot: partialSnapshot), partial = try job(partialStore, snapshot: partialSnapshot)
+        let partialIndex = URL(fileURLWithPath: partial.archivePath!).appendingPathComponent("archive.json")
+        var omittedIndex = try JSONSerialization.jsonObject(with: Data(contentsOf: partialIndex)) as! [String: Any]
+        omittedIndex["omitted"] = ["workspace/unreadable-diagnostic.txt"]
+        try JSONSerialization.data(withJSONObject: omittedIndex).write(to: partialIndex)
+        let omittedFile = URL(fileURLWithPath: partial.workspacePath!).appendingPathComponent("unreadable-diagnostic.txt")
+        try Data("unarchived diagnostic\n".utf8).write(to: omittedFile)
+        let partialPlan = try partialManager.scan()
+        try c.expect("omitted workspace diagnostic does not block other complete jobs", partialPlan.items.map { $0.id } == [full.id])
+        let pruned = try partialManager.clean(partialPlan, selectedIDs: [full.id])
+        try c.expect("partial workspace kept while shared snapshot backup is validated independently", pruned.jobs == 1 && FileManager.default.fileExists(atPath: omittedFile.path) && !FileManager.default.fileExists(atPath: partialSnapshot.directory.path))
+        try partialStore.restore(partial); try Staging.validate(partialSnapshot)
+        try c.expect("partial workspace archive still restores its complete snapshot", FileManager.default.fileExists(atPath: partialSnapshot.directory.path))
+
+        let (historyStore, historyManager, _) = try environment()
+        var h = try job(historyStore)
+        h.exportPath = source.path; try historyStore.save(h)
+        let recent = try historyManager.scan(policy: CleanupPolicy(mode: .history, retentionDays: 30))
+        try c.expect("history retention protects recent tasks", recent.items.isEmpty && recent.protectedJobs == 1)
+        let history = try historyManager.scan(policy: CleanupPolicy(mode: .history))
+        _ = try historyManager.clean(history, selectedIDs: [h.id])
+        let summary = try historyStore.records()[0]
+        try c.expect("history pruning deletes materials and retains truthful summary", summary.materialsRemovedAt != nil && summary.archivePath == nil && summary.workspacePath == nil && summary.phase == h.phase && !FileManager.default.fileExists(atPath: h.archivePath!))
+        try c.expect("cleanup never deletes user exports or original inputs", summary.exportPath == source.path && FileManager.default.fileExists(atPath: source.appendingPathComponent("keep.txt").path))
+        try c.expect("cleaned summaries are not offered for cleanup again", historyManager.scan(policy: CleanupPolicy(mode: .history)).items.isEmpty)
+        let (sharedStore, sharedManager, _) = try environment()
+        let shared = try Staging.create(source: source)
+        let sharedA = try job(sharedStore, snapshot: shared), sharedB = try job(sharedStore, snapshot: shared)
+        let sharedPlan = try sharedManager.scan(policy: CleanupPolicy(mode: .history))
+        let owner = sharedPlan.items.first { $0.paths.contains(shared.directory.deletingLastPathComponent().path) }!
+        let retained = owner.id == sharedA.id ? sharedB : sharedA
+        let retainedFile = URL(fileURLWithPath: retained.archivePath!).appendingPathComponent("snapshot/files/keep.txt")
+        try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: retainedFile.path)
+        try Data("bad retained archive\n".utf8).write(to: retainedFile)
+        let sharedFresh = try sharedManager.scan(policy: CleanupPolicy(mode: .history))
+        try c.rejects("history pruning verifies unselected shared snapshot backups", { _ = try sharedManager.clean(sharedFresh, selectedIDs: [owner.id]) })
+        try c.expect("shared snapshot survives a corrupt retained backup", FileManager.default.fileExists(atPath: shared.directory.path))
+        let cleared = try sharedManager.clean(sharedFresh, selectedIDs: [sharedA.id, sharedB.id])
+        try c.expect("explicit whole-history pruning may discard selected corrupt archives", cleared.jobs == 2 && !FileManager.default.fileExists(atPath: shared.directory.path))
+
+        let (previewStore, previewManager, _) = try environment()
+        let previewJob = try job(previewStore)
+        let protectedImage = URL(fileURLWithPath: previewJob.workspacePath!).appendingPathComponent("payload.bin").path
+        try c.expect("current preview path protects the whole historical job", previewManager.scan(policy: CleanupPolicy(mode: .history), protectedPaths: [protectedImage]).items.isEmpty)
+
+        let (unsafeStore, unsafeManager, _) = try environment()
+        for phase in [JobPhase.physical, .unknown, .needsInspection, .preparing, .staging] {
+            _ = try job(unsafeStore, phase: phase, operation: .burn, archived: false)
+        }
+        var flagged = try job(unsafeStore, phase: .idle, operation: .inspect, archived: false)
+        flagged.requiresInspection = true; try unsafeStore.save(flagged)
+        _ = try job(unsafeStore, phase: .failed, operation: .burn, archived: false)
+        let unsafe = try unsafeManager.scan(policy: CleanupPolicy(mode: .history))
+        try c.expect("all unresolved writes and active phases are excluded", unsafe.items.isEmpty && unsafe.protectedJobs == 7)
+        try c.expect("cleanup cannot clear persisted inspection requirement", unsafeStore.records().first { $0.id == flagged.id }?.requiresInspection == true)
+        let untracked = try JobStore.temporaryJob(UUID())
+        try Data("unindexed evidence".utf8).write(to: untracked.appendingPathComponent("keep"))
+        _ = try unsafeManager.scan(policy: CleanupPolicy(mode: .history))
+        try c.expect("unindexed temporary directories are not guessed or deleted", FileManager.default.fileExists(atPath: untracked.appendingPathComponent("keep").path))
+
+        let (changedStore, changedManager, _) = try environment()
+        var changed = try job(changedStore)
+        let before = try changedManager.scan()
+        try Data("changed".utf8).write(to: URL(fileURLWithPath: changed.workspacePath!).appendingPathComponent("payload.bin"))
+        try c.rejects("changed payload invalidates cleanup preview before deletion", { _ = try changedManager.clean(before, selectedIDs: [changed.id]) })
+        try c.expect("stale cleanup rejection retains material", FileManager.default.fileExists(atPath: changed.workspacePath!))
+        let beforePhase = try changedManager.scan(policy: CleanupPolicy(mode: .history))
+        changed.phase = .physical; try changedStore.save(changed)
+        try c.rejects("newly active task invalidates old cleanup selection", { _ = try changedManager.clean(beforePhase, selectedIDs: [changed.id]) })
+
+        let (badStore, badManager, _) = try environment()
+        let bad = try job(badStore)
+        let badArchive = URL(fileURLWithPath: bad.archivePath!).appendingPathComponent("workspace/payload.bin")
+        try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: badArchive.path)
+        try Data("corrupt archive\n".utf8).write(to: badArchive)
+        let badPlan = try badManager.scan()
+        try c.rejects("corrupt archive hash prevents deleting the temporary source", { _ = try badManager.clean(badPlan, selectedIDs: [bad.id]) })
+        try c.expect("archive validation happens before any source removal", FileManager.default.fileExists(atPath: bad.workspacePath!))
+        let badIndex = badStore.directory.appendingPathComponent("broken.json")
+        try Data("{".utf8).write(to: badIndex)
+        try c.rejects("unreadable history index blocks cleanup rather than unlocking", { _ = try badManager.scan(policy: CleanupPolicy(mode: .history)) })
+        try c.expect("bad index remains available for diagnosis", FileManager.default.fileExists(atPath: badIndex.path))
+
+        let (linkStore, linkManager, _) = try environment()
+        let linked = try job(linkStore)
+        let linkPlan = try linkManager.scan(policy: CleanupPolicy(mode: .history))
+        let original = URL(fileURLWithPath: linked.workspacePath!), moved = base.appendingPathComponent("moved-\(linked.id.uuidString)")
+        try FileManager.default.moveItem(at: original, to: moved)
+        try FileManager.default.createSymbolicLink(at: original, withDestinationURL: source)
+        try c.rejects("symlink substitution cannot redirect deletion outside managed roots", { _ = try linkManager.clean(linkPlan, selectedIDs: [linked.id]) })
+        try c.expect("symlink target and displaced original both survive", FileManager.default.fileExists(atPath: source.appendingPathComponent("keep.txt").path) && FileManager.default.fileExists(atPath: moved.appendingPathComponent("payload.bin").path))
+        try FileManager.default.removeItem(at: original); try FileManager.default.moveItem(at: moved, to: original)
+        try FileManager.default.createSymbolicLink(at: original.appendingPathComponent("external"), withDestinationURL: source)
+        try c.expect("nested symlinks exclude entire task without following targets", linkManager.scan(policy: CleanupPolicy(mode: .history)).items.isEmpty)
+
+        let (sparseStore, sparseManager, sparseLock) = try environment()
+        let sparse = try job(sparseStore, archived: false)
+        let file = URL(fileURLWithPath: sparse.workspacePath!).appendingPathComponent("payload.bin")
+        let fd = open(file.path, O_RDWR); guard fd >= 0 else { throw CheckFailure(message: "sparse fixture") }
+        guard ftruncate(fd, 1024 * 1024 * 1024) == 0 else { close(fd); throw CheckFailure(message: "sparse fixture size") }; close(fd)
+        let sparsePlan = try sparseManager.scan(policy: CleanupPolicy(mode: .history))
+        try c.expect("sparse 1 GiB image is measured by allocated blocks", sparsePlan.items.count == 1 && sparsePlan.allocatedBytes < 1024 * 1024)
+        _ = try sparseManager.clean(sparsePlan, selectedIDs: [sparse.id])
+        try c.expect("sparse fixture deletion reclaims only managed task root", !FileManager.default.fileExists(atPath: sparse.workspacePath!))
+        let occupied = CleanupManager(store: sparseStore, lockRoot: sparseLock, idle: { false })
+        try c.rejects("unknown workers or multiple GUI instances block cleanup", { _ = try occupied.scan() })
+        try c.rejects("cleanup cannot accept arbitrary retention policy", { _ = try sparseManager.scan(policy: CleanupPolicy(retentionDays: -1)) })
+    }
     @MainActor
     static func models(_ c: Checks, _ root: URL, _ snapshot: InputSnapshot) async throws {
         let conflictMock = MockRunner(), conflictModel = AppModel(runner: conflictMock, store: try JobStore(directory: root.appendingPathComponent("conflict-records")))
+        try c.expect("storage cleanup available only while GUI is idle", conflictModel.canManageStorage)
+        conflictModel.busy = true
+        try c.expect("busy GUI disables storage cleanup", !conflictModel.canManageStorage)
+        conflictModel.busy = false; conflictModel.workerUnknown = true
+        try c.expect("unknown worker disables GUI storage cleanup", !conflictModel.canManageStorage)
+        conflictModel.workerUnknown = false
         await conflictModel.discover(); await conflictModel.inspect(); conflictModel.snapshot = snapshot
         conflictModel.oldFiles = [snapshot.entries.first { !$0.directory }!]
         await conflictModel.preview()
@@ -392,6 +575,7 @@ struct ValidationMain {
         try c.expect("GUI skip choice reaches preview argv", conflictModel.canWrite && skipArguments?.contains("skip") == true)
         conflictModel.conflictPolicy = .replace
         try c.expect("changed conflict choice invalidates verified preview", !conflictModel.canWrite)
+        try c.expect("changed preview binding has visible rebuild reason", conflictModel.writeDisabledReason?.contains("重新构建预览") == true)
         await conflictModel.preview(); await conflictMock.configure(fail: true); await conflictModel.write()
         let burnArguments = await conflictMock.arguments(.burn)
         try c.expect("GUI replacement reaches writer and retains failed write lock", burnArguments?.contains("replace") == true && conflictModel.needsInspection)
@@ -411,6 +595,17 @@ struct ValidationMain {
         model.needsInspection = false
         await model.preview()
         try c.expect("model requires inspected target and verified preview", model.canWrite)
+        try c.expect("valid write admission has no disabled reason", model.writeDisabledReason == nil)
+        model.needsInspection = true
+        await model.preview()
+        try c.expect("successful preview keeps unresolved write locked with visible reason", model.phase == .completed && !model.canWrite && model.writeDisabledReason?.contains("构建预览不会解除写入锁定") == true)
+        model.needsInspection = false
+        model.workerUnknown = true
+        try c.expect("unknown worker has explicit receipt reason and cannot write", !model.canWrite && model.writeDisabledReason?.contains("退出收据") == true)
+        model.workerUnknown = false
+        model.historyWarnings = ["unreadable job"]
+        try c.expect("history warning cannot enable write after preview", !model.canWrite && model.writeDisabledReason?.contains("任务索引") == true)
+        model.historyWarnings = []
         await mock.configure(fail: true)
         await model.write()
         try c.expect("write failure enters inspection and blocks burn", model.phase == .needsInspection && model.needsInspection && !model.canWrite)

@@ -72,12 +72,19 @@ Tree selection(const fs::path &file, const Tree &tree) {
     }
     return selected;
 }
-Tree imported(std::shared_ptr<Blocks> source, uint32_t last, uint32_t end, std::string &filesystem) {
+Tree imported(std::shared_ptr<Blocks> source, uint32_t last, uint32_t end, std::string &filesystem, const std::string &expectedView = "", const fs::path &diagnostics={},std::string *compatibility=nullptr) {
     if (isUdfSession(*source, last, end)) {
-        filesystem = "udf1.02"; auto udf = readUdfTree(*source, last, end);
+        auto udf = readUdfTree(*source, last, end);filesystem=udf.filesystem;
+        require(expectedView.empty() || udf.viewIdentity==expectedView,"VAT view changed since preview");
+        std::cout<<"Filesystem: "<<filesystem<<'\n';
+        if(!udf.viewIdentity.empty())std::cout<<"Filesystem view: "<<udf.viewIdentity<<'\n';
+        if(!udf.compatibility.empty())std::cout<<"UDF compatibility: "<<udf.compatibility<<'\n';
+        if(!diagnostics.empty())writeText(diagnostics,udf.diagnostics);
+        if(compatibility)*compatibility=udf.compatibility;
         require(udf.inlineFiles.empty(), "Inline/unmapped UDF files are not supported by the validated reader");
         return udf.entries;
     }
+    require(expectedView.empty(),"Expected VAT view is absent");
     filesystem = "iso9660+joliet"; IsoImporter importer(source, last); return importer.tree();
 }
 void extract(Blocks &source, Tree &tree, uint32_t end, const fs::path &root) {
@@ -98,14 +105,14 @@ void extract(Blocks &source, Tree &tree, uint32_t end, const fs::path &root) {
             for (auto section : e.sections) {
                 // 空文件的 ISO extent 地址可能在镜像末尾之外；零长度不读取任何块。
                 if (!section.size) continue;
-                uint64_t blocks = (uint64_t(section.size) + BlockSize - 1) / BlockSize;
+                uint64_t blocks = (uint64_t(section.offset)+section.size + BlockSize - 1) / BlockSize;
                 require(uint64_t(section.block) + blocks <= end, "File extent exceeds recorded media");
                 source.prefetch(section.block, uint32_t(blocks));
-                for (uint64_t offset = 0; offset < section.size; offset += BlockSize) {
-                    auto b = source.read(section.block + uint32_t(offset / BlockSize));
-                    auto n = size_t(std::min<uint64_t>(BlockSize, section.size - offset)); sink(b.data(), n);
+                for (uint64_t offset = 0; offset < section.size;) {
+                    auto position=offset+section.offset;auto b = source.read(section.block + uint32_t(position / BlockSize));
+                    auto n = size_t(std::min<uint64_t>(BlockSize-position%BlockSize, section.size - offset));auto data=b.data()+position%BlockSize;sink(data, n);
                     size_t written = 0;
-                    while (written < n) { auto v = write(output.value, b.data() + written, n - written); if (v < 0 && errno == EINTR) continue; require(v > 0, "Export write failed"); written += size_t(v); }
+                    while (written < n) { auto v = write(output.value, data + written, n - written); if (v < 0 && errno == EINTR) continue; require(v > 0, "Export write failed"); written += size_t(v); }offset+=n;
                 }
                 total += section.size;
             }
@@ -115,11 +122,11 @@ void extract(Blocks &source, Tree &tree, uint32_t end, const fs::path &root) {
         std::cerr << "Export verified: " << std::quoted(path) << " bytes=" << e.size << '\n';
     }
 }
-void receipt(const fs::path &evidence, const Tree &tree, const std::string &filesystem, const std::string &sourceKind, const DiscInfo &disc) {
+void receipt(const fs::path &evidence, const Tree &tree, const std::string &filesystem, const std::string &sourceKind, const DiscInfo &disc,const std::string &compatibility) {
     std::ostringstream out;
     out << "{\"schema\":1,\"sourceKind\":" << json(sourceKind) << ",\"filesystem\":" << json(filesystem)
         << ",\"device\":" << json(disc.device) << ",\"registryID\":" << json(std::to_string(disc.drive.registryId))
-        << ",\"media\":" << json(disc.media) << ",\"entries\":[";
+        << ",\"media\":" << json(disc.media) << ",\"udfCompatibility\":" << json(compatibility) << ",\"entries\":[";
     bool first = true;
     for (const auto &[path, e] : tree) {
         if (!first) out << ','; first = false;
@@ -139,11 +146,13 @@ int main(int argc, char **argv) {
         std::map<std::string, std::string> options;
         for (int i = 2; i < argc; i += 2) {
             std::string key = argv[i];
-            const std::set<std::string> allowed = offline ? std::set<std::string>{"--image", "--last", "--selection", "--work-dir"}
-                : std::set<std::string>{"--device", "--registry-id", "--bsd-node", "--media", "--selection", "--work-dir"};
+            const std::set<std::string> allowed = offline ? std::set<std::string>{"--image", "--last", "--selection", "--work-dir", "--expected-view"}
+                : std::set<std::string>{"--device", "--registry-id", "--bsd-node", "--media", "--selection", "--work-dir", "--expected-view"};
             require(allowed.contains(key) && i + 1 < argc && options.emplace(key, argv[i + 1]).second, "Unknown/missing/repeated export option");
         }
         require(options.contains("--selection") && options.contains("--work-dir"), "Missing export paths");
+        auto expectedView=options.contains("--expected-view")?options.at("--expected-view"):"";
+        require(expectedView.empty() || std::regex_match(expectedView,std::regex("[a-f0-9]{64}")),"Invalid expected VAT view");
         auto parent = fs::canonical(options.at("--work-dir"));
         struct stat st{}; require(lstat(parent.c_str(), &st) == 0 && S_ISDIR(st.st_mode) && (st.st_mode & 077) == 0, "Export evidence parent must be private");
         if (!offline) {
@@ -155,14 +164,14 @@ int main(int argc, char **argv) {
         std::string pattern = (parent / "run-XXXXXX").string(); std::vector<char> b(pattern.begin(), pattern.end()); b.push_back(0);
         require(mkdtemp(b.data()) != nullptr, "Cannot create private export evidence"); owner.path = b.data();
         std::cout << "Evidence directory: " << owner.path.string() << '\n';
-        DiscInfo disc; std::string filesystem;
+        DiscInfo disc; std::string filesystem,compatibility;
         if (offline) {
             require(options.contains("--image") && options.contains("--last"), "Missing offline source/session");
             auto source = std::make_shared<FileBlocks>(options.at("--image"));
             require(source->count <= UINT32_MAX, "Offline image too large");
-            auto tree = selection(options.at("--selection"), imported(source, number(options.at("--last")), uint32_t(source->count), filesystem));
+            auto tree = selection(options.at("--selection"), imported(source, number(options.at("--last")), uint32_t(source->count), filesystem,expectedView,owner.path/"udf-view.txt",&compatibility));
             extract(*source, tree, uint32_t(source->count), owner.path / "files");
-            receipt(owner.path, tree, filesystem, "offline", disc); std::cout << "OFFLINE EXPORT VERIFIED\n"; return 0;
+            receipt(owner.path, tree, filesystem, "offline", disc,compatibility); std::cout << "OFFLINE EXPORT VERIFIED\n"; return 0;
         }
         for (auto key : {"--device", "--registry-id", "--bsd-node", "--media"}) require(options.contains(key), "Missing expected drive identity");
         auto pre = DiscScanner::preflight(options.at("--device"));
@@ -174,7 +183,7 @@ int main(int argc, char **argv) {
         require(!disc.blank && disc.closedSession(), "Export requires a complete recorded Session");
         disc.save(owner.path, "before"); disc.print();
         auto source = std::make_shared<OpticalBlocks>(disc, owner.path / "source-read");
-        auto tree = selection(options.at("--selection"), imported(source, disc.last, disc.readableEnd, filesystem));
+        auto tree = selection(options.at("--selection"), imported(source, disc.last, disc.readableEnd, filesystem,expectedView,owner.path/"udf-view.txt",&compatibility));
         DiscScanner::revalidate(disc);
         extract(*source, tree, disc.readableEnd, owner.path / "files");
         // 新的实际 readcd 缓存复读 metadata 和所选 payload；换盘或内容变化均失败。
@@ -182,7 +191,7 @@ int main(int argc, char **argv) {
         OpticalBlocks fresh(disc, owner.path / "verification-read"); source->verifyCachedMetadata(fresh);
         for (const auto &[path, e] : tree) if (!e.directory) require(hashEntry(fresh, e) == e.sha, "Fresh optical hash mismatch: " + path);
         DiscScanner::revalidate(disc); guard.restore();
-        receipt(owner.path, tree, filesystem, "optical", disc);
+        receipt(owner.path, tree, filesystem, "optical", disc,compatibility);
         std::cout << "OPTICAL EXPORT VERIFIED\n"; return 0;
     } catch (const std::exception &error) { std::cerr << "burnlight-export: " << error.what() << '\n'; return 1; }
 }

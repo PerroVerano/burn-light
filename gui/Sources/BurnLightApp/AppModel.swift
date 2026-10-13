@@ -27,6 +27,13 @@ final class AppModel: ObservableObject {
     @Published var physicalWritesEnabled = false
     @Published var historyWarnings: [String] = []
     @Published var conflictPolicy: ConflictPolicy = .reject
+    @Published var cleanupMode: CleanupMode = .temporary
+    @Published var cleanupRetentionDays = 0
+    @Published var cleanupPlan: CleanupPlan?
+    @Published var cleanupSelectedIDs: Set<UUID> = []
+    @Published var cleanupWorking = false
+    @Published var cleanupMessage = "扫描后选择要清理的任务材料。"
+    var selectedCleanupBytes: UInt64 { cleanupPlan?.items.filter { cleanupSelectedIDs.contains($0.id) }.reduce(0) { $0 + $1.allocatedBytes } ?? 0 }
     var conflictingPaths: [String] { (try? ConflictPolicy.conflicts(input: snapshot?.entries ?? [], existing: oldFiles)) ?? [] }
     private var previewBinding: String?
     private var flag: CancellationFlag?
@@ -45,11 +52,23 @@ final class AppModel: ObservableObject {
         guard !busy, let path = current?.evidencePath else { return false }
         return FileManager.default.fileExists(atPath: URL(fileURLWithPath: path).appendingPathComponent("windows-expected.json").path)
     }
-    var canWrite: Bool {
-        physicalWritesEnabled && !demo && !busy && !workerUnknown && !needsInspection && snapshot != nil && previewImage != nil &&
-            writeCLIOperation != nil && previewBinding == binding && historyWarnings.isEmpty
+    // 禁用原因与准入使用同一判断，预览成功也不能掩盖历史写入或未知执行器锁定。
+    var writeDisabledReason: String? {
+        if !physicalWritesEnabled { return "此应用版本未启用物理刻录。" }
+        if demo { return "模拟模式不能执行物理刻录。" }
+        if busy { return "请等待当前任务结束。" }
+        if workerUnknown { return "执行器退出状态未知，请先核对退出收据。" }
+        if needsInspection { return "历史刻录任务尚未核对。请在“历史记录”查看失败任务；构建预览不会解除写入锁定。" }
+        if !historyWarnings.isEmpty { return "任务索引有读取错误，请先查看历史记录诊断。" }
+        if snapshot == nil { return "请先选择本次新增目录。" }
+        if writeCLIOperation == nil { return "请先检查可写介质与目录。" }
+        if previewImage == nil { return "请先构建并验证追加或首刻预览。" }
+        if previewBinding != binding { return "目标或冲突策略已变化，请重新构建预览。" }
+        return nil
     }
-    private var binding: String { "\(selectedID)|\(writeCLIOperation?.rawValue ?? "offline")|\(conflictPolicy.rawValue)" }
+    var canWrite: Bool { writeDisabledReason == nil }
+    var canManageStorage: Bool { !busy && !workerUnknown && !demo && store != nil }
+    private var binding: String { "\(selectedID)|\(writeCLIOperation?.rawValue ?? "offline")|\(conflictPolicy.rawValue)|\(disc?.lastLBA ?? 0)|\(disc?.nextLBA ?? 0)|\(disc?.filesystemView ?? "")" }
 
     init() {
         demo = CommandLine.arguments.contains("--demo")
@@ -225,7 +244,7 @@ final class AppModel: ObservableObject {
             guard let directory = currentDirectory, let id = current?.id else { throw GUIError.invalid("导出任务未建立") }
             let selection = directory.appendingPathComponent("export-selection.txt")
             try DiscExport.writeSelection(entries, all: roots.isEmpty, to: selection)
-            let result = try await run(CLIRequest(.export, input: selection, drive: drive, evidence: parent))
+            let result = try await run(CLIRequest(.export, input: selection, drive: drive, evidence: parent, expectedView: disc?.filesystemView))
             let evidence = try TextContract.evidence(result, under: parent)
             current?.evidencePath = evidence.path; try persist()
             let receipt = try DiscExport.receipt(result, evidence: evidence, selected: drive, expected: entries)
@@ -275,7 +294,7 @@ final class AppModel: ObservableObject {
             if let disc, !disc.blank {
                 guard disc.writeCLIOperation == .burn else { throw GUIError.invalid("当前介质不可追加，预览已停止") }
                 let drive = try await currentDrive(); operation = .build
-                result = try await run(CLIRequest(.build, input: snapshot.directory, image: image, drive: drive, evidence: evidenceParent(), conflictPolicy: conflictPolicy))
+                result = try await run(CLIRequest(.build, input: snapshot.directory, image: image, drive: drive, evidence: evidenceParent(), conflictPolicy: conflictPolicy, expectedView: disc.filesystemView))
             } else {
                 operation = .initialBuild
                 result = try await run(CLIRequest(.initialBuild, input: snapshot.directory, image: image))
@@ -301,7 +320,7 @@ final class AppModel: ObservableObject {
             current?.phase = .needsInspection; current?.message = "物理写入请求将提交，等待实际读回结果"; try persist()
             needsInspection = true; phase = .physical
             detail = "核心正在准备 / 写入 / 关闭 Session / 实际读回。系统认证桥接不提供阶段流，进度不确定；请等待。"
-            let result = try await run(CLIRequest(operation, input: snapshot.directory, drive: drive, evidence: parent, conflictPolicy: operation == .burn ? conflictPolicy : .reject))
+            let result = try await run(CLIRequest(operation, input: snapshot.directory, drive: drive, evidence: parent, conflictPolicy: operation == .burn ? conflictPolicy : .reject, expectedView: operation == .burn ? disc?.filesystemView : nil))
             let evidence = try TextContract.evidence(result, under: parent)
             current?.evidencePath = evidence.path
             current?.imagePath = evidence.appendingPathComponent(operation == .initialize ? "session-first.iso" : "session-next.iso").path
@@ -362,6 +381,37 @@ final class AppModel: ObservableObject {
     }
     func openLogs(_ path: String? = nil) {
         if let url = path.map({ URL(fileURLWithPath: $0) }) ?? current?.archivePath.map({ URL(fileURLWithPath: $0) }) ?? lastDirectory { NSWorkspace.shared.open(url) }
+    }
+    private var cleanupProtection: (Set<UUID>, [String]) {
+        (Set(current.map { [$0.id] } ?? []), [snapshot?.directory.path, previewImage?.path, currentDirectory?.path].compactMap { $0 })
+    }
+    func invalidateCleanupPlan() { cleanupPlan = nil; cleanupSelectedIDs = []; cleanupMessage = "选项已变化，请重新扫描。" }
+    func scanCleanup() async {
+        guard canManageStorage, let store else { return }
+        busy = true; cleanupWorking = true; cleanupPlan = nil; cleanupSelectedIDs = []
+        cleanupMessage = "正在统计本地占用，不读取光盘…"
+        defer { busy = false; cleanupWorking = false }
+        let policy = CleanupPolicy(mode: cleanupMode, retentionDays: cleanupRetentionDays)
+        let (ids, paths) = cleanupProtection
+        do {
+            let plan = try await Task.detached { try CleanupManager(store: store).scan(policy: policy, protectedIDs: ids, protectedPaths: paths) }.value
+            cleanupPlan = plan; cleanupSelectedIDs = Set(plan.items.map { $0.id })
+            cleanupMessage = plan.items.isEmpty ? "没有符合条件的可清理材料。" : "已扫描，选择的材料将在确认后永久删除。"
+        } catch { cleanupMessage = error.localizedDescription }
+    }
+    func cleanStorage() async {
+        guard canManageStorage, let store, let plan = cleanupPlan, !cleanupSelectedIDs.isEmpty else { return }
+        busy = true; cleanupWorking = true
+        cleanupMessage = "正在复核任务状态与归档内容，然后清理所选材料…"
+        defer { busy = false; cleanupWorking = false }
+        let (ids, paths) = cleanupProtection, selected = cleanupSelectedIDs
+        do {
+            let result = try await Task.detached { try CleanupManager(store: store).clean(plan, selectedIDs: selected, protectedIDs: ids, protectedPaths: paths) }.value
+            let loaded = try store.load(); history = loaded.records; historyWarnings = loaded.warnings
+            cleanupMessage = "已清理 \(result.jobs) 个任务的材料，预计释放 \(formatBytes(result.estimatedFreedBytes))。" + (result.errors.isEmpty ? "" : "\n" + result.errors.joined(separator: "\n"))
+            detail = cleanupMessage
+        } catch { cleanupMessage = error.localizedDescription }
+        cleanupPlan = nil; cleanupSelectedIDs = []
     }
     func readbackFailedJob(_ record: JobRecord) async {
         guard !busy, !workerUnknown, let imagePath = record.imagePath else { return }

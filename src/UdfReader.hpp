@@ -3,6 +3,8 @@
 namespace ac {
 struct UdfTree {
     std::string volumeName;
+    std::string filesystem = "udf1.02", diagnostics, viewIdentity, compatibility;
+    uint16_t revision = 0x0102;
     Tree entries;
     std::vector<std::string> inlineFiles;
 };

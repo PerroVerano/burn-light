@@ -222,7 +222,7 @@ void verifySession(const fs::path &image, const Manifest &m, std::shared_ptr<Blo
     auto next = std::make_shared<FileBlocks>(image, m.start);
     require(next->count <= UINT32_MAX - m.start, "Image end LBA overflow");
     OverlayBlocks combined(std::move(oldSource), next, m.start);
-    if (m.filesystem == "udf1.02") { verifyUdfSession(combined, m, uint32_t(next->count), hashOld); return; }
+    if (m.filesystem == "udf1.02" || m.filesystem == "udf2.01+vat") { verifyUdfSession(combined, m, uint32_t(next->count), hashOld); return; }
     auto volumes = readVolumes(combined, m.start, m.start + uint32_t(next->count)); printVolumes(volumes);
     compare(volumes, combined, m, hashOld);
     // 独立解析器之外，再经 libisofs 重新导入实际输出，检查其 Joliet 选择。
@@ -233,7 +233,7 @@ void verifySession(const fs::path &image, const Manifest &m, std::shared_ptr<Blo
     for (const auto &[p, e] : m.entries) require(tree.contains(p) && tree.at(p).directory == e.directory && (e.directory || tree.at(p).size == e.size), "libisofs reimport mismatch: " + p);
 }
 void verifyReadback(Blocks &disc, const Manifest &m, uint32_t imageBlocks) {
-    if (m.filesystem == "udf1.02") {
+    if (m.filesystem == "udf1.02" || m.filesystem == "udf2.01+vat") {
         for (const auto &[p,e] : m.entries) if (!e.directory) require(!e.sha.empty(), "Readback requires pre-burn content hash: " + p);
         verifyUdfSession(disc, m, imageBlocks, true);
         std::cout << "OPTICAL UDF READBACK VERIFIED (Windows acceptance still required)\n"; return;

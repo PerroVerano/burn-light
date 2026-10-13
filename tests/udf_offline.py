@@ -7,9 +7,10 @@ import subprocess
 import sys
 import struct
 import binascii
+import os
 
 cli=pathlib.Path(sys.argv[1]).resolve()
-out=cli.parent.parent/'artifacts'/'udf-tests'
+out=pathlib.Path(os.environ.get('APPENDCD_TEST_ARTIFACT_ROOT', str(cli.parent.parent/'artifacts')))/'udf-tests'
 if out.exists(): shutil.rmtree(out)
 out.mkdir(parents=True)
 logs=[]

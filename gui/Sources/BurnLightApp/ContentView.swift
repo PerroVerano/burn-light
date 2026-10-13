@@ -5,6 +5,7 @@ struct ContentView: View {
     @ObservedObject var model: AppModel
     @State private var selectedTab = "files"
     @State private var demoScenario = "appendable"
+    @State private var showCleanup = false
     private let accent = Color(red: 0.86, green: 0.36, blue: 0.16)
     var body: some View {
         HStack(spacing: 0) {
@@ -31,6 +32,7 @@ struct ContentView: View {
         }
         .tint(accent)
         .background(Color(nsColor: .windowBackgroundColor))
+        .sheet(isPresented: $showCleanup) { CleanupView(model: model) }
         .alert(model.writeCLIOperation == .initialize ? "首次刻录到空白盘" : "追加到已有光盘", isPresented: $model.showWriteConfirmation) {
             Button("取消", role: .cancel) {}
             Button("确认并进行系统认证") { Task { await model.write() } }
@@ -95,6 +97,8 @@ struct ContentView: View {
                 }.onChange(of: demoScenario) { _, value in model.loadDemo(value) }
             }
             Spacer()
+            Button { showCleanup = true } label: { Label("清理本地存储…", systemImage: "externaldrive.badge.minus") }
+                .disabled(!model.canManageStorage)
             Text("本机使用版 · macOS 26 / Apple Silicon\n使用现有 appendcd 核心")
                 .font(.caption2).foregroundStyle(.tertiary)
         }.padding(20).frame(maxHeight: .infinity).background(Color(nsColor: .controlBackgroundColor))
@@ -116,6 +120,11 @@ struct ContentView: View {
         HStack(spacing: 22) {
             Image(systemName: "opticaldisc").font(.system(size: 48, weight: .thin)).foregroundStyle(accent)
             metric("当前介质", model.disc?.media ?? "尚未检查")
+            metric("文件系统", model.disc?.filesystem == "udf2.01+vat" ? "UDF 2.01 / VAT" : (model.disc?.filesystem ?? (model.disc == nil ? "尚未检查" : "ISO9660 + Joliet")))
+            if model.disc?.udfCompatibility != nil {
+                Text("此盘使用 Windows 兼容视图，已校验文件引用；格式偏差记录在日志中。")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
             Divider().frame(height: 38)
             metric("介质状态", discLabel)
             Divider().frame(height: 38)
@@ -234,13 +243,14 @@ struct ContentView: View {
                     Text("\(record.operation?.rawValue ?? "staging") · \(record.phase.label)").font(.subheadline.bold())
                     Text(record.message).font(.caption).foregroundStyle(.secondary)
                     Text(record.created.formatted(date: .numeric, time: .standard)).font(.caption2).foregroundStyle(.tertiary)
-                    Text(record.archivePath != nil ? "可读材料已持久保存" : (record.archiveWarning ?? "原临时材料尚未归档"))
-                        .font(.caption2).foregroundStyle(record.archivePath != nil ? Color.secondary : Color.orange)
+                    Text(record.materialsRemovedAt != nil ? "材料已清理，保留任务摘要" : (record.archivePath != nil ? "可读材料已持久保存" : (record.archiveWarning ?? "原临时材料尚未归档")))
+                        .font(.caption2).foregroundStyle(record.materialsRemovedAt != nil || record.archivePath != nil ? Color.secondary : Color.orange)
                     if let output = record.exportPath { Text(output).font(.caption2).foregroundStyle(.secondary).textSelection(.enabled) }
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 7) {
                     Button("材料") { model.openLogs(record.archivePath ?? record.workspacePath ?? "/private/tmp/burnlight-job-\(record.id.uuidString)") }
+                        .disabled(record.materialsRemovedAt != nil || model.busy)
                     Button("导出诊断…") { model.exportDiagnostics(record) }.disabled(model.busy || model.workerUnknown || record.archivePath == nil)
                     if record.operation?.writes == true, [.needsInspection, .physical, .unknown].contains(record.phase) {
                         Button("原镜像只读补验…") { Task { await model.readbackFailedJob(record) } }
@@ -263,6 +273,10 @@ struct ContentView: View {
                     .disabled(model.busy || model.snapshot == nil || model.workerUnknown || model.demo)
                 Button(model.writeCLIOperation == .initialize ? "首次刻录…" : "追加刻录…") { model.showWriteConfirmation = true }
                     .buttonStyle(.borderedProminent).disabled(!model.canWrite)
+            }
+            if let reason = model.writeDisabledReason {
+                Text("刻录暂不可用：\(reason)")
+                    .font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
             }
             DisclosureGroup("技术详情与验收边界") {
                 Text("设备：\(model.selected?.device ?? "—") · Registry ID：\(model.selected?.registryID ?? "—")\n最新 Session LBA：\(model.disc.map { String($0.lastLBA) } ?? "—") · NWA：\(model.disc.map { String($0.nextLBA) } ?? "—")（仅展示，核心现场探测）\n本机使用版；每次任务以实际读回结果为准，Windows 实机验收另行记录。系统认证非流式传输，日志在命令结束后读取。任务材料保存在 Application Support，归档中的原绝对路径保留；失败材料不自动清理。")

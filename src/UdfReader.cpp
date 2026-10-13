@@ -1,4 +1,5 @@
 #include "UdfReader.hpp"
+#include "UdfVat.hpp"
 #include <udfread/udfread.h>
 #include <udfread/blockinput.h>
 #include <cstring>
@@ -78,6 +79,8 @@ void walk(udfread *volume, UDFDIR *directory, const std::string &prefix, UdfTree
 }
 }
 UdfTree readUdfTree(Blocks &source, uint32_t last, uint32_t readableEnd) {
+    auto layout=readUdfVolume(source,last,readableEnd);
+    if(layout.revision==0x0201)return readVatVolume(source,last,readableEnd).tree;
     require(readableEnd > uint64_t(last) + 256, "UDF Anchor is outside recorded range");
     Input input(source, last, readableEnd);
     std::unique_ptr<udfread, decltype(&udfread_close)> volume(udfread_init(), udfread_close);

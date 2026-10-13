@@ -160,14 +160,41 @@ def patch_initial(source):
     replace_once(source / 'cdrecord/version.h', '3.02a09-appendcd-media6', '3.02a09-appendcd-initial7')
 
 
+def patch_vat(source):
+    """Separate CD-R variable-packet executor; never replace media6/initial7."""
+    c = source / 'cdrecord/cdrecord.c'
+    if 'appendcd-vat' not in c.read_text(encoding='latin1'):
+        replace_once(c, 'appendcd-finish";', 'appendcd-finish,appendcd-vat";')
+        replace_once(c, '&appendcd_finish)) < 0)', '&appendcd_finish, &appendcd_vat)) < 0)')
+        replace_once(c, '\tif ((flags & F_WRITE) && !(flags & F_FIX) && (flags & F_MULTI) &&',
+            '\tif (flags & F_WRITE) {\n\t\tif (!appendcd_vat || appendcd_reuse || appendcd_finish ||\n\t\t    (flags & F_FIX) || !(flags & F_MULTI) || tracks != 1 ||\n\t\t    get_curprofile(scgp) != 0x09 || !is_packet(&track[1]) ||\n\t\t    track[1].pktsize != 0 || track[1].padsecs != 0)\n\t\t\tcomerrno(EX_BAD, "appendcd VAT requires one CD-R variable packet track, -multi and no padding.\\n");\n\t}\n\tif ((flags & F_WRITE) && !(flags & F_FIX) && (flags & F_MULTI) &&')
+    driver = source / 'cdrecord/drv_mmc.c'
+    if 'appendcd_fixate_packet' not in driver.read_text(encoding='latin1'):
+        replace_once(driver, '#include "cdrecord.h"', '#include "cdrecord.h"\n#include "appendcd_backend.h"')
+        # fixate_mmc receives the lead-in record, whose PACKET flag upstream
+        # never sets. Without the data-track check it only flushes the cache.
+        replace_once(driver,
+            '\tif (is_tao(trackp) || is_packet(trackp)) {\n\t\tret = scsi_close_tr_session(scgp, CL_TYPE_SESSION, 0,',
+            '\tif (is_tao(trackp) || appendcd_fixate_packet(is_packet(trackp), is_packet(track_base(trackp) + 1))) {\n\t\tret = scsi_close_tr_session(scgp, CL_TYPE_SESSION, 0,')
+    version = source / 'cdrecord/version.h'
+    for previous in ('3.02a09-appendcd-media6', '3.02a09-appendcd-vat8'):
+        if previous in version.read_text(encoding='latin1'):
+            replace_once(version, previous, '3.02a09-appendcd-vat9')
+    if '3.02a09-appendcd-vat9' not in version.read_text(encoding='latin1'):
+        raise RuntimeError('Unexpected VAT backend version after Session-fixation patch')
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--archive', type=pathlib.Path)
     parser.add_argument('--output-dir', type=pathlib.Path, default=ROOT / 'build/backend')
     parser.add_argument('--resume', action='store_true', help='Resume a previously extracted local build')
     parser.add_argument('--initial', action='store_true', help='Build separate blank-disc executor; does not replace the validated append executor')
+    parser.add_argument('--vat', action='store_true', help='Build separate UDF 2.01 CD-R variable-packet executor')
     parser.add_argument('--runtime-dir', type=pathlib.Path, help='Copy the marked binary to an isolated user libexec directory')
     args = parser.parse_args()
+    if args.initial and args.vat:
+        parser.error('--initial and --vat are mutually exclusive')
     output = args.output_dir.resolve()
     output.mkdir(parents=True, exist_ok=True)
     archive = args.archive or output / 'cdrtools-3.02a09.tar.gz'
@@ -201,6 +228,10 @@ def main():
         patch_initial(source)
     elif 'appendcd-initial' in (source / 'cdrecord/cdrecord.c').read_text(encoding='latin1'):
         raise RuntimeError('An initial build cannot be resumed as the append-only backend')
+    if args.vat:
+        patch_vat(source)
+    elif 'appendcd-vat' in (source / 'cdrecord/cdrecord.c').read_text(encoding='latin1'):
+        raise RuntimeError('A VAT build cannot be resumed as the baseline backend')
     for profiled in source.glob('lib*/*_p.mk'):
         profiled.unlink()
     smake = shutil.which('smake')
@@ -221,7 +252,7 @@ def main():
     binaries = list((source / 'cdrecord/OBJ').glob('*/cdrecord'))
     if len(binaries) != 1:
         raise RuntimeError(f'Cannot uniquely locate built cdrecord: {binaries}')
-    name = 'appendcd-initial-cdrecord' if args.initial else 'appendcd-cdrecord'
+    name = 'appendcd-vat-cdrecord' if args.vat else ('appendcd-initial-cdrecord' if args.initial else 'appendcd-cdrecord')
     target = output / name
     shutil.copyfile(binaries[0], target)
     target.chmod(0o755)
@@ -238,7 +269,7 @@ def main():
             raise RuntimeError('Refusing to replace a runtime symlink')
         shutil.copyfile(target, installed)
         installed.chmod(0o755)
-        shutil.copyfile(output / 'provenance.json', runtime / ('initial-provenance.json' if args.initial else 'provenance.json'))
+        shutil.copyfile(output / 'provenance.json', runtime / ('vat-provenance.json' if args.vat else ('initial-provenance.json' if args.initial else 'provenance.json')))
         print(f'Isolated runtime: {installed}')
 
 

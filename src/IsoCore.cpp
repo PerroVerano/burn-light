@@ -1,6 +1,7 @@
 #include "IsoCore.hpp"
 #include "GeneratedMetadata.hpp"
 #include <cerrno>
+#include <algorithm>
 #include <cstring>
 #include <fcntl.h>
 #include <fstream>
@@ -17,21 +18,41 @@ static void isoCheck(int result, const std::string &operation) {
 FileBlocks::FileBlocks(const fs::path &path, uint32_t base) : fd_(-1), base_(base) {
     fd_ = ::open(path.c_str(), O_RDONLY | O_CLOEXEC | O_NOFOLLOW);
     require(fd_ >= 0, "Cannot open ISO: " + path.string());
+    try {
     struct stat s{};
     if (fstat(fd_, &s) != 0 || !S_ISREG(s.st_mode) || s.st_size % BlockSize) {
-        close(fd_); fd_ = -1; throw std::runtime_error("ISO must be a regular file of 2048-byte blocks");
+        throw std::runtime_error("ISO must be a regular file of 2048-byte blocks");
     }
     count = uint64_t(s.st_size) / BlockSize;
+    require(count<=UINT32_MAX-base_,"File block address overflow");
+    if (fs::exists(path.string()+".tracks")) {
+        std::istringstream tracks(readText(path.string()+".tracks"));std::string line;
+        while(std::getline(tracks,line)) {
+            std::istringstream row(line);Range r;
+            require(bool(row>>r.begin>>r.end>>r.track>>r.session) && (row>>std::ws).eof(),"Malformed recorded Track map");
+            require(r.begin<r.end && r.begin>=base_ && uint64_t(r.end)<=base_+count &&
+                    (ranges_.empty() || r.begin>=ranges_.back().end),"Invalid recorded Track map");
+            ranges_.push_back(r);
+        }
+        require(tracks.eof() && !ranges_.empty(),"Malformed recorded Track map");
+    } else ranges_.push_back({base_,uint32_t(base_+count)});
     if (fs::exists(path.string() + ".blocks")) {
-        sparse_ = true; std::ifstream index(path.string() + ".blocks"); uint32_t lba;
-        while (index >> lba) valid_.insert(lba);
-        if (!index.eof()) { close(fd_); fd_ = -1; throw std::runtime_error("Malformed sparse cache validity map"); }
+        sparse_ = true; std::ifstream index(path.string() + ".blocks");std::string line;
+        require(bool(index),"Cannot open sparse cache validity map");
+        while(std::getline(index,line)) {
+            std::istringstream row(line);uint64_t lba;
+            require(bool(row>>lba) && (row>>std::ws).eof() && lba>=base_ && lba<uint64_t(base_)+count,"Malformed sparse cache validity map");
+            valid_.insert(uint32_t(lba));
+        }
+        require(index.eof(),"Cannot read sparse cache validity map");
     }
+    } catch(...) {close(fd_);fd_=-1;throw;}
 }
 FileBlocks::~FileBlocks() { if (fd_ >= 0) close(fd_); }
 Block FileBlocks::read(uint32_t lba) {
     checkInterrupted(); require(lba >= base_ && uint64_t(lba - base_) < count, "LBA outside ISO: " + std::to_string(lba));
     require(!sparse_ || valid_.contains(lba), "Requested LBA is a hole in optical cache: " + std::to_string(lba));
+    require(std::any_of(ranges_.begin(),ranges_.end(),[&](auto r){return lba>=r.begin && lba<r.end;}),"LBA in an unrecorded Track/gap: "+std::to_string(lba));
     Block b{};
     require(pread(fd_, b.data(), b.size(), off_t(lba - base_) * BlockSize) == ssize_t(BlockSize), "ISO read error at LBA " + std::to_string(lba));
     ++reads; return b;
@@ -43,6 +64,12 @@ Block OverlayBlocks::read(uint32_t lba) {
     if (lba >= start_) return next_->read(lba);
     require(bool(old_), "Old extent needs --source or a live optical read: LBA " + std::to_string(lba));
     return old_->read(lba);
+}
+std::vector<Blocks::Range> OverlayBlocks::recordedRanges() const {
+    auto out=old_?old_->recordedRanges():std::vector<Range>{};
+    out.erase(std::remove_if(out.begin(),out.end(),[&](auto r){return r.begin>=start_;}),out.end());
+    for(auto &r:out)r.end=std::min(r.end,start_);
+    auto next=next_->recordedRanges(); out.insert(out.end(),next.begin(),next.end()); return out;
 }
 IsoRuntime::IsoRuntime() {
     isoCheck(iso_init(), "iso_init");
@@ -176,12 +203,14 @@ std::string hashEntry(Blocks &source, const Entry &e) {
     return hashBytes([&](auto sink) {
         uint64_t total = 0;
         for (auto section : e.sections) {
-            source.prefetch(section.block, uint32_t((uint64_t(section.size) + BlockSize - 1) / BlockSize));
+            require(section.offset<BlockSize,"Invalid data offset");
+            source.prefetch(section.block, uint32_t((uint64_t(section.offset)+section.size + BlockSize - 1) / BlockSize));
             uint64_t offset = 0;
             while (offset < section.size) {
-                auto b = source.read(section.block + uint32_t(offset / BlockSize));
-                auto n = std::min<uint64_t>(BlockSize, section.size - offset);
-                sink(b.data(), size_t(n)); offset += n;
+                auto position=offset+section.offset;
+                auto b = source.read(section.block + uint32_t(position / BlockSize));
+                auto n = std::min<uint64_t>(BlockSize-position%BlockSize, section.size - offset);
+                sink(b.data()+position%BlockSize, size_t(n)); offset += n;
             }
             total += section.size;
         }
@@ -190,10 +219,10 @@ std::string hashEntry(Blocks &source, const Entry &e) {
 }
 void Manifest::save(const fs::path &path) const {
     std::ostringstream o;
-    o << "APPENDCD_MANIFEST 2\n" << std::quoted(filesystem) << '\n' << importedStart << ' ' << start << ' ' << sourceBase << ' ' << std::quoted(sourcePath) << ' ' << std::quoted(imageSha) << '\n';
+    o << "APPENDCD_MANIFEST " << (filesystem=="udf2.01+vat"?3:2) << "\n" << std::quoted(filesystem) << '\n' << importedStart << ' ' << start << ' ' << sourceBase << ' ' << std::quoted(sourcePath) << ' ' << std::quoted(imageSha) << '\n';
     for (const auto &[path, e] : entries) {
         o << (e.directory ? 'D' : 'F') << ' ' << (e.old ? 'O' : 'N') << ' ' << std::quoted(path) << ' ' << e.size << ' ' << std::quoted(e.sha) << ' ' << e.sections.size();
-        for (auto s : e.sections) o << ' ' << s.block << ' ' << s.size;
+        for (auto s : e.sections) { o << ' ' << s.block << ' ' << s.size; if(filesystem=="udf2.01+vat")o<<' '<<s.offset; }
         o << '\n';
     }
     writeText(path, o.str());
@@ -211,10 +240,10 @@ void Manifest::saveWindowsExpected(const fs::path &path,const std::string &media
 }
 Manifest Manifest::load(const fs::path &path) {
     std::istringstream in(readText(path)); std::string magic; int version;
-    in >> magic >> version; require(magic == "APPENDCD_MANIFEST" && (version == 1 || version == 2), "Unsupported manifest");
+    in >> magic >> version; require(magic == "APPENDCD_MANIFEST" && version>=1 && version<=3, "Unsupported manifest");
     Manifest m;
-    if (version == 2) in >> std::quoted(m.filesystem);
-    require(m.filesystem == "iso9660+joliet" || m.filesystem == "udf1.02", "Unknown manifest filesystem");
+    if (version >= 2) in >> std::quoted(m.filesystem);
+    require(m.filesystem == "iso9660+joliet" || m.filesystem == "udf1.02" || (version==3 && m.filesystem=="udf2.01+vat"), "Unknown manifest filesystem");
     in >> m.importedStart >> m.start >> m.sourceBase >> std::quoted(m.sourcePath) >> std::quoted(m.imageSha);
     bool initial = m.start == 0 && m.importedStart == 0 && m.sourceBase == 0 && m.sourcePath.empty() && m.filesystem == "iso9660+joliet";
     require(bool(in) && (m.start > m.importedStart || initial), "Invalid manifest addresses");
@@ -225,7 +254,7 @@ Manifest Manifest::load(const fs::path &path) {
         require(bool(in) && count < 100000 && (kind == 'D' || kind == 'F') && (origin == 'O' || origin == 'N'), "Invalid manifest entry");
         e.directory = kind == 'D'; e.old = origin == 'O';
         require(!initial || !e.old, "Initial-session manifest cannot contain old references");
-        for (size_t i = 0; i < count; ++i) { Section s; in >> s.block >> s.size; e.sections.push_back(s); }
+        for (size_t i = 0; i < count; ++i) { Section s; in >> s.block >> s.size; if(version==3)in>>s.offset; require(s.offset<BlockSize,"Invalid manifest offset"); e.sections.push_back(s); }
         require(bool(in) && m.entries.emplace(p, e).second, "Invalid/duplicate manifest entry");
     }
     require(in.eof(), "Malformed manifest"); return m;

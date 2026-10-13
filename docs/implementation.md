@@ -12,7 +12,31 @@
 
 Windows IMAPI 对 [ImportFileSystem](https://learn.microsoft.com/en-us/windows/win32/api/imapi2fs/nf-imapi2fs-ifilesystemimage-importfilesystem) 按 UDF/Joliet/ISO9660 顺序导入，并检查 [FileSystemsToCreate 的布局兼容性](https://learn.microsoft.com/en-us/windows/win32/api/imapi2fs/nf-imapi2fs-ifilesystemimage-put_filesystemstocreate)。当前 DVD-R 已取得用户实际 Windows 操作结果：三个首刻文件可见，资源管理器 master 模式成功追加 `swagger.json`。第二 Session 仍为 ISO9660 + Joliet，三个旧文件引用原 LBA 33/34/35，Swagger 数据从 LBA 93979 开始。返回 Mac 后，首刻完整镜像 hash、三个旧文件 hash/extent、最新 metadata/path tables 和两次独立光盘读回均通过。CD-R 在同一 Lenovo 光驱也已完成相同闭环：Windows 能看到并打开三个首刻文件，再用 master 模式追加 Swagger；返回 Mac 实测 2 Sessions / 2 Tracks、latest=11702、NWA=18904、appendable，两个 Track 的 TOC 均为 control=4/mode=2。两次独立读取确认首刻 68-block 完整镜像和旧文件 LBA/hash 不变；最新 ISO 为 148 blocks，新文件从 LBA 11729 开始，完整 hash 与 metadata/path tables 均通过。CD-R 证据为 `artifacts/cd-initial-roundtrip/acceptance.json`。两种介质的 Windows 源文件 hash/IOCTL 报告未采集；新增 Swagger 验证限于实际盘上的两次读取一致。新型号仍需分别验收。
 
-## 两种权威目录
+## 权威目录与文件系统分支
+
+2026-10-13 用户要求开放 DVD-R / UDF 2.01/VAT。物理 inspect/list/build/export 的 CD-only 格式限制取消；底层仍只接收原 CD-R/DVD-R 和受支持 VAT 结构。`recordingBackend` 按介质选取后端：CD-R VAT 为 vat9，DVD-R VAT 为 media6，DVD 参数保持 `-multi -data`，不带 CD variable-packet、XA 或 `-appendcd-vat`。DVD VAT 的 NWA 和镜像长度须按 16 扇区对齐，生成镜像原有的 32 块长度对齐满足后者。VAT recovery 仍拒绝，首刻仍走 ISO9660/Joliet。当前 Lenovo XL6M 已完成 GUI 实盘追加、Windows 人工读取/再追加和 Mac 两次实际读回，正式本机版去除试用标识；Windows 偏差兼容提示仍保留。新入口位于 Session 5，其 Anchor 引用 Session 4 VDS，最新 VAT 链连接 Mac VAT，旧数据仍位于 Session 3/4。见 [往返验收](udf201-dvd-r-roundtrip-20261013.md)，[试用记录](udf201-dvd-r-trial-20261013.md)保持原阶段边界。
+
+2026-10-12 新增 `UdfVat.cpp` 的受限 2.01 分支，保留既有 libudfread/UDF 1.02 writer。依据 [OSTA UDF 2.01 正式规范的镜像](https://13thmonkey.org/documentation/UDF/udf201.pdf) §§2.2.8、2.2.10、2.3.10、6.10；采用的 PDF SHA256 为 `83f1267466928782cd239ed39cbc1acd384ddf799900213d75d74e97f9f10f53`。完整状态和证据见 [本次验收](udf201-acceptance-20261012.md)。
+
+VRS/Anchor 从最新完整 Session 进入；Anchor 的 VDS 指针为绝对地址，不加 Session base。Partition Reference 是映射索引，Partition Number 是 PD 的标识；虚拟 ICB 经 VAT 转成物理分区块号后，再加 Partition Start。Anchor/VDS 的 Tag Location 按绝对 LBA 校验；虚拟 FSD/ICB 按虚拟块号、物理 allocation/FID/VAT ICB 按物理分区块号校验。完成 Track 的区间集合负责读取边界，声明分区容量只用于布局容量检查，不能将未来容量或 Track 间隙当作已记录数据。
+
+缓存同时保存 `.tracks` 与 `.blocks`，实际 readcd 成功的块才加入有效索引。批量读取在 Track 末尾和已有缓存处截断，缺块报错。最新 VAT 只在最新完成 Track 的有限尾部查找，允许明确零 padding；遇到不明非零数据或损坏候选即失败，不能退回历史目录。previous VAT、allocation extent、目录均有循环检测；历史 VAT 累计最多 64 MiB、最多 1024 项，目录最多 100000 ICB/128 层。主 VDS 损坏可使用当前 Anchor 指向的备用 VDS，并写明恢复来源。
+
+writer 更新最新目录/FSD/VAT，生成新 VDS 和 open LVID，保留物理分区容量和 Number。未替换文件复用原 ICB/VAT entry，内嵌文件的内容字节仍在原 ICB；manifest v3 以 block/size/offset 表达实际地址，兼容旧 v1/v2。新 ICB 使用虚拟地址，文件和目录 allocation 使用物理地址，维持 previous VAT、计数、revision、Tag Version 3、CRC 和 UniqueID。结束布局为 S+256 Anchor、N-256 Anchor、255 块结束区、最后有效数据扇区 N 的 VAT ICB。大 VAT 使用外部物理 allocation；不照搬 1.02 的 N Anchor。
+
+vat9 后端采用 variable packet / pktsize=0 / nopad，并依 TOC 维持已有 Mode 1 或 Mode 2 Form 1；混合或无法确认的 data mode 拒绝写入。它从数据 Track 的 PACKET 标志选择 Session fixation，修复上游只检查未标记 lead-in 而仅 flush 的问题；旧 vat8 在 CLI、CMake 与 GUI 打包中拒绝。原 ISO/UDF 1.02 的 TAO/其他 CD/DVD 路径使用原后端。
+
+本次替换盘实际写入 576 blocks，vat8 留下未完成 Session，失败边界在 [原记录](udf201-mac-attempt-20261012.md)。之后经单独授权，用原 media6 完成已有 Session；正常 CLI、独立解析、挂载和导出适配器均证明新旧 hash、旧 extent、两 Anchor 和最后 VAT 扇区正确，见 [会话完成记录](udf201-session-completion-20261012.md)。Windows 11 25H2 资源管理器随后正常读取并追加 JSON，返回 Mac 的最新 Session 3 / VAT 19531 实际全文件读回及 GUI 导出通过，见 [返回盘记录](udf201-windows-return-20261012.md)。vat9 正常 burn 全流程独立物理复验仍待验收；没有自动关闭或新增 VAT recovery。写前实际复读 metadata 与所有旧 hash，写后正常读回要求完整 Session 和全部 hash；原八 Session 损伤盘的边界保持独立。
+
+返回盘的目录 FID Tag Location 不符合正常物理地址规则。用户明确授权后，仅 `windows-fid-location-v1` 可兼容：当前 VAT ICB 与目录 FE 必须带已识别 Microsoft 标识；非零旧位置必须由有效 previous VAT 下同一虚拟目录、相同 UniqueID/字节偏移、完整 FID 字节相等和严格有效历史 Tag/子 ICB 证明。零位置的普通 FID 必须在同一目录已有搬移证明、无 implementation-use/特殊 flags，且绑定 Microsoft 普通 EFE 的 UniqueID。首次分配要求 EFE 位于对应 VAT 的已记录 Track、早于该 VAT 且晚于 previous VAT，所有更早表未映射该虚拟 ICB；后续保留记录还必须保持同一实际 ICB，并在来源 Microsoft VAT/目录中具有相同目录 UniqueID、字节偏移和完整 FID 字节，来源搬移记录由更早严格历史记录证明。事务可以处于同一物理 Session。历史搜索最多 100000 次、读取目录累计最多 64 MiB，不改当前 VAT 或合并历史目录。未链接到 previous 链的同 Session 较早事务不会被并入历史证明或当前目录。所有 checksum/CRC、版本、缓存有效性、实际范围、循环及资源限制继续执行。
+
+兼容标识进入当前 view hash、CLI 输出、GUI 目标绑定/显示、导出收据及 writer 来源诊断；未知标识拒绝。独立 oracle 默认保持严格拒绝，显式兼容模式另行证明来源并记录 `strictConformance=false`。从兼容来源生成的新目录始终重建正确 Tag Location，不继承偏差；独立严格解析验证生成结果，并检查旧 payload/内嵌 ICB 地址保持且未复制到新镜像。
+
+CLI inspect/list/build/verify 与 GUI 导出共用同一最新目录。GUI inspect/list 一致性和预览绑定包含 VAT view identity；build/burn/export 用 `--expected-view` 拒绝过期事务。固定物理目标、冲突策略、guard、串行 worker、未知任务和退出收据流程保持。VAT 不纳入 DVD recovery，macOS 首刻继续 ISO9660/Joliet。
+
+随后 [vat9 正常追加实盘](udf201-vat9-normal-burn-20261012.md)完成：一次后端写入并正常 fixation，第 4 Session 实际 576 个数据块和全部四文件严格读取通过；旧 payload 保持，新目录不继承 Windows FID 偏差。写前连续读取暴露 IOMedia 异步重新发布窗口，新增 `waitForOpticalMedia`：已有节点立即返回，暂缺时只等待已选 registry/address/path 的同一光驱，最多 10 秒、可中断；换设备/路径、消失或超时拒绝。此等待不执行 SCSI 写入或重试 writer；真实连续 list→inspect 和 burn 前/写后重新探测均触发并通过。用户已确认最新第 4 Session 四文件在 Windows 均可见且能打开，这是人工确认；Windows 自动 hash 报告未采集，原损伤八 Session 全文件读取仍未通过。
+
+再次 Windows 追加后的六 Session 盘暴露零位置 FID 保留旧 EFE、清零 ICB 的合法已删除记录及旧 IOMedia 残留问题。修复将零位置来源追溯到首次分配 VAT；删除记录按 §2.3.4.2 处理，旧介质只在与当前唯一发布 BSD 服务 ID 一致时参与枚举。正常重启释放内核等待后，最新 Anchor 133974 → Session 4 VDS 26466、VAT 134015 → Session 5 VAT 126815、旧 jar ICB 126782 的真实来源证明均通过。五文件实际导出、两份全新缓存独立解析、四个原文件 hash/extent/UniqueID 保持及原生 GUI 最新文件列表通过；修复包已安装。本轮没有写盘，严格 oracle 仍拒绝 Windows 位置偏差。详见 [本轮验收](udf201-gui-six-session-readback-20261012.md)；[重启前检查点](udf201-gui-continuation-fix-20261012.md)保留历史状态。
 
 ISO9660/Joliet 输入调用本机 `/opt/homebrew/include/libisofs/libisofs.h` 的实际 API：
 
@@ -108,3 +132,12 @@ DiscScanner 现在先把 msinfo 的两个地址与同一次扫描的 minfo 最�
 Windows 最新 PVD/SVD 的 Volume Space Size 均为 31；旧 32-block 导入下限拒绝了这个有效的小卷。导入改为要求描述符在已报告卷范围内，生成镜像仍保持 >=32 与精确块数等旧校验。UDF VRS 识别只读到调用方的已知 end，短 ISO/Joliet 离线镜像不再因固定 48-block 扫描越界。生成格式、旧 extent、参数、写前 metadata/hash 与 guard 不变。字段依据 [ECMA-119](https://ecma-international.org/wp-content/uploads/ECMA-119_6th_edition_december_2025.pdf) 的 7.3 与 8.4.8；31-block 兼容性来自此次实际盘与独立 mkisofs -no-pad 回归。
 
 新增改动涉及 DiscScanner.hpp/cpp、IsoVerifier.cpp、UdfReader.hpp/cpp、main.cpp，以及 drive_selection.cpp 的矛盾地址回归；GUI 导出适配器向识别器传递实际已知 end。加上原冲突改动，基线差异共十个共享源码文件和一个原测试文件；原 build/appendcd、两个 runtime 及 SCSI/MMC 后端未替换。最新材料位于 gui/evidence/write-acceptance-20261010/windows-return/。
+
+
+## GUI 本地存储清理（1.2.1）
+
+`BurnLightCore/Cleanup.swift` 只识别当前 `JobStore` 的私有工作目录、归档和关联快照；不枚举并删除任意临时目录，也不处理项目 artifacts 或用户导出。扫描使用实际分配块并记录 inode/大小/mtime/ctime/类型指纹，确认时重新读取索引及引用关系。默认临时清理必须有完整归档，删除前调用 `validatedArchive` 复读全部内容 hash；共享快照需要所有引用记录的归档完整，活动引用保留。
+
+清理和物理操作共用 `physical.lock`，检查 active 标记/worker/其他 GUI 实例，但不创建或移除 active 标记、不发送系统服务信号。AppModel 持有 busy 状态，保护当前任务、快照和预览，阻止同时启动预览/物理/导出任务。未知、活动、待检查、未通过的刻录和坏索引拒绝清理。按目录 fd/openat/fstatat/unlinkat 删除，不跟随 symlink，不跨文件系统；仅调整待删除私有副本的只读目录权限。扫描后变化则重新扫描，部分删除失败如实报告并保留剩余材料。
+
+历史清理保留 JobRecord 摘要及 outcome，不改刻录状态/检查标志；可选 `materialsRemovedAt` 保持旧索引解码兼容，清除已删材料路径，界面禁止打开已清理诊断。所有实际用户材料删除须在 GUI 查看清单后确认，功能无自动删除策略。fixture 删除由独立离线检查覆盖，验收见 [清理报告](gui-storage-cleanup-20261013.md)。

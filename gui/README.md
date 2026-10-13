@@ -1,18 +1,46 @@
-# BurnLight 本机使用版 1.1.1
+# BurnLight 正式本机使用版 1.2.1
+
+2026-10-13 用户全量试用反馈无异常，1.2.1 / build 5 按用户要求暂时结档。当前交付与验收边界见 [结档记录](../docs/release-1.2.1-closeout-20261013.md)；后续问题另行修复。
 
 新 Git checkout 的基准恢复、构建步骤与文件范围见 [仓库说明](../docs/repository.md)。本机安装、发布包和实盘材料路径是历史交付位置，应用二进制与用户材料不随 Git 上传。
+
+2026-10-12 新源码增加 CD-R / UDF 2.01/VAT 的目录、预览与导出支持，显示真实版本并将预览/导出绑定到最新 VAT 视图。只支持 type-1 + Virtual Partition Map；其他版本/映射在预览或写入前明确失败。内嵌旧文件保持原 ICB 的内容地址。首次刻录继续 ISO9660/Joliet，DVD recovery 不含 VAT。
+
+当前独立只读测试包为 `build-udf201-gui-compatible/output/BurnLight.app`，未覆盖已安装应用或历史发布包。使用 `BURNLIGHT_BUILD_ROOT="$PWD/build-udf201-gui-compatible" ./gui/scripts/test.sh` 重建；新的 vat9 后端独立构建和纳入 bundle 信任清单，旧 media6/initial7 pin 保持。真实八 Session 盘的目录读取成功，但一个旧文件报介质错误；详见 [初始报告](../docs/udf201-acceptance-20261012.md)。
+
+独立可写验收包为 `build-udf201-gui-compatible-write/output/BurnLight.app`，同目录附 zip；相同验证代码/八项工具与库 hash，仅配置开启写入并重签名，未安装、未通过此包写盘。若需从源码完整重建，使用 `BURNLIGHT_BUILD_ROOT="$PWD/build-udf201-gui-compatible-write" BURNLIGHT_ENABLE_WRITES=1 ./gui/scripts/build.sh`。vat9 正常 burn 的完整物理验收仍未完成。
+
+随后换入的同格式单 Session 盘已通过 GUI 导出适配器的全部文件导出和独立真实复读，详见 [换盘验收](../docs/udf201-replacement-acceptance-20261012.md)。此结果不代表原损伤盘全文件读取、GUI 写盘或 Windows 往返已通过。
+
+随后 CLI 实盘追加发现 vat8 未结束 Session 的缺陷，已修复并新增回归；CLI/打包拒绝旧 vat8，GUI 不自动结束失败会话或重烧。经用户单独授权完成已有会话后，新旧两文件实际导出通过。Windows 11 25H2 资源管理器再次追加 JSON 后，现盘 3 个完成 Session，最终导出适配器从新入口/VAT 对全部三文件实际导出、两次独立实读和内容比对通过，旧 payload 地址保持。见 [当前返回盘记录](../docs/udf201-windows-return-20261012.md)；[会话完成](../docs/udf201-session-completion-20261012.md)和 [失败阶段](../docs/udf201-mac-attempt-20261012.md)保留，不算 GUI 写盘或 vat9 正常 burn 完整物理 PASS。
+
+当前 Windows 返回目录的两处 FID 位置偏差经用户明确授权使用受限 `windows-fid-location-v1`，界面标记 Windows 兼容视图，目标绑定/日志/导出收据保存该标识。核心证明历史来源并继续校验 CRC/VAT/实际读取范围，不以此宣称规范严格符合。146 条 GUI 断言、七组内置 CLI 回归、50 项冲突、8 项短卷、10 项原导出及 5 项 VAT 导出回归通过；原生窗口的实际写入操作未在此阶段执行。
+
+最新阶段已完成修复后正常 CLI vat9 写入与第 4 Session 实际读回，最终 GUI 导出适配器四文件提取/两次严格独立实读通过。最终只读包为 `build-udf201-gui-publication/output/BurnLight.app`，可写本地包为 `build-udf201-gui-publication-write/output/BurnLight.app`（同目录 zip），未安装。核心增加同一光驱的最多 10 秒介质发布等待，不重试 writer；GUI 146 项及上述全部离线回归重新通过。当前新目录无 Windows FID 偏差，旧三个 hash/地址保持，盘仍可追加。用户随后确认最新 Session 4 的四文件在 Windows 均可见且能打开；Windows 自动 hash 报告未采集。见 [最新报告](../docs/udf201-vat9-normal-burn-20261012.md)；此前待 vat9 实测的段落为历史阶段边界，原损伤八 Session 全文件读取仍未通过。
 
 原生 SwiftUI + AppKit，Apple Silicon / macOS 26。用户确认本次发布为**本机正式使用、保留系统认证、不需开发者账号**。用户后来明确授权当前光盘及 Desktop/Burn 实盘验收，并要求加入同路径文件跳过/替换。1.1 可显式构建启用刻录的本机包；只读 1.0 归档仍保留。Windows 新任务结果单独验收。
 
 ## 安装与运行
 
-已安装到 `/Users/luzove/Applications/BurnLight.app`。自包含包携带独立编译的 appendcd、只读导出器、media6 / initial7 两个既有后端、readcd、libisofs 和 libudfread；运行不需要项目目录或 Homebrew。原 `build/appendcd` 和两个原 runtime 保持基线；共享核心已加入显式冲突策略、Session 地址一致检查和短卷导入兼容；默认冲突拒绝、生成镜像校验及写入后端保留。修改前源码另有快照。
+2026-10-13 DVD-R / UDF 2.01/VAT 已纳入 **1.2.0 正式本机使用版**。本张 Lenovo XL6M DVD-R 经 GUI 追加 ZIP/实际读回、Windows 人工读取并再追加 `swagger.json`、Mac 返回盘三文件两次实读与导出通过；旧 hash/extent/UniqueID 保持。DVD 使用 media6 incremental，CD-R VAT 使用 vat9；不放开 RW/BD 或 VAT recovery。去除试用提示，保留受限 Windows 格式偏差提示。正式包、安装及构建绑定见 [往返验收](../docs/udf201-dvd-r-roundtrip-20261013.md)，此前 [试用记录](../docs/udf201-dvd-r-trial-20261013.md)保持历史状态。
+
+2026-10-13 又修复追加按钮状态说明：预览成功时仍会显示尚未解除的历史写入锁定原因，按钮准入与说明共用判断。原损伤八 Session 盘的一条历史任务经退出收据、原始读错误和对应核心控制流程核对，确认在写前复读失败，未调用数据写入；保留原归档并纠正该任务索引后，健康六 Session 盘的原生追加预览成功，“追加刻录…”已启用。151 项 GUI 检查通过，新包已更新安装，详见[按钮修复验收](../docs/gui-append-button-fix-20261013.md)。本轮没有真实刻录，未知执行器与未确认的写后任务仍保持准入保护。
+
+2026-10-12 的六 Session 修复包已安装到 `/Users/luzove/Applications/BurnLight.app` 并正常启动，旧版保留为 `BurnLight-previous-20261012-170149-3d6f90f5.app`。原生“检查介质与目录”实际通过，显示最新五文件（含 `MybatisCodeHelperConfig.json`、`lssjk.jar` 和两个 Mac 文本）、UDF 2.01 / VAT、六 Session 和可追加状态。Windows 保留旧 FID 的来源与合法已删除记录已验证；五文件实际导出/两次复读、四个旧文件 hash/地址保持及全部离线 GUI 回归通过。本轮没有写盘。详见 [修复验收](../docs/udf201-gui-six-session-readback-20261012.md)。只读包为 `build-udf201-gui-history/output/BurnLight.app`，已安装的可写包为 `build-udf201-gui-history-write/output/BurnLight.app`；首刻仍使用原 ISO9660 + Joliet 路径。下文“本次 VAT 本地包尚未覆盖安装”及前述 publication 包是首次交付的历史状态。
+
+历史版本已安装到 `/Users/luzove/Applications/BurnLight.app`，本次 VAT 本地包尚未覆盖安装。历史自包含包携带独立编译的 appendcd、只读导出器、media6 / initial7 两个既有后端、readcd、libisofs 和 libudfread；运行不需要项目目录或 Homebrew。本次包另增加隔离的 vat9 后端。原 `build/appendcd` 和两个原 runtime 保持基线；共享核心已加入显式冲突策略、Session 地址一致检查和短卷导入兼容；默认冲突拒绝、生成镜像校验及写入后端保留。修改前源码另有快照。
 
 ```sh
 open /Users/luzove/Applications/BurnLight.app
 ```
 
-发布包：`gui/output/BurnLight-1.1.1-local-arm64.zip` 与同名 `.sha256`。可将 `.app` 搬到本机其他用户可访问的正常应用目录。使用本机 ad hoc 签名，没有 Developer ID、公证或 helper，不修改 SIP/TCC/xcode-select 等永久系统设置；这不是面向其他机器的公证发行包。
+当前发布包：`build-gui-cleanup-20261013-final-write/output/BurnLight-1.2.1-local-arm64.zip` 与同名 `.sha256`。历史 `gui/output/BurnLight-1.1.1-local-arm64.zip` 保留。可将 `.app` 搬到本机其他用户可访问的正常应用目录。使用本机 ad hoc 签名，没有 Developer ID、公证或 helper，不修改 SIP/TCC/xcode-select 等永久系统设置；这不是面向其他机器的公证发行包。
+
+## 清理本地存储
+
+1.2.1 新增左下角“清理本地存储…”：先预览占用和清单，支持逐项选择及 7/30 天或全部已结束任务。默认清理有完整归档的临时副本，保留可恢复历史；另可清理过期历史归档并留下小型任务摘要。确认后永久删除，无自动清理，无管理员认证。
+
+当前快照/预览、活动或未知 worker、待检查或失败刻录和坏索引不会因清理而解除保护。共享快照核对全部归档副本，删除临时副本前独立复读归档 hash。原始输入、用户导出、项目验收材料和应用安装包不纳入。空间按 `st_blocks` 估算，稀疏镜像不按逻辑长度计费。详细实现和验证见 [清理验收](../docs/gui-storage-cleanup-20261013.md)。
 
 ## 使用
 
@@ -26,7 +54,7 @@ open /Users/luzove/Applications/BurnLight.app
 8. “原镜像只读补验”先按用户权限固定原 ISO 和同名 manifest，再调用真实 readback。写后失败必须先检查介质，再使用失败任务原镜像；不自动重烧、不把 init/burn 自动互换、不从另一张盘的 PASS 解除失败记录。
 9. “任务日志”在命令退出后展示 stdout/stderr，界面显示不确定进度。“历史记录”打开持久材料、导出诊断；诊断包含原文件和本地路径，只保存到用户选定目录，不自动上传。Windows 预期清单导出不等于 Windows PASS。
 
-完整 Session 且可追加的 CD-R/DVD-R 是目前原核心物理读取范围；ISO9660/Joliet 或受支持 UDF 1.02。封盘、ROM、空白/未完成 Session、其他文件系统以及 inline/unmapped UDF 暂不支持导出。文件导出保存名称、目录、内容，未提供原权限/时间戳/扩展属性还原。
+完整 Session 且可追加的 CD-R/DVD-R 保持原 ISO9660/Joliet、受支持 UDF 1.02 的物理读取范围；新源码还支持上述受限 CD-R/DVD-R / UDF 2.01/VAT，包含可解析的内嵌文件。封盘、ROM、空白/未完成 Session、其他文件系统及无法映射的结构仍拒绝导出；原 UDF 1.02 的 inline/unmapped 限制保持。文件导出保存名称、目录、内容，未提供原权限/时间戳/扩展属性还原。
 
 ## 权限与失败处理
 
@@ -69,4 +97,4 @@ python3 ./gui/scripts/install-local.py
 
 本轮实盘与冲突证据见 [1.1 验收](evidence/write-acceptance-20261010/acceptance.md)。原 [1.0 只读本机版验收](evidence/local-release-20261010/acceptance.md) 保留当时结果。此前开发和导出结果分别保存在 [首版只读验收](evidence/acceptance.md) 和 [导出功能验收](evidence/export-20261010/acceptance.md)，属于当时产物，不能替代本轮打包验证。
 
-剩余验收边界：Windows 读取/打开原七文件和再次追加已由用户实机确认，返回 Mac 的八文件读回另见本轮报告；CD-R/DVD-R GUI 首刻、DVD-R GUI 实盘追加与 skip 实盘 burn 未完成；历史 CLI 两盘闭环不算新 GUI PASS。其他光驱/多驱、大盘/满盘/拔盘、真实桥接异常或服务故障未测试。未知写入缺少原镜像或可信身份时仍需人工检查，不能强制解锁。旧系统/Intel、Sandbox/书签、Developer ID 公证、SMAppService/XPC helper 与材料清理 UI 不在本机发行范围。
+2026-10-10 历史阶段的剩余验收边界（DVD-R GUI 追加已由 2026-10-13 往返报告补齐）：Windows 读取/打开原七文件和再次追加已由用户实机确认，返回 Mac 的八文件读回另见本轮报告；CD-R/DVD-R GUI 首刻、DVD-R GUI 实盘追加与 skip 实盘 burn 未完成；历史 CLI 两盘闭环不算新 GUI PASS。其他光驱/多驱、大盘/满盘/拔盘、真实桥接异常或服务故障未测试。未知写入缺少原镜像或可信身份时仍需人工检查，不能强制解锁。旧系统/Intel、Sandbox/书签、Developer ID 公证、SMAppService/XPC helper 与材料清理 UI 不在本机发行范围。

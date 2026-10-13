@@ -56,6 +56,7 @@ static void normal() {
     media={4,0,4,0,1,0};replies={{4,track(4,107440,100000,false)}};closeCalls=0;
     appendcd_reuse=0;appendcd_physical_track=0;appendcd_reserved_count=0;appendcd_expected_nwa=107440;
     appendcd_initial=0;
+    appendcd_vat=0;
 }
 static void cd() {
     normal();profile=0x09;media={1,0,1,0,1,2};cdReply={};
@@ -78,6 +79,11 @@ int main() {
     check(appendcd_registry_matches("18446744073709551615",UINT64_MAX));
     check(!appendcd_registry_matches("",1) && !appendcd_registry_matches("1,0,0",1));
     SCSI s;long address=0;
+    // Actual packet argv layout: lead-in has no PACKET flag, data Track has it.
+    appendcd_vat=1;check(appendcd_fixate_packet(0,1));
+    appendcd_vat=0;check(!appendcd_fixate_packet(0,1));
+    check(appendcd_fixate_packet(1,0));
+    appendcd_vat=1;check(!appendcd_fixate_packet(0,0));
     normal();check(appendcd_select_track(&s,&address)==4&&address==107440);
     appendcd_expected_nwa=108240;rejected([&]{appendcd_select_track(&s,&address);});check(closeCalls==0);
     normal();replies.at(4).nwa_v=0;rejected([&]{appendcd_select_track(&s,&address);});
@@ -98,6 +104,10 @@ int main() {
     cd();appendcd_expected_nwa=12301;rejected([&]{appendcd_validate_cd(&s);});
     cd();media.sess_status=1;rejected([&]{appendcd_validate_cd(&s);});
     cd();cdReply.packet=1;rejected([&]{appendcd_validate_cd(&s);});
+    appendcd_vat=1;appendcd_validate_cd(&s);
+    cdReply.fp=1;rejected([&]{appendcd_validate_cd(&s);});
+    cd();appendcd_vat=1;appendcd_validate_cd(&s);
+    appendcd_initial=1;rejected([&]{appendcd_validate_cd(&s);});
     cd();cdReply.data_len[1]=26;rejected([&]{appendcd_validate_cd(&s);});
     cd();appendcd_reuse=1;rejected([&]{appendcd_validate_cd(&s);});
     // 首刻只能通过独立标志进入；原追加路径仍拒绝 blank/NWA 0。

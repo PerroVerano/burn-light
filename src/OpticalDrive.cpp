@@ -4,6 +4,7 @@
 #include <IOKit/IOKitLib.h>
 #include <iostream>
 #include <regex>
+#include <unistd.h>
 
 namespace ac {
 namespace {
@@ -64,12 +65,25 @@ std::vector<DriveIdentity> enumerate() {
                 CFHandle name{IORegistryEntryCreateCFProperty(child.value, CFSTR("BSD Name"), nullptr, 0)};
                 auto node = cfString(name.value);
                 if (node.empty()) continue;
+                // 独占访问后的旧 IOMedia 可尚未退出 registry；只接受 BSD 当前发布的同一对象。
+                IOHandle publishedMatches;
+                require(IOServiceGetMatchingServices(kIOMainPortDefault, IOBSDNameMatching(kIOMainPortDefault, 0, node.c_str()), &publishedMatches.value)==KERN_SUCCESS,
+                        "Cannot resolve published optical BSD node");
+                IOHandle published{IOIteratorNext(publishedMatches.value)};
+                IOHandle duplicate{IOIteratorNext(publishedMatches.value)};
+                require(!duplicate.value,"Ambiguous published optical BSD node");
+                uint64_t childId=0, publishedId=0;
+                require(IORegistryEntryGetRegistryEntryID(child.value,&childId)==KERN_SUCCESS && childId,
+                        "Cannot obtain optical media identity");
+                if(!published.value)continue;
+                require(IORegistryEntryGetRegistryEntryID(published.value,&publishedId)==KERN_SUCCESS && publishedId,
+                        "Cannot obtain published optical media identity");
+                if(childId!=publishedId)continue;
                 require(std::regex_match(node, std::regex("disk[0-9]+")) && d.bsdDevice.empty(), "Ambiguous optical whole-media BSD node");
                 d.bsdDevice = "/dev/" + node;
                 CFHandle type{IORegistryEntryCreateCFProperty(child.value, CFSTR("Type"), nullptr, 0)};
                 d.mediaType = cfString(type.value);
-                require(IORegistryEntryGetRegistryEntryID(child.value, &d.mediaRegistryId) == KERN_SUCCESS && d.mediaRegistryId,
-                        "Cannot obtain optical media identity");
+                d.mediaRegistryId=childId;
             }
             // 同一服务若匹配多个类，只保留最具体的光学类，避免重复候选。
             unique[d.registryId] = d;
@@ -102,6 +116,23 @@ void requireSameDrive(const DriveIdentity &expected, const DriveIdentity &curren
     // 获得/释放 SCSI 独占访问会重建 IOMedia，不能把它的 registry ID 当作盘片身份。
     if (sameMedium) require(!expected.bsdDevice.empty() && expected.bsdDevice == current.bsdDevice && expected.mediaType == current.mediaType,
                             "Optical media changed since preparation");
+}
+DriveIdentity waitForOpticalMedia(const DriveIdentity &selected,
+                                 const std::function<std::vector<DriveIdentity>()> &discover,
+                                 const std::function<void()> &pause, unsigned attempts) {
+    require(selected.registryId && attempts<=40,"Invalid optical media wait binding/limit");
+    if(!selected.bsdDevice.empty())return selected;
+    // SCSI 独占访问结束后 IOMedia 异步重新发布；只等待同一服务，不重试任何 writer。
+    std::cerr<<"Waiting for selected optical media publication before preflight\n";
+    for(unsigned i=0;i<attempts;++i) {
+        checkInterrupted();
+        if(pause)pause();else usleep(250000);
+        checkInterrupted();
+        auto current=selectOpticalDrive(discover(),selected.device);
+        requireSameDrive(selected,current,false);
+        if(!current.bsdDevice.empty())return current;
+    }
+    throw std::runtime_error("Selected optical drive has no readable media; insert an appendable CD-R/DVD-R");
 }
 void revalidateDrive(const DriveIdentity &drive, bool sameMedium) {
     auto current = selectOpticalDrive(enumerate(), drive.device);

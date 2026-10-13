@@ -6,6 +6,7 @@
 namespace ac {
 struct Section {
     uint32_t block = 0, size = 0;
+    uint32_t offset = 0; // 内嵌数据指向原 ICB 扇区，不复制旧 payload。
     bool operator==(const Section &) const = default;
 };
 struct Entry {
@@ -23,17 +24,21 @@ public:
     virtual ~Blocks() = default;
     virtual Block read(uint32_t lba) = 0;
     virtual void prefetch(uint32_t, uint32_t) {}
+    struct Range { uint32_t begin, end, track = 0, session = 0; };
+    virtual std::vector<Range> recordedRanges() const { return {}; }
 };
 class FileBlocks : public Blocks {
     int fd_;
     uint32_t base_;
     bool sparse_ = false;
     std::set<uint32_t> valid_;
+    std::vector<Range> ranges_;
 public:
     uint64_t count;
     FileBlocks(const fs::path &path, uint32_t base = 0);
     ~FileBlocks() override;
     Block read(uint32_t lba) override;
+    std::vector<Range> recordedRanges() const override { return ranges_; }
 };
 class OverlayBlocks : public Blocks {
     std::shared_ptr<Blocks> old_, next_;
@@ -41,6 +46,7 @@ class OverlayBlocks : public Blocks {
 public:
     OverlayBlocks(std::shared_ptr<Blocks> oldSource, std::shared_ptr<Blocks> nextSource, uint32_t start);
     Block read(uint32_t lba) override;
+    std::vector<Range> recordedRanges() const override;
 };
 struct Manifest {
     std::string filesystem = "iso9660+joliet";

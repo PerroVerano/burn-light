@@ -3,6 +3,7 @@
 #include "IsoVerifier.hpp"
 #include "UdfReader.hpp"
 #include "UdfSession.hpp"
+#include "UdfVat.hpp"
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -42,7 +43,8 @@ struct Arguments {
             std::string a = argv[i];
             if (a.starts_with("--")) {
                 if(a=="--prepare-only") {require(command=="recover" && !options.contains(a),"--prepare-only is for recover only");options[a]="1";continue;}
-                require(a == "--source" || a == "--source-base" || a == "--last" || a == "--next" || a == "--work-dir" || a == "--device" || a == "--on-conflict", "Unknown option: " + a);
+                if(a=="--hash-files") {require((command=="inspect" || command=="list") && !options.contains(a),"--hash-files is for inspect/list only");options[a]="1";continue;}
+                require(a == "--source" || a == "--source-base" || a == "--last" || a == "--next" || a == "--work-dir" || a == "--device" || a == "--on-conflict" || a=="--expected-view", "Unknown option: " + a);
                 require(i + 1 < argc && !options.contains(a), "Missing/repeated option: " + a); options[a] = argv[++i];
             } else positional.push_back(a);
         }
@@ -50,6 +52,7 @@ struct Arguments {
             require(command == "build" || command == "burn", "--on-conflict is for build/burn only");
             require(get("--on-conflict") == "skip" || get("--on-conflict") == "replace", "--on-conflict must be skip or replace");
         }
+        if(options.contains("--expected-view"))require((command=="build" || command=="burn") && get("--expected-view").size()==64 && get("--expected-view").find_first_not_of("0123456789abcdef")==std::string::npos,"--expected-view needs a build/burn VAT view hash");
     }
     std::string get(const std::string &key, const std::string &fallback = "") const { auto i = options.find(key); return i == options.end() ? fallback : i->second; }
     void count(size_t n) const { require(positional.size() == n, "Wrong argument count; use appendcd help"); }
@@ -67,6 +70,8 @@ void help() {
               << "sudo appendcd init FILES [--work-dir DIR] (blank CD-R/DVD-R only)\n"
               << "sudo appendcd inspect [--work-dir DIR]\n"
               << "sudo appendcd list [--work-dir DIR]\n"
+              << "  inspect/list --hash-files reads every regular file and records SHA256.\n"
+              << "  build/burn --expected-view SHA256 binds a UDF VAT preview transaction.\n"
               << "sudo appendcd build FILES OUTPUT.iso [--work-dir DIR]\n"
               << "appendcd verify OUTPUT.iso [--source OLD.iso]\n"
               << "sudo appendcd readback OUTPUT.iso [--work-dir DIR] (read only)\n"
@@ -78,7 +83,7 @@ void help() {
               << "Offline list/inspect/build: --source DISC.iso --last LBA\n"
               << "Offline build also requires --next LBA (never inferred from image length).\n"
               << "For readcd session-only input add --source-base ABSOLUTE_LBA.\n"
-              << "Input detection: ISO9660/Joliet or simple read-only UDF 1.02.\n"
+              << "Input detection: ISO9660/Joliet, supported UDF 1.02, or CD-R/DVD-R UDF 2.01/VAT.\n"
               << "Output continues the detected filesystem; verify loads OUTPUT.iso.manifest.\n";
     std::cout << "build/burn: --on-conflict skip|replace explicitly handles same-path files.\n"
               << "Without this option existing files are rejected; directories merge, type/name collisions remain errors.\n"
@@ -104,6 +109,19 @@ void baselineHashes(Manifest &m, Blocks &source) {
         std::cerr << "Pre-burn optical baseline " << done << ": " << std::quoted(p) << '\n';
     }
 }
+void reportUdf(UdfTree &tree,Blocks &source,uint32_t last,const fs::path &evidence,bool hashes,bool listing=true) {
+    std::cout<<"UDF volume: "<<tree.volumeName<<"\nFilesystem: "<<tree.filesystem<<"\n";
+    if(!tree.viewIdentity.empty())std::cout<<"Filesystem view: "<<tree.viewIdentity<<'\n';
+    if(!tree.compatibility.empty())std::cout<<"UDF compatibility: "<<tree.compatibility<<'\n';
+    if(listing)listTree(tree.entries);
+    if(!evidence.empty())writeText(evidence/"udf-view.txt",tree.diagnostics);
+    if(hashes) {
+        Manifest baseline;baseline.filesystem=tree.filesystem;baseline.importedStart=last;baseline.start=last;
+        for(auto &[p,e]:tree.entries)if(!e.directory){e.sha=hashEntry(source,e);std::cout<<"SHA256 "<<std::quoted(p)<<' '<<e.sha<<'\n';}
+        baseline.entries=tree.entries;
+        if(!evidence.empty())baseline.save(evidence/"read-baseline.manifest");
+    }
+}
 void opticalReadback(const DiscInfo &disc, const Manifest &m, const fs::path &image, const fs::path &evidence,bool allowIncomplete=false) {
     require(allowIncomplete || disc.closedSession(),"The latest Session is unfinished; readback alone cannot declare physical completion");
     require(disc.last == m.start && disc.next > disc.last, "Optical last session differs from prepared start LBA");
@@ -113,6 +131,10 @@ void opticalReadback(const DiscInfo &disc, const Manifest &m, const fs::path &im
     auto hash = hashBytes([&](auto sink) { for (uint32_t i = 0; i < blocks; ++i) { auto b = readback.read(m.start + i); sink(b.data(), b.size()); } });
     require(hash == m.imageSha, "Optical continuation bytes differ from prepared image");
     verifyReadback(readback,m,blocks);
+    if(m.filesystem=="udf2.01+vat") {
+        auto tree=readUdfTree(readback,disc.last,disc.readableEnd);
+        std::cout<<"Filesystem: "<<tree.filesystem<<"\nFilesystem view: "<<tree.viewIdentity<<'\n';
+    }
     m.saveWindowsExpected(evidence/"windows-expected.json",disc.media);
     writeText(evidence/"result.txt",std::string(allowIncomplete?"INCOMPLETE_SESSION_READBACK_PASS":"PHYSICAL_READBACK_PASS")+"\nWINDOWS_ACCEPTANCE_PENDING\nMedia: "+disc.media+"\nSession start: "+std::to_string(m.start)+"\nImage SHA256: "+hash+"\n");
 }
@@ -129,7 +151,7 @@ void completePhysical(const DiscInfo &disc,const Manifest &m,const fs::path &ima
         catch(const std::exception &error){writeText(evidence/("after-ready-attempt-"+std::to_string(attempt)+".txt"),error.what());}
         for(int i=0;i<20;++i){usleep(100000);checkInterrupted();}
     }
-    require(ready,"Media was written/closed, but did not become ready within 30 seconds; use readback after it settles");
+    require(ready,"Data was written, but a completed new Session was not confirmed within 30 seconds; no further write or close was attempted. Inspect the actual physical state before readback");
     writeText(evidence/"after-drutil.txt",postPre.drutil);
     unmountOptical(postPre);
     DiskArbitrationGuard postGuard;
@@ -176,17 +198,18 @@ int main(int argc, char **argv) {
             auto source = std::make_shared<FileBlocks>(path, base);
             require(source->count <= UINT32_MAX - base, "Offline source end LBA overflow");
             bool udf = isUdfSession(*source, last, uint32_t(source->count + base));
+            if(a.options.contains("--expected-view"))require(udf && readUdfTree(*source,last,uint32_t(source->count+base)).viewIdentity==a.get("--expected-view"),"VAT view changed since preview");
             if (a.command == "build" && udf) {
                 a.count(2); require(a.options.contains("--next"), "Offline UDF build needs --next");
                 auto m = buildUdfSession(source,last,number(a.get("--next")),uint32_t(source->count+base),a.positional[0],a.positional[1],path.string(),base,0,a.conflictPolicy());
                 verifySession(a.positional[1],m,source,false); std::cout << "UDF BUILD VERIFIED\n"; return 0;
             }
             if (a.command == "inspect" && udf) {
-                a.count(0); auto tree=readUdfTree(*source,last,uint32_t(source->count+base)); std::cout<<"UDF volume: "<<tree.volumeName<<'\n';listTree(tree.entries);return 0;
+                a.count(0); auto tree=readUdfTree(*source,last,uint32_t(source->count+base));reportUdf(tree,*source,last,{},a.options.contains("--hash-files"));return 0;
             }
             if (a.command == "list" && udf) {
                 a.count(0); auto tree = readUdfTree(*source, last, uint32_t(source->count + base));
-                std::cout << "UDF volume: " << tree.volumeName << '\n'; listTree(tree.entries);
+                reportUdf(tree,*source,last,{},a.options.contains("--hash-files"));
                 for (const auto &p : tree.inlineFiles) std::cout << "INLINE/UNMAPPED: " << std::quoted(p) << '\n';
                 return 0;
             }
@@ -245,15 +268,16 @@ int main(int argc, char **argv) {
         }
         auto old = std::make_shared<OpticalBlocks>(disc, evidence / "before-read");
         probeFilesystem(*old, disc.last, evidence / "filesystem-probe.txt");
-        if (a.command == "inspect") { guard.restore(); return 0; }
         bool udf = isUdfSession(*old, disc.last, disc.readableEnd);
+        if(a.options.contains("--expected-view"))require(udf && readUdfTree(*old,disc.last,disc.readableEnd).viewIdentity==a.get("--expected-view"),"VAT view changed since preview");
         require(!recovery || udf,"Reserved-Track recovery currently requires the validated UDF 1.02 writer");
-        if (udf && a.command == "list") {
+        if (udf && (a.command == "list" || a.command=="inspect")) {
             auto tree = readUdfTree(*old, disc.last, disc.readableEnd);
-            std::cout << "UDF volume: " << tree.volumeName << '\n'; listTree(tree.entries);
+            reportUdf(tree,*old,disc.last,evidence,a.options.contains("--hash-files"),a.command=="list");
             for (const auto &p : tree.inlineFiles) std::cout << "INLINE/UNMAPPED: " << std::quoted(p) << '\n';
             guard.restore(); return 0;
         }
+        if (a.command == "inspect") { guard.restore(); return 0; }
         // 独立读取 descriptors/目录，再让 libisofs 选择 Joliet。无有效 Joliet 时停止。
         if (!udf) { auto oldVolumes = readVolumes(*old, disc.last, UINT32_MAX, false); printVolumes(oldVolumes); }
         if (a.command == "list") { IsoImporter imported(old, disc.last); listTree(imported.tree()); guard.restore(); return 0; }

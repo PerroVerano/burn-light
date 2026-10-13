@@ -25,6 +25,7 @@ struct DiscInfo {
     bool blank = false;
     uint32_t physicalFirst = 0, physicalLast = 0, sessionStatus = 0;
     std::vector<PhysicalTrack> physical;
+    std::vector<Blocks::Range> recorded;
     void requireNormalTarget() const;
     void requireInitialTarget() const;
     bool closedSession() const { return sessionStatus==0 || (media=="CD-R" && sessionStatus==2); }
@@ -41,10 +42,12 @@ public:
     static DiscInfo parseStatus(const DriveIdentity &drive, const std::string &status, bool allowBlank = false);
     static void applyInitialProbe(DiscInfo &disc, const std::string &probe);
     static void applySessionAddresses(DiscInfo &disc, const std::string &msinfo);
+    static void applyRecordedTracks(DiscInfo &disc);
     static void checkInquiry(const DriveIdentity &drive, const std::string &inquiry);
     static void checkWriteCapabilities(DriveIdentity &drive, const std::string &info, const std::string &infoXml);
 };
-std::vector<std::string> recordingOptions(const DiscInfo &disc);
+std::vector<std::string> recordingOptions(const DiscInfo &disc, const std::string &filesystem = "iso9660+joliet");
+std::string recordingBackend(const DiscInfo &disc, const std::string &filesystem);
 class OpticalBlocks : public Blocks {
     DiscInfo disc_;
     fs::path directory_;
@@ -56,6 +59,7 @@ public:
     Block read(uint32_t lba) override;
     void prefetch(uint32_t lba, uint32_t count) override;
     void verifyCachedMetadata(Blocks &fresh);
+    std::vector<Range> recordedRanges() const override { return disc_.recorded; }
     fs::path snapshot() const { return directory_ / "disc-cache.iso"; }
 };
 void recordSession(const DiscInfo &disc, const fs::path &image, bool recovery = false);

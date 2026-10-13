@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run original six CTest groups with copied binaries in a fresh evidence root.
+"""Run all seven CTest groups with copied binaries in a fresh evidence root.
 
 The original Python suites remove their output folders; relocating the copied
 CLI keeps every historical artifact intact. No C++ source/build is modified.
@@ -17,10 +17,10 @@ evidence = pathlib.Path(os.environ.get('BURNLIGHT_EVIDENCE_DIR', str(root / 'gui
 evidence.mkdir(parents=True, exist_ok=True)
 scratch = pathlib.Path(tempfile.mkdtemp(prefix='burnlight-original-regression-', dir='/private/tmp'))
 bundle = scratch / 'Relocated Local.app'
-shutil.copytree(root / 'gui/output/BurnLight.app', bundle)
+shutil.copytree(pathlib.Path(os.environ.get('BURNLIGHT_TEST_APP', str(root / 'gui/output/BurnLight.app'))), bundle)
 build = bundle / 'Contents/MacOS'
 for name in ('backend_target_test', 'recovery_image_test', 'drive_selection_test'):
-    shutil.copy2(root / 'gui/.adapter-build' / name, build / name)
+    shutil.copy2(pathlib.Path(os.environ.get('BURNLIGHT_ADAPTER_BUILD', str(root / 'gui/.adapter-build'))) / name, build / name)
     for lib in ('libisofs.6.dylib', 'libudfread.3.dylib'):
         original = '/opt/homebrew/opt/' + ('libisofs' if lib.startswith('libisofs') else 'libudfread') + '/lib/' + lib
         subprocess.run(['/usr/bin/install_name_tool', '-change', original, '@executable_path/../Frameworks/' + lib, str(build / name)], check=True)
@@ -40,7 +40,7 @@ text = text.replace(str(definitions), str(build)).replace(str(root / 'artifacts/
 (build / 'CTestTestfile.cmake').write_text(text)
 process = subprocess.run(['ctest', '--test-dir', str(build), '--output-on-failure'], text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 (evidence / 'cli-regression.log').write_text(process.stdout)
-report = dict(exitCode=process.returncode, source='unchanged original six CTest definitions, bundled CLI and separately compiled core tests; drive_selection adds Session-address contradiction cases', bundledCLIsha256=hashlib.sha256((build / 'appendcd').read_bytes()).hexdigest(), scratch=str(scratch), physicalWrites=0, originalCLIsha256=hashlib.sha256((root / 'build/appendcd').read_bytes()).hexdigest())
+report = dict(exitCode=process.returncode, source='six existing CTest groups and VAT group, bundled CLI and separately compiled core tests; isolated fixture outputs', bundledCLIsha256=hashlib.sha256((build / 'appendcd').read_bytes()).hexdigest(), scratch=str(scratch), physicalWrites=0, originalCLIsha256=hashlib.sha256((root / 'build/appendcd').read_bytes()).hexdigest())
 (evidence / 'cli-regression.json').write_text(json.dumps(report, indent=2) + '\n')
 print(process.stdout)
 raise SystemExit(process.returncode)

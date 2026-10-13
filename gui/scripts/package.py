@@ -38,8 +38,18 @@ for name in ('appendcd-cdrecord', 'appendcd-initial-cdrecord'):
     provenance[name] = dict(source=str(source), sourceSHA256=digest(source), baseline=True)
 if digest(root / 'build/appendcd') != expected['build/appendcd']:
     raise SystemExit('Original CLI baseline mismatch')
+vat = pathlib.Path(os.environ.get('BURNLIGHT_VAT_BACKEND', str(root / 'build-vat-backend-v9/appendcd-vat-cdrecord')))
+if vat.exists():
+    version = subprocess.run([vat, '-version'], check=True, capture_output=True, text=True)
+    if '3.02a09-appendcd-vat9' not in version.stdout + version.stderr:
+        raise SystemExit('VAT packaging requires vat9 Session fixation; vat8 is rejected')
+    vat_provenance = json.loads((vat.parent / 'provenance.json').read_text())
+    if digest(vat) != vat_provenance['binarySha256']:
+        raise SystemExit('VAT backend provenance mismatch')
+    copy_binary(vat, macos / vat.name)
+    provenance[vat.name] = dict(source=str(vat), sourceSHA256=digest(vat), baseline=False, provenance=vat_provenance)
 for name in ('appendcd', 'burnlight-export'):
-    copy_binary(root / 'gui/.adapter-build' / name, macos / name)
+    copy_binary(pathlib.Path(os.environ.get('BURNLIGHT_ADAPTER_BUILD', str(root / 'gui/.adapter-build'))) / name, macos / name)
 copy_binary('/opt/homebrew/bin/readcd', macos / 'readcd')
 provenance['readcd'] = dict(source='/opt/homebrew/bin/readcd', sourceSHA256=digest(pathlib.Path('/opt/homebrew/bin/readcd')), baseline=False)
 libs = {pathlib.Path('/opt/homebrew/opt/libisofs/lib/libisofs.6.dylib'), pathlib.Path('/opt/homebrew/opt/libudfread/lib/libudfread.3.dylib')}
@@ -62,7 +72,7 @@ if write_flag not in ('0', '1'):
 config = dict(schema=2, cli='MacOS/appendcd', exportCLI='MacOS/burnlight-export', trustedFiles=trusted,
               recordDirectory='ApplicationSupport/Records', allowPhysicalWrites=write_flag == '1')
 (resources / 'LocalConfiguration.json').write_text(json.dumps(config, indent=2) + '\n')
-(resources / 'Provenance.json').write_text(json.dumps(dict(baseline=baseline['snapshot'], originalCLIsha256=expected['build/appendcd'], sources=provenance, architecture='arm64', minimumOS='26.0', bundledCLI='shared main/core with explicit conflict policy, consistent Session addresses and bounded compact-volume import; default collision rejection and generated-image checks preserved; bundle-relative runtimes'), indent=2) + '\n')
+(resources / 'Provenance.json').write_text(json.dumps(dict(baseline=baseline['snapshot'], originalCLIsha256=expected['build/appendcd'], sources=provenance, architecture='arm64', minimumOS='26.0', bundledCLI='shared main/core with UDF 2.01 VAT view binding, cross-Session recorded ranges, explicit conflicts and bounded compact-volume import; bundle-relative isolated runtimes'), indent=2) + '\n')
 shutil.copy2(root / 'gui/Resources/Usage.md', resources / 'Usage.md')
 notices = resources / 'ThirdPartyNotices'
 notices.mkdir(exist_ok=True)

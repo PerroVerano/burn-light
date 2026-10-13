@@ -62,9 +62,29 @@ public enum TextContract {
               try unsigned(f["Last session LBA"]!) <= UInt64(UInt32.max), try unsigned(f["Next writable LBA"]!) <= UInt64(UInt32.max), blocks <= UInt64(UInt32.max) else {
             throw GUIError.invalid("介质字段超出核心地址与 Track 范围")
         }
-        return try Disc(drive: selected, media: f["Media"]!, sessions: unsigned(f["Sessions"]!), tracks: unsigned(f["Tracks"]!), freeBytes: bytes,
+        var disc = try Disc(drive: selected, media: f["Media"]!, sessions: unsigned(f["Sessions"]!), tracks: unsigned(f["Tracks"]!), freeBytes: bytes,
                         appendable: flag(f["Appendable"]!), blank: flag(f["Blank"]!), unfinished: flag(f["Unfinished Session"]!),
                         lastLBA: unsigned(f["Last session LBA"]!), nextLBA: unsigned(f["Next writable LBA"]!))
+        let formats = records.filter { $0.hasPrefix("Filesystem: ") }
+        let views = records.filter { $0.hasPrefix("Filesystem view: ") }
+        let compatibility = records.filter { $0.hasPrefix("UDF compatibility: ") }
+        guard formats.count <= 1, views.count <= 1, compatibility.count <= 1 else { throw GUIError.invalid("文件系统绑定重复") }
+        if let line = formats.first {
+            let format = String(line.dropFirst(12))
+            guard ["udf1.02", "udf2.01+vat"].contains(format) else { throw GUIError.invalid("不支持的文件系统") }
+            disc.filesystem = format
+        }
+        if let line = views.first {
+            let view = String(line.dropFirst(17))
+            guard disc.filesystem == "udf2.01+vat", matches(view, "^[a-f0-9]{64}$") else { throw GUIError.invalid("无效的 VAT 事务绑定") }
+            disc.filesystemView = view
+        }
+        guard disc.filesystem != "udf2.01+vat" || disc.filesystemView != nil else { throw GUIError.invalid("缺少 VAT 事务绑定") }
+        if let line = compatibility.first {
+            guard disc.filesystem == "udf2.01+vat", line == "UDF compatibility: windows-fid-location-v1" else { throw GUIError.invalid("不支持的 UDF 兼容分支") }
+            disc.udfCompatibility = "windows-fid-location-v1"
+        }
+        return disc
     }
     public static func disc(_ result: CLIResult, selected: Drive) throws -> Disc {
         guard result.succeeded else { throw GUIError.invalid(result.authorizationCancelled ? "管理员认证已取消" : "介质检查未完成；请查看日志") }
@@ -77,7 +97,8 @@ public enum TextContract {
     static func knownHeader(_ line: String) -> Bool {
         if let split = line.range(of: ": "), discKeys.contains(String(line[..<split.lowerBound])) { return true }
         return line == "OPTICAL EXPORT VERIFIED" || line.hasPrefix("Evidence directory: ") || line.hasPrefix("Filesystem recognition: ") ||
-            matches(line, "^(ISO9660 PVD|Joliet SVD) LBA=[0-9]+ VolumeSpaceSize=[0-9]+ Root=[0-9]+ RootBytes=[0-9]+ PathTableBytes=[0-9]+ L=[0-9]+ M=[0-9]+$") || line.hasPrefix("UDF volume: ")
+            matches(line, "^(ISO9660 PVD|Joliet SVD) LBA=[0-9]+ VolumeSpaceSize=[0-9]+ Root=[0-9]+ RootBytes=[0-9]+ PathTableBytes=[0-9]+ L=[0-9]+ M=[0-9]+$") || line.hasPrefix("UDF volume: ") ||
+            matches(line, "^Filesystem: udf(1[.]02|2[.]01[+]vat)$") || matches(line, "^Filesystem view: [a-f0-9]{64}$") || line == "UDF compatibility: windows-fid-location-v1"
     }
     // C++ std::quoted 只转义反斜线和双引号；不能按空格拆分文件名。
     static func quoted(_ text: String) throws -> (String, String) {

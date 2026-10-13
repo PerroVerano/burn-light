@@ -1,0 +1,999 @@
+{
+  "schema": 1,
+  "phase": "PENDING_RESTART_AND_FRESH_PHYSICAL_GUI_VERIFICATION",
+  "recordedAt": "2026-10-12T16:00:11.535566+08:00",
+  "baseCommit": "b4899944d19d32ff82b89d9185e3dcce1227a38a",
+  "priorAcceptedStage": "docs/evidence/udf201-vat9-normal-burn-20261012.json",
+  "priorAcceptedStageSHA256": "eab515b0f63a42348aec8ea4d654a206706205dfb05191530904fa4870d57059",
+  "priorInstalledAcceptedPackageUnchanged": true,
+  "physicalWrites": 0,
+  "sourceHashes": {
+    "backend/CDDL.Schily.txt": "0770cbf84caf67c6e776ef1dcf89dc0cda47f8ede144f170a2850df9008739c7",
+    "backend/appendcd_backend.h": "ad1786cdf2607eae9a2f036a7adb0155a154a20dc48864ea9f8d67bfe753c724",
+    "backend/appendcd_identity.h": "f6dfaa09cae0afdb96b5885f3572e6edacb5299364fd9439fbcd212e8865cb80",
+    "gui/Adapter/CMakeLists.txt": "3b1e6c1a44e15cc7ec2dd219486522b6cd353acb35305a1fe8970236fb6b42a1",
+    "gui/Adapter/Export.cpp": "f99fc7246edb3a67a0e6782c8d3601b5f445da9296fd4e3057b8a0c901ed5084",
+    "gui/Adapter/RuntimePaths.hpp": "28bb10a244e98fe6ef30fe19c876119daa585a92251532d4b977aa3f8fbc72dc",
+    "gui/Sources/BurnLightApp/AppModel.swift": "5f9452128eb4e229ba2c13e80f64ebceeff6463cfb0e4ac342467b98e6c42b95",
+    "gui/Sources/BurnLightApp/BurnLightApp.swift": "d2492675f38c46c7f34fd9d510d09c18ccc5a02d9e2412b006cec92ab055af8f",
+    "gui/Sources/BurnLightApp/ContentView.swift": "527921c72364979051a50ff75e605c818484af0622eda0795cbfd1491059359c",
+    "gui/Sources/BurnLightCore/DiscExport.swift": "91601aa4d7707832c047e157a6b204d95ddcedf18e4eab68eeb098f3545e2206",
+    "gui/Sources/BurnLightCore/JobArchive.swift": "e6523344067bbff3b71dc10bd0e6f4c6732508d81953c0f461b7a168b493a78d",
+    "gui/Sources/BurnLightCore/JobStore.swift": "dc9eb6ecb203e8bc6bec7e69b357360bcb3f7c0b2e9981b8305ae857800aef7b",
+    "gui/Sources/BurnLightCore/Models.swift": "94b5b9d5cc02036203a3e25022cbf95bec1ad7f9df7c64a6defed97dacb05989",
+    "gui/Sources/BurnLightCore/Recovery.swift": "f496fb29590425c09d5f84839b8eb225535f040212730498e100ae84f278672f",
+    "gui/Sources/BurnLightCore/Runner.swift": "eb3a902161bd65ef20f27712adb8ef5960f9e2417942b54e2809bc2d5f0d5b65",
+    "gui/Sources/BurnLightCore/Staging.swift": "ff1a3d727af82efdf5335e1f3b11a2e1ce4094e185d4570eade53c36adaab87d",
+    "gui/Sources/BurnLightCore/TextContract.swift": "143cc8e87dcadc30b9d8f36561cb2190b632a8ae8f211e488b5a28e1fd3ea72e",
+    "gui/Validation/Fixtures/new-files/GUI data.txt": "98bb8492ab4e7281863c2b6905445e969af67b37b12e2589f45d0fc23a87bf04",
+    "gui/Validation/Fixtures/new-files/GUI只读预览.txt": "15693e4163ddb104e6c406784558dbe68f0c4e3b647886249a3ad9fcf4ddd770",
+    "gui/Validation/PhysicalFixtures/conflict-20261010/GUI-追加验收/receipt.txt": "30534f4c53ee31d8cbcc6a0d2c6833316a2740bbb330ee58531d447415a0b778",
+    "gui/Validation/ValidationMain.swift": "e5bc63db19a50ec6a234e7ef20f443adff97f0c80f813795f6a1e1b76e80de9b",
+    "gui/Validation/compact_session.py": "9d499aac1da2ff6efb61cc9d3bb44fbfd0560005d567cf8a5b2c1da27ba94ade",
+    "gui/Validation/conflict_offline.py": "a7907c545142e21688a6963250df655cb46e9a24df13d230ba849501002f18df",
+    "gui/Validation/export_offline.py": "478d68223dfa987e1a54e26235e6b78bb505f270042c7e7b984daf94067e6883",
+    "gui/Validation/physical_check.py": "df20c7f7e6cffad725461a2fda1925bd1230a6bd7f94b3518194ac30e1d929a0",
+    "gui/Validation/process_check.py": "6c7d294509a3fcccef7ab89c76450dc0815da248236d7875d3d32194a7c6b49e",
+    "gui/Validation/release_check.py": "eea24bb93fed335da025ceaa811282f03574998967989b6a707ea5d9401f87ed",
+    "gui/Validation/vat_export.py": "37eb1111ec3515343249b9c726433e5f5f7a5be70d4c2dad207cc4d99a9a8e98",
+    "gui/Validation/windows_return_check.py": "24c7f6fda4f6033a15103452b05af16e3daca400376cc63753a94357db955ddd",
+    "gui/scripts/build.sh": "dda9413010d2a66a97af2ac255d17b1ce02611648978298e11c15874074882d7",
+    "gui/scripts/cli-regression.py": "52ebf82b90a40903a5d5f2b90f0718d5e76e0a8525803f63f361c1ceeb34237f",
+    "gui/scripts/collect-evidence.py": "eac056d54b794fadc63a174a68b44230180edb85ea0014a9f96c39af96ed7c64",
+    "gui/scripts/icon-pack.py": "3127898492cb20fb14b7a028572b8d200f46e3597466fbfb209cababaf9a8236",
+    "gui/scripts/icon.swift": "44740d4ec114f6a45891b3502d15e87eb336746ed84d75079485e5a308662d31",
+    "gui/scripts/install-local.py": "41f3f52fa084b5e3be89601ff2b88a7427f6ca5d4ab182d8588077a41ce552bb",
+    "gui/scripts/package.py": "d8bb8550d7bc8b810784946bfbab1588c6d7cbcf386296ad9c311a26b418e13c",
+    "gui/scripts/release.sh": "fcdfb3bea71f3c6d9efbfc66c297ce89dc641c121859deb7d78a4a23e351f554",
+    "gui/scripts/restore-reference.py": "e9feaf3d4e43b41121b07974688fdd970d3c44272bfa6e56153d1288cbd52cd2",
+    "gui/scripts/test.sh": "530df33b8c38f121d345e4d291e6b0275252a385db921805f3cca848469d9b0c",
+    "scripts/admin-run.sh": "f9e6b1046371c98a1f182a50416b52359a7813b42b1d1d4c057e12f354380039",
+    "scripts/build-cdrecord.py": "efa40c8f51f0ac8a23e492ce719a1fad2b3328b10107d89461b5b03d53a987c0",
+    "scripts/windows-verify.ps1": "e7d76a1dd6a164a02e8fea184fa9384a27c56da2ebf1e85fc54b92f09aed930e",
+    "src/DiscScanner.cpp": "daceab7e0feed55602236e02a82fabdc981209f582bcb3b7a43dce54d209a2f4",
+    "src/DiscScanner.hpp": "a86d3af8fa995ef28c47f87577544d318dc2f43b3590a43d3f515371862d6d88",
+    "src/DiskArbitrationGuard.cpp": "0a0ffa21ed7530926380637b1b87db552dcadc9c38ce72a72e445eedabd9645d",
+    "src/DiskArbitrationGuard.hpp": "9e557a25a35e5cb0ac561b2cac6236545f5acdd6f49caad4112ec82b94fa8c58",
+    "src/GeneratedMetadata.cpp": "804153af850fdb55cdcae2a765004d94cfbe27e3f52b30f818ab882185658109",
+    "src/GeneratedMetadata.hpp": "9635d67df7cf40246a43e42a1522c158d1726918a38baa9fe1fb7e2de3605ef4",
+    "src/IsoCore.cpp": "281f34f92f86f236b1f21c0cd2f5fd2bcfd2b8c5334caca559ac49e8e4776663",
+    "src/IsoCore.hpp": "437b60b98d27baf7e092e0ddb703af46a3d456d6204095bee9638ed3d7536b0d",
+    "src/IsoInitial.cpp": "62b1c31d70b5599c9b27d730bce06692d93429a1c45b75fa365a29ae207481f5",
+    "src/IsoVerifier.cpp": "d1958aca171a0b49d482f13a353b0ea957cd378aef43e53e2df6025f26dcf092",
+    "src/IsoVerifier.hpp": "79220aebc4da82199304d0c30c76208a3b47eeb42c67ed54e018713c5a3711de",
+    "src/OpticalDrive.cpp": "1deb675239d3ce4fe44df821a7a4e8e82bc2491bf3717463e1e11981e4a5daf4",
+    "src/OpticalDrive.hpp": "58437e9de4610390cd6adfd2152b89bae37ffddad26986a85f0f3213d3cb2148",
+    "src/UdfReader.cpp": "28d3113941ff2fedf5fc343d68f25a5ee88ce7cca573ab1ef75702a4b06131ef",
+    "src/UdfReader.hpp": "ea245ec57f5aaa4176135c5d13606ce2c9dec68a102ffd259a9f2709c743ff48",
+    "src/UdfSession.cpp": "17971b356075ffe536f45c87eb670d140052a13af3237ad9204ea62359c2b9ee",
+    "src/UdfSession.hpp": "0ae7a4a5baf99dd020a37e4997f6eb5bd7b2338fddeff01c3f6628279c8ae049",
+    "src/UdfVat.cpp": "9a3cdeb74678b14ae6800a9d8c3b7249dac8323c2fafe595b61621fff95719b5",
+    "src/UdfVat.hpp": "67a4dbce7a0e6e21d17937a5112388a66e7363ff2bf2cfdc8d10d54797a298b0",
+    "src/Util.cpp": "f4b60701091fcfbc4b0fbc9919d62f9636e6e5a53dbe9a5c3275d59598654743",
+    "src/Util.hpp": "d150760e02f3fcee1530951d0763b586decc9bb169d64438077ff2c223717e8d",
+    "src/main.cpp": "e74c4014545765914369ee51a09c72da08531289d0815df50bba5ba75b7c3517",
+    "tests/backend_target.cpp": "ca3bb56d38e190c9b939c51a6ecce9471a5077d3b6ed9f7f9d6e45b3239414a7",
+    "tests/drive_selection.cpp": "40ffb7be8535a675a63bcd62c5c1d7e1b92723c525a70e052da2ce1e707974ff",
+    "tests/guard_recovery.cpp": "39b251677666762eb15bbf09f7c9e3632533362cf97596f4d8896065c8f44ad9",
+    "tests/initial.py": "e4a1a75f9e90235345559bca54064cec09bb54016008043e299977f94835f289",
+    "tests/offline.py": "8b14dda32f97a76fdfbf66f37ad77d7fe31d95337151c5a3aaadade05d82c52f",
+    "tests/recovery_image.cpp": "519935aee2aa0caa12451f888c612b39ed6ef3ec2a136edd60912866941b6e54",
+    "tests/udf_offline.py": "bf5b8a34ada882910f0315a44434581c0d649cc891586e594d1c298a07219e44",
+    "tests/vat_fixture.py": "a735f04934c7d45cfd6a4720ea7dfebe1f82b278ceb3c05dfd5235f1113495c1",
+    "tests/vat_offline.py": "563028f45d833c39678f33aa6f3fc65e729c85007374ca788da1268d40492959",
+    "tests/vat_oracle.py": "ed83ee729146651fb85608305ca1c20ec62a5e5916f3739feb5029d4b548858a",
+    "CMakeLists.txt": "359f25fa32db25772853f5e39b99eb6479f8ed0f8d3c738f57b246f0b0b6ac31"
+  },
+  "sourceAggregateSHA256": "48b2632fbc4e6445dbbcf3c6b1e660f2cc0c3d4c30482830be50c845600cf84e",
+  "changedSourcesSincePriorStage": [
+    "gui/Validation/vat_export.py",
+    "src/OpticalDrive.cpp",
+    "src/UdfVat.cpp",
+    "tests/vat_fixture.py",
+    "tests/vat_offline.py",
+    "tests/vat_oracle.py"
+  ],
+  "preservedPriorSourceFiles": {
+    "gui/Validation/vat_export.py": "artifacts/udf201-gui-fix/20261012-151937/before-source/gui/Validation/vat_export.py",
+    "src/OpticalDrive.cpp": "artifacts/udf201-gui-fix/20261012-151937/before-source/src/OpticalDrive.cpp",
+    "src/UdfVat.cpp": "artifacts/udf201-gui-fix/20261012-151937/before-source/src/UdfVat.cpp",
+    "tests/vat_fixture.py": "artifacts/udf201-gui-fix/20261012-151937/before-source/tests/vat_fixture.py",
+    "tests/vat_offline.py": "artifacts/udf201-gui-fix/20261012-151937/before-source/tests/vat_offline.py",
+    "tests/vat_oracle.py": "artifacts/udf201-gui-fix/20261012-151937/before-source/tests/vat_oracle.py"
+  },
+  "buildHashes": {
+    "build-udf201-history-cli/appendcd": "e653b46ab2c97082074596c612725ff4f776446b9d2efb1067a51bb4a6491f6e",
+    "build-udf201-history-cli/libappendcore.a": "6078f09c5251d9bae1e3364cdab0e338da025bf67ff7bae8f05dfb83ea1d4a23",
+    "build-udf201-history-cli/CMakeCache.txt": "2dd9c96195f42db8d6a3fefa25e00b01c0edb8cecfadb4886804a63b8654a06b",
+    "build-udf201-history-asan/appendcd": "8153768ebbe7030f6d3798d8ed2058e6c0d5d73236e3f6da9eac746ef5630899",
+    "build-udf201-history-asan/CMakeCache.txt": "8d8c04f24ca1c8d7051535a26613c5476506a256640e9e2f3caddd746af24698"
+  },
+  "protectedBaseline": {
+    "/Users/luzove/Documents/Projects/BurnLight/build/appendcd": {
+      "expected": "306bfd58e78847e2ed9d157849c8269a2f6ca04912fcd185ef3f35a443b2a587",
+      "actual": "306bfd58e78847e2ed9d157849c8269a2f6ca04912fcd185ef3f35a443b2a587",
+      "match": true
+    },
+    "/Users/luzove/.local/libexec/appendcd/appendcd-cdrecord": {
+      "expected": "588515140fb7e5f74dc064f31f561a6a96be8178cda5f414e0f16ada44e63d17",
+      "actual": "588515140fb7e5f74dc064f31f561a6a96be8178cda5f414e0f16ada44e63d17",
+      "match": true
+    },
+    "/Users/luzove/.local/libexec/appendcd/appendcd-initial-cdrecord": {
+      "expected": "c8c69b90718bdeb02dee95810b0a3f1be9e1df6e3334f2eeb339a0ec4c4c424e",
+      "actual": "c8c69b90718bdeb02dee95810b0a3f1be9e1df6e3334f2eeb339a0ec4c4c424e",
+      "match": true
+    },
+    "/Users/luzove/.local/libexec/appendcd/provenance.json": {
+      "expected": "db99da46240c8bcceb83b7f044b2f112fab4bed4fef9f6df3a3a400362e28d06",
+      "actual": "db99da46240c8bcceb83b7f044b2f112fab4bed4fef9f6df3a3a400362e28d06",
+      "match": true
+    },
+    "/Users/luzove/.local/libexec/appendcd/initial-provenance.json": {
+      "expected": "70714194d3cf604b9bd677546ab3c3e36f3d7258d0abf3c73e3ecfdb2c5aeb9c",
+      "actual": "70714194d3cf604b9bd677546ab3c3e36f3d7258d0abf3c73e3ecfdb2c5aeb9c",
+      "match": true
+    }
+  },
+  "installedApp": "/Users/luzove/Applications/BurnLight.app",
+  "installedTrustedHashes": {
+    "Frameworks/libisofs.6.dylib": "c718e7b716cd51cd19f58183d3117241366dff0bb8d5a9dd66aedcbdb2ac08ec",
+    "Frameworks/libudfread.3.dylib": "d77a290a6c72bd3c558284fb500d38ddab9399362f2bb0cb2ab6c2150bfd8580",
+    "MacOS/appendcd": "c612f300155c803464391bb9e9bcbf52b24febde15ceb19c47efe29398ce41e7",
+    "MacOS/appendcd-cdrecord": "11c4f0d0bca59d5fb1e1efea706aabfb228681df32cea66cd0ee48009d8879ec",
+    "MacOS/appendcd-initial-cdrecord": "60a8f03459c5d4ba6adbaa5bfd4a24e3afcbd7b021f97129ccc3cf95c568911d",
+    "MacOS/appendcd-vat-cdrecord": "7a7fcb81577d48fab581160dfb59661275a002f11905f191042a585332ed1026",
+    "MacOS/burnlight-export": "c311c5789d5b8187ec9b90649f799835835a775814a3f476f789007342cde5e3",
+    "MacOS/readcd": "b9679cc60652aa9ebbcffb0200f469865ddedbd46e2849115b70eeaeb69f4c18"
+  },
+  "newGUIBuild": "NOT_RUN_ACTIVE_READ_DIAGNOSTIC_BLOCKED",
+  "newGUIInstall": "NOT_RUN",
+  "actualCurrentSixSessionRead": "NOT_PASS_PENDING_VALID_HISTORICAL_METADATA_AND_FRESH_FULL_READ",
+  "originalGUIFailureRecord": {
+    "archivePath": "/Users/luzove/Library/Application Support/BurnLight/Archives/B1BD6FA1-C5D0-4BE1-82FE-3560BB8315E9",
+    "conflictPolicy": "reject",
+    "created": "2026-10-12T07:14:44Z",
+    "device": {
+      "bsdNode": "/dev/disk4",
+      "device": "1,0,0",
+      "media": "CD-R",
+      "name": "Lenovo Ultraslim DVD XL6M",
+      "registryID": "4295078831"
+    },
+    "id": "B1BD6FA1-C5D0-4BE1-82FE-3560BB8315E9",
+    "message": "介质检查未完成；请查看日志",
+    "operation": "inspect",
+    "phase": "failed",
+    "workspacePath": "/private/tmp/burnlight-job-B1BD6FA1-C5D0-4BE1-82FE-3560BB8315E9"
+  },
+  "originalFailureBaseline": {
+    "source": "/Users/luzove/Library/Application Support/BurnLight/Archives/B1BD6FA1-C5D0-4BE1-82FE-3560BB8315E9/workspace/optical/run-OOU78G/before-read",
+    "GUIRecord": "/Users/luzove/Library/Application Support/BurnLight/Records/B1BD6FA1-C5D0-4BE1-82FE-3560BB8315E9.json",
+    "installedCLIsha256": "c612f300155c803464391bb9e9bcbf52b24febde15ceb19c47efe29398ce41e7",
+    "physicalWrites": 0,
+    "humanReport": "在 Windows 资源管理器追加了文件",
+    "completedSessions": 6,
+    "last": 133718,
+    "next": 140918,
+    "cacheValidBlocks": 329
+  },
+  "actualPartialMetadataAnalysis": {
+    "recordedRanges": [
+      [
+        0,
+        352,
+        1,
+        1
+      ],
+      [
+        11754,
+        12330,
+        2,
+        2
+      ],
+      [
+        19232,
+        19532,
+        3,
+        3
+      ],
+      [
+        26434,
+        27010,
+        4,
+        4
+      ],
+      [
+        33912,
+        126816,
+        5,
+        5
+      ],
+      [
+        133718,
+        134016,
+        6,
+        6
+      ]
+    ],
+    "files": {},
+    "directories": {
+      "/": {
+        "node": {
+          "icb": 133984,
+          "type": 4,
+          "unique": 0,
+          "kind": 261,
+          "size": 10364,
+          "writer": "*Microsoft Windows",
+          "flags": 1
+        },
+        "virtual": 466,
+        "records": [
+          {
+            "name": "",
+            "byte": 0,
+            "flags": 10,
+            "recorded": 26435,
+            "expected": 26435,
+            "childVirtual": 466,
+            "childActual": 133984,
+            "fidUnique": 0,
+            "history": [
+              {
+                "vat": 126815,
+                "childMap": 60544,
+                "metadata": "not cached"
+              },
+              {
+                "vat": 27009,
+                "childMap": 26441,
+                "directoryICB": 26729,
+                "directoryUnique": 0,
+                "directoryWriter": "*appendcd",
+                "equalFID": true,
+                "expected": 26435
+              },
+              {
+                "vat": 19531,
+                "childMap": null
+              },
+              {
+                "vat": 12329,
+                "childMap": null
+              },
+              {
+                "vat": 351,
+                "childMap": null
+              },
+              {
+                "vat": 319,
+                "childMap": null
+              }
+            ],
+            "icbLength": 2048,
+            "reference": 1,
+            "implementationBytes": 2008,
+            "child": {
+              "icb": 133984,
+              "type": 4,
+              "unique": 0,
+              "kind": 261,
+              "size": 10364,
+              "writer": "*Microsoft Windows",
+              "flags": 1
+            }
+          },
+          {
+            "name": "20261010更新步骤.docx",
+            "byte": 2048,
+            "flags": 0,
+            "recorded": 26436,
+            "expected": 26436,
+            "childVirtual": 2,
+            "childActual": 336,
+            "fidUnique": 16,
+            "history": [
+              {
+                "vat": 126815,
+                "childMap": 48,
+                "metadata": "not cached"
+              },
+              {
+                "vat": 27009,
+                "childMap": 48,
+                "directoryICB": 26729,
+                "directoryUnique": 0,
+                "directoryWriter": "*appendcd",
+                "equalFID": true,
+                "expected": 26436
+              },
+              {
+                "vat": 19531,
+                "childMap": 48
+              },
+              {
+                "vat": 12329,
+                "childMap": 48
+              },
+              {
+                "vat": 351,
+                "childMap": 48
+              },
+              {
+                "vat": 319,
+                "childMap": null
+              }
+            ],
+            "icbLength": 2048,
+            "reference": 1,
+            "implementationBytes": 1972,
+            "child": {
+              "icb": 336,
+              "type": 5,
+              "unique": 16,
+              "kind": 266,
+              "size": 14336,
+              "writer": "*Microsoft Windows",
+              "flags": 1
+            }
+          },
+          {
+            "name": "MybatisCodeHelperConfig.json",
+            "byte": 4096,
+            "flags": 0,
+            "recorded": 26437,
+            "expected": 26437,
+            "childVirtual": 424,
+            "childActual": 19506,
+            "fidUnique": 18,
+            "history": [
+              {
+                "vat": 126815,
+                "childMap": 19218,
+                "metadata": "not cached"
+              },
+              {
+                "vat": 27009,
+                "childMap": 19218,
+                "directoryICB": 26729,
+                "directoryUnique": 0,
+                "directoryWriter": "*appendcd",
+                "equalFID": true,
+                "expected": 26437
+              },
+              {
+                "vat": 19531,
+                "childMap": 19218
+              },
+              {
+                "vat": 12329,
+                "childMap": null
+              },
+              {
+                "vat": 351,
+                "childMap": null
+              },
+              {
+                "vat": 319,
+                "childMap": null
+              }
+            ],
+            "icbLength": 2048,
+            "reference": 1,
+            "implementationBytes": 1952,
+            "child": {
+              "icb": 19506,
+              "type": 5,
+              "unique": 18,
+              "kind": 266,
+              "size": 11266,
+              "writer": "*Microsoft Windows",
+              "flags": 1
+            }
+          },
+          {
+            "name": "burnlight-vat-mac-20261012.txt",
+            "byte": 6144,
+            "flags": 0,
+            "recorded": 26438,
+            "expected": 26438,
+            "childVirtual": 423,
+            "childActual": 19505,
+            "fidUnique": 17,
+            "history": [
+              {
+                "vat": 126815,
+                "childMap": 19217,
+                "metadata": "not cached"
+              },
+              {
+                "vat": 27009,
+                "childMap": 19217,
+                "directoryICB": 26729,
+                "directoryUnique": 0,
+                "directoryWriter": "*appendcd",
+                "equalFID": true,
+                "expected": 26438
+              },
+              {
+                "vat": 19531,
+                "childMap": 19217
+              },
+              {
+                "vat": 12329,
+                "childMap": 11760
+              },
+              {
+                "vat": 351,
+                "childMap": null
+              },
+              {
+                "vat": 319,
+                "childMap": null
+              }
+            ],
+            "icbLength": 2048,
+            "reference": 1,
+            "implementationBytes": 1948,
+            "child": {
+              "icb": 19505,
+              "type": 5,
+              "unique": 17,
+              "kind": 261,
+              "size": 56,
+              "writer": "*appendcd",
+              "flags": 1
+            }
+          },
+          {
+            "name": "burnlight-vat-post-windows-offline.txt",
+            "byte": 8192,
+            "flags": 0,
+            "recorded": 26439,
+            "expected": 133694,
+            "childVirtual": 467,
+            "childActual": 133985,
+            "fidUnique": 19,
+            "history": [
+              {
+                "vat": 126815,
+                "childMap": 60545,
+                "metadata": "not cached"
+              },
+              {
+                "vat": 27009,
+                "childMap": 26442,
+                "directoryICB": 26729,
+                "directoryUnique": 0,
+                "directoryWriter": "*appendcd",
+                "equalFID": true,
+                "expected": 26439
+              },
+              {
+                "vat": 19531,
+                "childMap": null
+              },
+              {
+                "vat": 12329,
+                "childMap": null
+              },
+              {
+                "vat": 351,
+                "childMap": null
+              },
+              {
+                "vat": 319,
+                "childMap": null
+              }
+            ],
+            "icbLength": 2048,
+            "reference": 1,
+            "implementationBytes": 1932,
+            "child": {
+              "icb": 133985,
+              "type": 5,
+              "unique": 19,
+              "kind": 261,
+              "size": 46,
+              "writer": "*appendcd",
+              "flags": 1
+            }
+          },
+          {
+            "name": "lssjk.jar",
+            "byte": 10240,
+            "flags": 0,
+            "recorded": 0,
+            "expected": 133695,
+            "childVirtual": 468,
+            "childActual": 126782,
+            "fidUnique": 20,
+            "history": [
+              {
+                "vat": 126815,
+                "childMap": 126494,
+                "metadata": "not cached"
+              },
+              {
+                "vat": 27009,
+                "childMap": null,
+                "directoryICB": 26729,
+                "directoryUnique": 0,
+                "directoryWriter": "*appendcd",
+                "equalFID": false,
+                "expected": null
+              },
+              {
+                "vat": 19531,
+                "childMap": null
+              },
+              {
+                "vat": 12329,
+                "childMap": null
+              },
+              {
+                "vat": 351,
+                "childMap": null
+              },
+              {
+                "vat": 319,
+                "childMap": null
+              }
+            ],
+            "icbLength": 2048,
+            "reference": 1,
+            "implementationBytes": 0,
+            "child": "not yet cached"
+          },
+          {
+            "name": "BAD:ff007e002400320036003100300031003066f465b06b659aa4002e0064006f00630078",
+            "byte": 10288,
+            "flags": 5,
+            "recorded": 0,
+            "expected": 133695,
+            "childVirtual": 0,
+            "childActual": 26722,
+            "fidUnique": 0,
+            "history": [
+              {
+                "vat": 126815,
+                "childMap": 26434,
+                "metadata": "not cached"
+              },
+              {
+                "vat": 27009,
+                "childMap": 26434,
+                "directoryICB": 26729,
+                "directoryUnique": 0,
+                "directoryWriter": "*appendcd",
+                "equalFID": false,
+                "expected": null
+              },
+              {
+                "vat": 19531,
+                "childMap": 11754
+              },
+              {
+                "vat": 12329,
+                "childMap": 11754
+              },
+              {
+                "vat": 351,
+                "childMap": 46
+              },
+              {
+                "vat": 319,
+                "childMap": 1
+              }
+            ],
+            "icbLength": 0,
+            "reference": 0,
+            "implementationBytes": 0,
+            "child": "deleted FID, no ICB dereference"
+          }
+        ]
+      }
+    },
+    "missingBlocks": [
+      45440,
+      45440,
+      45440,
+      45440,
+      45440,
+      126782,
+      45440,
+      45440
+    ],
+    "anchor": 133974,
+    "vds": 26466,
+    "partition": 288,
+    "VATChain": [
+      {
+        "icb": 134015,
+        "entries": 978,
+        "writer": "*Microsoft Windows"
+      },
+      {
+        "icb": 126815,
+        "entries": 978,
+        "writer": "*Microsoft Windows"
+      },
+      {
+        "icb": 27009,
+        "entries": 468,
+        "writer": "*appendcd"
+      },
+      {
+        "icb": 19531,
+        "entries": 466,
+        "writer": "*Microsoft Windows"
+      },
+      {
+        "icb": 12329,
+        "entries": 424,
+        "writer": "*appendcd"
+      },
+      {
+        "icb": 351,
+        "entries": 422,
+        "writer": "*Microsoft Windows"
+      },
+      {
+        "icb": 319,
+        "entries": 2,
+        "writer": "*Microsoft Windows"
+      }
+    ],
+    "olderDirectoryMetadata": [
+      {
+        "vat": 126815,
+        "node": {
+          "icb": 60832,
+          "type": 4,
+          "unique": 0,
+          "kind": 261,
+          "size": 10288,
+          "writer": "*Microsoft Windows",
+          "flags": 1
+        },
+        "dataLBAs": [
+          26723,
+          26724,
+          26725,
+          26726,
+          45440,
+          45441
+        ]
+      },
+      {
+        "vat": 27009,
+        "node": {
+          "icb": 26729,
+          "type": 4,
+          "unique": 0,
+          "kind": 261,
+          "size": 10240,
+          "writer": "*appendcd",
+          "flags": 1
+        },
+        "dataLBAs": [
+          26723,
+          26724,
+          26725,
+          26726,
+          26727
+        ]
+      }
+    ]
+  },
+  "metadataReadOperation": {
+    "recordedAt": "2026-10-12T15:54:54.413146+08:00",
+    "bootSessionUUID": "5AD91AB9-EDCB-4BC1-A913-764461443275",
+    "physicalMarker": {
+      "jobDirectory": "/private/tmp/burnlight-fid-meta-ewm6lw8a",
+      "started": "2026-10-12T07:32:03.679405+00:00",
+      "operation": "three-block read-only forensic metadata capture"
+    },
+    "physicalWrites": 0,
+    "captureStarted": false,
+    "GUIInstalledUpdate": "PENDING_KNOWN_WORKER_EXIT_AND_ACTUAL_READ",
+    "userReply": "好的，稍后我会重启",
+    "helperSourceSHA256": "fcd2bd368d96412ebb68f1ad0cc08db31074a34d53f16fa15831f88a1f8f5782",
+    "helperBinarySHA256": "7ff34b075a8d797144d9ca850341d55bf0b9e2ba0bb2f0efb66abb7c152c365d",
+    "actualLinkedCoreSHA256": "b93a498e92bbfdffebac8b99673a5a222c53d2655a2258d675f831e91814cc4a",
+    "bindingCaveat": "Helper statically linked before UDF repair; live library path later rebuilt for offline tests. Actual pre-build library snapshot retained.",
+    "relatedProcesses": [
+      "  367     1 Ss   /usr/libexec/diskarbitrationd",
+      "53634 53633 S    /private/tmp/burnlight-gui-fid-read",
+      "53635 53634 ?E   (drutil)"
+    ]
+  },
+  "checks": {
+    "offline": {
+      "input": "independent encoded supported VAT layouts and original regression suite",
+      "evidence": "artifacts/udf201-gui-fix/20261012-151937/cli-ctest.log",
+      "evidenceSHA256": "fa3416856cd6f15d74d6a66d35ab842ceb965d51c3c855d59360d8fb4c90de76",
+      "buildSHA256": "e653b46ab2c97082074596c612725ff4f776446b9d2efb1067a51bb4a6491f6e",
+      "result": "PASS_7_OF_7"
+    },
+    "vat": {
+      "input": "independent encoded supported VAT layouts and original regression suite",
+      "evidence": "artifacts/udf201-gui-fix/20261012-151937/cli-vat-result.json",
+      "evidenceSHA256": "0c5a6318cc70a3f7d004ed72c715330efef84f17106a089390fee28a11933b29",
+      "buildSHA256": "e653b46ab2c97082074596c612725ff4f776446b9d2efb1067a51bb4a6491f6e",
+      "result": "PASS_89"
+    },
+    "asan": {
+      "input": "independent encoded supported VAT layouts and original regression suite",
+      "evidence": "artifacts/udf201-gui-fix/20261012-151937/asan-ctest.log",
+      "evidenceSHA256": "dd0dce7dd0e26bc3f3e3f6b2ca65227329b1c423da2dee3f8e743c15ee587f67",
+      "buildSHA256": "8153768ebbe7030f6d3798d8ed2058e6c0d5d73236e3f6da9eac746ef5630899",
+      "result": "PASS_7_OF_7"
+    },
+    "asan-vat": {
+      "input": "independent encoded supported VAT layouts and original regression suite",
+      "evidence": "artifacts/udf201-gui-fix/20261012-151937/asan-vat-result.json",
+      "evidenceSHA256": "8a271d1d0be8c3a852f6a70c393bf3659b82f1a8c255ff282265fc8a09e3057c",
+      "buildSHA256": "8153768ebbe7030f6d3798d8ed2058e6c0d5d73236e3f6da9eac746ef5630899",
+      "result": "PASS_89"
+    }
+  },
+  "vat": {
+    "result": "PASS",
+    "count": 89,
+    "checks": [
+      "eight-session Anchor uses sixth-session absolute VDS",
+      "latest+32 contains no VDS",
+      "old inline content read from original ICB",
+      "old physical payload hash",
+      "Chinese nested directory and empty file",
+      "multiple VAT transactions in one physical Session",
+      "wrong entry rejected against recorded latest Session",
+      "independent historical view has explicit difference",
+      "independent single-session UDF 2.01",
+      "cross-Session directory allocations and packed final FIDs",
+      "independent split-directory contents equal original fixture",
+      "CRC-valid relocated FID with stale Tag Location is rejected",
+      "CRC-valid new FID with zero Tag Location is rejected",
+      "independent oracle also rejects both Windows-return FID defects",
+      "Windows compatibility requires exact previous-VAT directory provenance",
+      "independent compatibility oracle reports both deviations explicitly",
+      "strict conformance oracle remains distinct from authorized compatibility",
+      "Windows copied FID must exactly match historical record",
+      "Windows zero FID without proven relocation profile",
+      "Windows profile cannot be selected by arbitrary VAT writer",
+      "Windows compatibility still rejects CRC corruption",
+      "Windows zero FID requires current Microsoft EFE",
+      "Windows compatibility cannot bypass FID UniqueID binding",
+      "Windows following Session retains original zero-FID file ICB",
+      "independent origin proof preserves every carried payload and excludes deleted tombstone",
+      "linked Windows VAT transactions inside same physical Session preserve zero FID",
+      "independent same-Session transaction namespace",
+      "carried Windows compatibility still not strict conformance",
+      "carried zero FID must exactly equal origin bytes",
+      "carried origin must be a Microsoft VAT",
+      "carried origin directory must be Microsoft metadata",
+      "carried child UniqueID cannot change",
+      "carried origin cannot claim a virtual ICB allocated in an older VAT",
+      "carried provenance cannot use a missing historical cache block",
+      "strict deleted zero ICB and compression IDs 254/255 not live names",
+      "independent strict deleted FID namespace",
+      "deleted FID invalid ICB rejected",
+      "deleted FID invalid name rejected",
+      "deleted FID invalid flags rejected",
+      "deleted FID still needs valid CRC",
+      "rebased-vds",
+      "track-gap",
+      "future-blank-track",
+      "overflow",
+      "reserve recovery retains current VAT",
+      "both VDS fail",
+      "anchor-crc",
+      "anchor-checksum",
+      "vat-crc",
+      "vat-checksum",
+      "VAT location uses physical partition offset",
+      "truncated VAT",
+      "invalid VAT mapping",
+      "VAT history cycle",
+      "directory/parent cycle",
+      "VAT-mapped payload-gap",
+      "VAT-mapped payload-future",
+      "unknown nonzero tail cannot hide latest VAT",
+      "unsupported map-number",
+      "unsupported map-identifier",
+      "unsupported external EA ICB",
+      "independent physical allocation continuation",
+      "allocation continuation cycle",
+      "latest VAT removed rejects history",
+      "missing sparse cache blocks",
+      "truncated recorded-range map",
+      "overflow sparse validity entry",
+      "append from compatible Windows view generates strictly valid new directory",
+      "Windows compatible source retains every old payload and inline ICB",
+      "append from carried zero FID and tombstone view creates strict new directory",
+      "VAT append independently reparsed/verified",
+      "independent Python parser validates tags/end layout/VAT history",
+      "independent payload and original ICB byte addresses",
+      "all unchanged extents and inline addresses retained",
+      "old payload not written to continuation",
+      "DS_Store excluded",
+      "latest differs from earlier VAT",
+      "two consecutive appends retain all generations",
+      "independent second append preserves previous transaction",
+      "external VAT generated and independently read",
+      "external VAT core reader and empty files",
+      "UniqueID lower-32 rollover skips reserved range",
+      "single-session append independent composite",
+      "default conflicts rejected",
+      "skip inline original address/content semantics",
+      "skip unrelated old extent preserved",
+      "replace inline original address/content semantics",
+      "replace unrelated old extent preserved",
+      "preview VAT identity rejects stale transaction"
+    ],
+    "cliSHA256": "e653b46ab2c97082074596c612725ff4f776446b9d2efb1067a51bb4a6491f6e",
+    "scratch": "/var/folders/zw/7qwcyhnj29x26hvtqlbtnxhm0000gn/T/burnlight-vat-jd9r2a38",
+    "physicalWrites": 0,
+    "fixture": "tests/vat_fixture.py independent encoder"
+  },
+  "asanVat": {
+    "result": "PASS",
+    "count": 89,
+    "checks": [
+      "eight-session Anchor uses sixth-session absolute VDS",
+      "latest+32 contains no VDS",
+      "old inline content read from original ICB",
+      "old physical payload hash",
+      "Chinese nested directory and empty file",
+      "multiple VAT transactions in one physical Session",
+      "wrong entry rejected against recorded latest Session",
+      "independent historical view has explicit difference",
+      "independent single-session UDF 2.01",
+      "cross-Session directory allocations and packed final FIDs",
+      "independent split-directory contents equal original fixture",
+      "CRC-valid relocated FID with stale Tag Location is rejected",
+      "CRC-valid new FID with zero Tag Location is rejected",
+      "independent oracle also rejects both Windows-return FID defects",
+      "Windows compatibility requires exact previous-VAT directory provenance",
+      "independent compatibility oracle reports both deviations explicitly",
+      "strict conformance oracle remains distinct from authorized compatibility",
+      "Windows copied FID must exactly match historical record",
+      "Windows zero FID without proven relocation profile",
+      "Windows profile cannot be selected by arbitrary VAT writer",
+      "Windows compatibility still rejects CRC corruption",
+      "Windows zero FID requires current Microsoft EFE",
+      "Windows compatibility cannot bypass FID UniqueID binding",
+      "Windows following Session retains original zero-FID file ICB",
+      "independent origin proof preserves every carried payload and excludes deleted tombstone",
+      "linked Windows VAT transactions inside same physical Session preserve zero FID",
+      "independent same-Session transaction namespace",
+      "carried Windows compatibility still not strict conformance",
+      "carried zero FID must exactly equal origin bytes",
+      "carried origin must be a Microsoft VAT",
+      "carried origin directory must be Microsoft metadata",
+      "carried child UniqueID cannot change",
+      "carried origin cannot claim a virtual ICB allocated in an older VAT",
+      "carried provenance cannot use a missing historical cache block",
+      "strict deleted zero ICB and compression IDs 254/255 not live names",
+      "independent strict deleted FID namespace",
+      "deleted FID invalid ICB rejected",
+      "deleted FID invalid name rejected",
+      "deleted FID invalid flags rejected",
+      "deleted FID still needs valid CRC",
+      "rebased-vds",
+      "track-gap",
+      "future-blank-track",
+      "overflow",
+      "reserve recovery retains current VAT",
+      "both VDS fail",
+      "anchor-crc",
+      "anchor-checksum",
+      "vat-crc",
+      "vat-checksum",
+      "VAT location uses physical partition offset",
+      "truncated VAT",
+      "invalid VAT mapping",
+      "VAT history cycle",
+      "directory/parent cycle",
+      "VAT-mapped payload-gap",
+      "VAT-mapped payload-future",
+      "unknown nonzero tail cannot hide latest VAT",
+      "unsupported map-number",
+      "unsupported map-identifier",
+      "unsupported external EA ICB",
+      "independent physical allocation continuation",
+      "allocation continuation cycle",
+      "latest VAT removed rejects history",
+      "missing sparse cache blocks",
+      "truncated recorded-range map",
+      "overflow sparse validity entry",
+      "append from compatible Windows view generates strictly valid new directory",
+      "Windows compatible source retains every old payload and inline ICB",
+      "append from carried zero FID and tombstone view creates strict new directory",
+      "VAT append independently reparsed/verified",
+      "independent Python parser validates tags/end layout/VAT history",
+      "independent payload and original ICB byte addresses",
+      "all unchanged extents and inline addresses retained",
+      "old payload not written to continuation",
+      "DS_Store excluded",
+      "latest differs from earlier VAT",
+      "two consecutive appends retain all generations",
+      "independent second append preserves previous transaction",
+      "external VAT generated and independently read",
+      "external VAT core reader and empty files",
+      "UniqueID lower-32 rollover skips reserved range",
+      "single-session append independent composite",
+      "default conflicts rejected",
+      "skip inline original address/content semantics",
+      "skip unrelated old extent preserved",
+      "replace inline original address/content semantics",
+      "replace unrelated old extent preserved",
+      "preview VAT identity rejects stale transaction"
+    ],
+    "cliSHA256": "8153768ebbe7030f6d3798d8ed2058e6c0d5d73236e3f6da9eac746ef5630899",
+    "scratch": "/var/folders/zw/7qwcyhnj29x26hvtqlbtnxhm0000gn/T/burnlight-vat-5n1pcbf_",
+    "physicalWrites": 0,
+    "fixture": "tests/vat_fixture.py independent encoder"
+  },
+  "sanitizers": {
+    "ASAN_OPTIONS": "detect_leaks=0",
+    "UBSAN_OPTIONS": "halt_on_error=1",
+    "leakDetection": "NOT_SUPPORTED_NOT_PASS"
+  },
+  "GUIValidation": "new sixth offline adapter export case added, not yet executed; historical 146 assertions not reused as new PASS",
+  "nextRequiredSteps": [
+    "verify actual OS/worker termination and service/lease state after user reboot",
+    "rediscover actual device and full completed Track/NWA ranges",
+    "fresh physical read and independent historical zero-FID provenance proof, validate latest namespace/content",
+    "build and test new GUI and adapter, preserve existing app, normal replacement, verify actual visible file list"
+  ],
+  "readCacheBoundary": "original actual blocks only; .blocks and .tracks required; missing historical blocks do not become zeros",
+  "documentHashes": {
+    "README.md": "d2a8fc4c5286c8f4772385a62dadd1b84e956c32c6e88ae5c3754b921e40908f",
+    "gui/README.md": "8eac314a3f8023d62d9f4524daf45d3107c41e46c4489d017706ce01dff8091a",
+    "docs/implementation.md": "4d0206c59df3555ebdfa7c9d6b8e6f4bad3aaf5d88309dfa6e402d34ad9aa6ec",
+    "docs/udf201-gui-continuation-fix-20261012.md": "405f484a7007ede7cb856260c3f2fbe8a2a5f9645c75c8517dbc85158e2162a7"
+  },
+  "gitDiffCheck": 0,
+  "gitStatusEvidence": "artifacts/udf201-gui-fix/20261012-151937/git-status.txt",
+  "gitStatusSHA256": "4cedd61f307bbde20286e7a0dc27ba6b502044cee34e11f041718983e6202482",
+  "evidenceHashes": {
+    "artifacts/udf201-gui-fix/20261012-151937/asan-ctest.log": "dd0dce7dd0e26bc3f3e3f6b2ca65227329b1c423da2dee3f8e743c15ee587f67",
+    "artifacts/udf201-gui-fix/20261012-151937/asan-vat-result.json": "8a271d1d0be8c3a852f6a70c393bf3659b82f1a8c255ff282265fc8a09e3057c",
+    "artifacts/udf201-gui-fix/20261012-151937/baseline.json": "609cf256fde5d09d4181ed77b787c33f4c5f5f18adc9696a4bfec45273569b46",
+    "artifacts/udf201-gui-fix/20261012-151937/before-device-identity.txt": "d29ff29022f85baa407de16700c1d4906a0816520f811df3f03a9aec4bdbc3f4",
+    "artifacts/udf201-gui-fix/20261012-151937/before-fulltoc.txt": "b0a44726723e6ad20823efebe5a229ba5abfe996fcf9ff9acc314f249ad2c5f6",
+    "artifacts/udf201-gui-fix/20261012-151937/before-minfo.txt": "a5da68271fe7a176de87044e2ca04cb838c4f5474edb326bf94cd6cee304c55b",
+    "artifacts/udf201-gui-fix/20261012-151937/before-source/README.md": "b29f274f41a7462a6c395317f452cc489b27aba9993e3990aaf0f152278d9b47",
+    "artifacts/udf201-gui-fix/20261012-151937/before-source/docs/implementation.md": "70f7b45f932f2dfddbdc82f01d882a34bc8b8c560478ab99c14a9a83fabb73ef",
+    "artifacts/udf201-gui-fix/20261012-151937/before-source/gui/README.md": "3a8cc578a46e04df66dfbd516f59cfb89b4fbccc64121b44bd1eef55c28e2599",
+    "artifacts/udf201-gui-fix/20261012-151937/before-source/gui/Validation/vat_export.py": "c2f56a8e8a93e151b737d6aec3f125a9f5ca4014966f4db8538545df2b10552d",
+    "artifacts/udf201-gui-fix/20261012-151937/before-source/src/OpticalDrive.cpp": "d993a9331ac554f8551eecd419d81c742483ee73da7b312cd5bcab10b36445a1",
+    "artifacts/udf201-gui-fix/20261012-151937/before-source/src/UdfVat.cpp": "c8cb96f9f8ca52b154757122f169c34b130017e4546590eae532e8b3ec11c9bc",
+    "artifacts/udf201-gui-fix/20261012-151937/before-source/tests/vat_fixture.py": "e494609ae7decb1a742ec2e3cff0914c0fe46f0d021fbf1442d386773a1778e1",
+    "artifacts/udf201-gui-fix/20261012-151937/before-source/tests/vat_offline.py": "fbf999332e3438a1a6b4f698ba46a56c60d8cc9f0ab5a897abb2ff54ded4c5a8",
+    "artifacts/udf201-gui-fix/20261012-151937/before-source/tests/vat_oracle.py": "b64d0b1943f9b85a2f6cb2e24337a2e25aa9370e0d4a7001635d45d87c3b163f",
+    "artifacts/udf201-gui-fix/20261012-151937/before-toc.txt": "4df0ea4b06abb8266df09d8781bbd7df5975a5fd9b28ceba799eb342cd937ec0",
+    "artifacts/udf201-gui-fix/20261012-151937/capture-linked-core-actual.a": "b93a498e92bbfdffebac8b99673a5a222c53d2655a2258d675f831e91814cc4a",
+    "artifacts/udf201-gui-fix/20261012-151937/capture-optical-source.cpp": "7eb6c088a92fc51a56335583c70153168c5b4538cd02d366eb651054b1904631",
+    "artifacts/udf201-gui-fix/20261012-151937/cli-ctest.log": "fa3416856cd6f15d74d6a66d35ab842ceb965d51c3c855d59360d8fb4c90de76",
+    "artifacts/udf201-gui-fix/20261012-151937/cli-vat-result.json": "0c5a6318cc70a3f7d004ed72c715330efef84f17106a089390fee28a11933b29",
+    "artifacts/udf201-gui-fix/20261012-151937/disc-cache.iso": "f6d7dc227e1cc7edf0da9ec6517dfbb73c71d96fbd8225e8fe186d7f50d9eec5",
+    "artifacts/udf201-gui-fix/20261012-151937/disc-cache.iso.blocks": "b8001ef6801ac88cf6277af3a158ac0f4bd494d1666e64ef409814f2dca3aa7c",
+    "artifacts/udf201-gui-fix/20261012-151937/disc-cache.iso.tracks": "155780a62171b17c9df0dc90793e1f0dee2fe5d7b9a7214a002ff3aa78aafda5",
+    "artifacts/udf201-gui-fix/20261012-151937/failure.txt": "8784240327fd86d8a44c45dda0178b0f2fd9b039c6f66e588768822502f1d3d5",
+    "artifacts/udf201-gui-fix/20261012-151937/fid-metadata-analysis.json": "6c39155955b793e44ee239a93fa61859307f121e30b7bd14f5f1ac9b7406d643",
+    "artifacts/udf201-gui-fix/20261012-151937/git-diff-check.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/udf201-gui-fix/20261012-151937/git-status.txt": "4cedd61f307bbde20286e7a0dc27ba6b502044cee34e11f041718983e6202482",
+    "artifacts/udf201-gui-fix/20261012-151937/native-media-observation.json": "e185b9d8c47955445ecff69b5925738b2bc81f0b54685f6c0b888bc8c9f002df",
+    "artifacts/udf201-gui-fix/20261012-151937/original-gui-record.json": "c226a9abb38130ac17b4b6fbb3fc15560debf1950c36c6663241b1c9285b8c10",
+    "artifacts/udf201-gui-fix/20261012-151937/pending-restart-checkpoint.json": "420bfbc0f758792dacbe7654349d273cb78545504027a73f52015cee6841693d",
+    "artifacts/udf201-gui-fix/20261012-151937/three-block-actual-read/exit.code": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "artifacts/udf201-gui-fix/20261012-151937/three-block-actual-read/stderr.log": "1961bdbae98bb3f90afd5531471c2353647f5c4cecb09b42280e88de8840d1bc",
+    "artifacts/udf201-gui-fix/20261012-151937/three-block-actual-read/stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/udf201-gui-fix/20261012-151937/three-block-read-binding.json": "e0cce1bc241c49f15546cffa6080e0d9fa389dc4e845bf2f3c3452b6f313bff9",
+    "artifacts/udf201-gui-fix/20261012-151937/vat-result.json": "836452240128c12e35ed206014ce49a8f683dfc1757eefb3d4d1ce0316a23399"
+  }
+}

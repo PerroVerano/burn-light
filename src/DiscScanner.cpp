@@ -148,7 +148,7 @@ void DiscScanner::checkWriteCapabilities(DriveIdentity &drive,const std::string 
     drive.canTAO=std::regex_search(match(info,"Strategies:[ \\t]*([^\\r\\n]+)"),std::regex("(^|,)\\s*CD-TAO\\s*(,|$)"));
 }
 DiscInfo DiscScanner::preflight(const std::string &selected, bool allowBlank) {
-    auto drive=selectOpticalDrive(opticalDrives(),selected);
+    auto drive=waitForOpticalMedia(selectOpticalDrive(opticalDrives(),selected));
     require(!drive.bsdDevice.empty(),"Selected optical drive has no readable media; insert an appendable CD-R/DVD-R");
     auto list=checkedRun({"/usr/bin/drutil","list"});
     std::regex rows("(^|\n)\\s*([0-9]+)\\s+[^\\r\\n]+");
@@ -230,6 +230,21 @@ void DiscScanner::applySessionAddresses(DiscInfo &d, const std::string &msinfo) 
             "Invalid multisession/readable Session boundary");
     d.last = last; d.next = next; d.readableEnd = end;
 }
+void DiscScanner::applyRecordedTracks(DiscInfo &d) {
+    d.recorded.clear();
+    // minfo 总数包含下一空白 Session；只有 Data 行属于可读区间。
+    std::regex rows("(^|\n)[ \\t]*([0-9]+)[ \\t]+([0-9]+)[ \\t]+Data[ \\t]+([0-9]+)[ \\t]+([0-9]+)[ \\t]+([0-9]+)[ \\t]*(?=\\r?\n|$)");
+    for (auto i=std::sregex_iterator(d.minfo.begin(),d.minfo.end(),rows);i!=std::sregex_iterator();++i) {
+        auto m=*i; auto begin=number(m[4]), last=number(m[5]), size=number(m[6]);
+        require(last<UINT32_MAX && last>=begin && uint64_t(last)-begin+1==size,"Invalid recorded Track range");
+        require(d.recorded.empty() || d.recorded.back().end<=begin,"Overlapping recorded Tracks");
+        d.recorded.push_back({begin,last+1,number(m[2]),number(m[3])});
+    }
+    require(!d.recorded.empty() && d.recorded.back().end==d.readableEnd && d.recorded.size()==d.tracks,
+            "Recorded Track table differs from completed Tracks/leadout");
+    auto entry=std::find_if(d.recorded.begin(),d.recorded.end(),[&](auto r){return r.begin==d.last;});
+    require(entry!=d.recorded.end() && entry->session==d.sessions,"Latest Session lacks a completed data Track");
+}
 DiscInfo DiscScanner::scan(const DiscInfo &pre, const std::string &selected) {
     require(geteuid() == 0, "Run optical commands with sudo; offline commands do not need root");
     DiscInfo d = pre;
@@ -256,6 +271,7 @@ DiscInfo DiscScanner::scan(const DiscInfo &pre, const std::string &selected) {
         }
     }
     d.toc = recorder(d,{CDRECORD_PATH, dev, "-toc"});
+    applyRecordedTracks(d);
     if(d.media=="CD-R") {
         auto completed=number(match(d.toc,"first:\\s*[0-9]+\\s+last\\s+([0-9]+)"));
         require(completed==d.tracks && completed<99,"CD-R TOC differs from completed Track count");
@@ -320,6 +336,10 @@ OpticalBlocks::OpticalBlocks(const DiscInfo &disc, const fs::path &dir) : disc_(
     fs::create_directories(dir);
     fd_ = ::open(snapshot().c_str(), O_RDWR | O_CREAT | O_EXCL | O_CLOEXEC | O_NOFOLLOW, 0600);
     require(fd_ >= 0, "Cannot create exclusive optical cache");
+    require(ftruncate(fd_,off_t(disc_.readableEnd)*BlockSize)==0,"Cannot size sparse optical cache");
+    std::ostringstream ranges;
+    for (auto r:disc_.recorded) ranges<<r.begin<<' '<<r.end<<' '<<r.track<<' '<<r.session<<'\n';
+    writeText(snapshot().string()+".tracks",ranges.str());
 }
 OpticalBlocks::~OpticalBlocks() { if (fd_ >= 0) close(fd_); }
 Block OpticalBlocks::read(uint32_t lba) {
@@ -333,6 +353,10 @@ void OpticalBlocks::prefetch(uint32_t lba, uint32_t count) {
     for (uint32_t offset = 0; offset < count;) {
         if (cached_.contains(lba + offset)) { ++offset; continue; }
         uint32_t n = std::min<uint32_t>(512, count - offset), begin = lba + offset;
+        auto range=std::find_if(disc_.recorded.begin(),disc_.recorded.end(),[&](auto r){return begin>=r.begin && begin<r.end;});
+        require(range!=disc_.recorded.end(),"Read points to an unrecorded Track/gap at LBA "+std::to_string(begin));
+        n=std::min(n,range->end-begin);
+        for(uint32_t i=1;i<n;++i)if(cached_.contains(begin+i)){n=i;break;}
         revalidateDrive(disc_.drive,false);
         auto file = directory_ / "sector.bin"; std::error_code ec; fs::remove(file, ec);
         auto output = checkedRun({READCD_PATH, "dev=" + disc_.device, "sectors=" + std::to_string(begin) + "-" + std::to_string(begin + n), "retries=4", "f=" + file.string()}, 120);
@@ -364,11 +388,26 @@ void OpticalBlocks::verifyCachedMetadata(Blocks &fresh) {
         at = end;
     }
 }
-std::vector<std::string> recordingOptions(const DiscInfo &disc) {
+std::string recordingBackend(const DiscInfo &disc, const std::string &filesystem) {
+    require(disc.media=="CD-R" || disc.media=="DVD-R","Unsupported recording media type");
+    // vat9 只执行 CD 可变包；DVD VAT 复用 media6 的受保护 incremental 路径。
+    return filesystem=="udf2.01+vat" && disc.media=="CD-R" ? VAT_CDRECORD_PATH : CDRECORD_PATH;
+}
+std::vector<std::string> recordingOptions(const DiscInfo &disc, const std::string &filesystem) {
     require(disc.media=="CD-R" || disc.media=="DVD-R","Unsupported recording media type");
     require(disc.writeSpeed>0,"No verified write speed");
     std::vector<std::string> args{"-multi","fs=8m"};
-    if(disc.media=="CD-R")args.insert(args.end(),{"-tao","-xa","-nopad"});
+    if(filesystem=="udf2.01+vat" && disc.media=="CD-R") {
+        require(disc.toc.find("PACKET")!=std::string::npos,"Drive did not report packet writing support");
+        std::regex rows("track:[ \\t]+([0-9]+)[ \\t]+lba:[^\\r\\n]*mode:[ \\t]+([0-9]+)");
+        std::set<uint32_t> tracks;uint32_t dataMode=0;
+        for(auto i=std::sregex_iterator(disc.toc.begin(),disc.toc.end(),rows);i!=std::sregex_iterator();++i) {
+            auto track=number((*i)[1]),mode=number((*i)[2]);
+            require((mode==1 || mode==2) && tracks.insert(track).second && (!dataMode || dataMode==mode),"VAT requires consistent Mode 1 or Mode 2 Form 1 recorded Tracks");dataMode=mode;
+        }
+        require(tracks.size()==disc.tracks && dataMode,"VAT cannot confirm the existing CD data mode");
+        args.insert(args.end(),{"-packet","pktsize=0",dataMode==2?"-xa":"-data","-nopad","-appendcd-vat"});
+    } else if(disc.media=="CD-R")args.insert(args.end(),{"-tao","-xa","-nopad"});
     else args.push_back("-data");
     args.push_back("speed="+std::to_string(disc.writeSpeed));return args;
 }
@@ -380,10 +419,19 @@ void recordSession(const DiscInfo &disc, const fs::path &image, bool recovery) {
     require(size && size % BlockSize == 0 && size / BlockSize + 64 <= disc.freeBlocks, "Image exceeds available writable capacity");
     require(!recovery || size/BlockSize==plan.blocks,"Recovery image must exactly fill reserved Track");
     auto start=recovery?plan.start:disc.next;
+    auto manifest=Manifest::load(image.string()+".manifest");
+    require(manifest.start==start,"Prepared image starts at a different NWA");
+    bool vat=manifest.filesystem=="udf2.01+vat";
+    require(!vat || !recovery,"VAT is excluded from DVD recovery");
+    if(vat && disc.media=="DVD-R")
+        require(start%16==0 && (size/BlockSize)%16==0,"DVD-R VAT start and image must align to 16-sector ECC blocks");
+    auto backend=recordingBackend(disc,manifest.filesystem);
+    require(!backend.empty() && fs::is_regular_file(backend),"Recording backend unavailable");
+    if(vat && disc.media=="CD-R")require(checkedRun({backend,"-version"}).find("3.02a09-appendcd-vat9")!=std::string::npos,"CD-R VAT writer requires vat9 Session fixation; vat8 is rejected");
     std::cout << "Writing " << disc.media << " multisession at LBA " << start << '\n';
     // DVD-R 使用 incremental recording 和普通 2048 字节 data，不使用 CD-ROM XA。
-    std::vector<std::string> args{CDRECORD_PATH, "dev=" + disc.device, "-v"};
-    auto mode=recordingOptions(disc);args.insert(args.end(),mode.begin(),mode.end());
+    std::vector<std::string> args{backend, "dev=" + disc.device, "-v"};
+    auto mode=recordingOptions(disc,manifest.filesystem);args.insert(args.end(),mode.begin(),mode.end());
     args.push_back("appendcd-nwa="+std::to_string(start));
     if(recovery){args.push_back("-appendcd-reuse");args.push_back("appendcd-track="+std::to_string(plan.track));args.push_back("appendcd-reserved-count="+std::to_string(plan.reservedCount));}
     if (disc.media=="DVD-R" && disc.minfo.find("Drive returns zero media size. Using media size from ADIP.") != disc.minfo.npos) {

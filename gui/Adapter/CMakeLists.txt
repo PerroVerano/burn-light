@@ -14,7 +14,7 @@ add_library(exportcore STATIC
   ${CORE_ROOT}/src/Util.cpp ${CORE_ROOT}/src/IsoCore.cpp ${CORE_ROOT}/src/IsoInitial.cpp
   ${CORE_ROOT}/src/IsoVerifier.cpp ${CORE_ROOT}/src/GeneratedMetadata.cpp
   ${CORE_ROOT}/src/DiscScanner.cpp ${CORE_ROOT}/src/OpticalDrive.cpp
-  ${CORE_ROOT}/src/DiskArbitrationGuard.cpp ${CORE_ROOT}/src/UdfReader.cpp ${CORE_ROOT}/src/UdfSession.cpp)
+  ${CORE_ROOT}/src/DiskArbitrationGuard.cpp ${CORE_ROOT}/src/UdfReader.cpp ${CORE_ROOT}/src/UdfSession.cpp ${CORE_ROOT}/src/UdfVat.cpp)
 target_include_directories(exportcore PUBLIC ${CORE_ROOT}/src)
 target_compile_definitions(exportcore PUBLIC LIBISOFS_WITHOUT_LIBBURN)
 target_compile_options(exportcore PUBLIC -include "${CMAKE_CURRENT_SOURCE_DIR}/RuntimePaths.hpp")

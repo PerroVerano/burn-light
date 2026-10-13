@@ -9,7 +9,8 @@ import subprocess
 import tempfile
 
 root = pathlib.Path(__file__).resolve().parents[1]
-adapter = root / 'output/BurnLight.app/Contents/MacOS/burnlight-export'
+app = pathlib.Path(os.environ.get('BURNLIGHT_TEST_APP', str(root / 'output/BurnLight.app')))
+adapter = app / 'Contents/MacOS/burnlight-export'
 project = root.parent
 scratch = pathlib.Path(tempfile.mkdtemp(prefix='burnlight-export-offline-', dir='/private/tmp'))
 checks, logs = [], []
@@ -21,7 +22,7 @@ def run(args, ok=True):
     return p.stdout
 
 def export(image, last, label, roots=(), broken=None):
-    listing = run([root / 'output/BurnLight.app/Contents/MacOS/appendcd', 'list', '--source', image, '--last', last])
+    listing = run([app / 'Contents/MacOS/appendcd', 'list', '--source', image, '--last', last])
     entries = []
     for line in listing.splitlines():
         if line.startswith(('FILE ', 'DIR  ')):

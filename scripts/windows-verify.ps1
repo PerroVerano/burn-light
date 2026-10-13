@@ -50,6 +50,8 @@ public static class AppendCdReadOnly {
 $report = [ordered]@{
     timestamp = [DateTime]::UtcNow.ToString('o')
     os = (Get-CimInstance Win32_OperatingSystem).Caption
+    osVersion = (Get-CimInstance Win32_OperatingSystem).Version
+    osBuild = (Get-CimInstance Win32_OperatingSystem).BuildNumber
     drive = $Drive
     opticalModel = $optical[0].Name
     result = 'OBSERVED_ONLY'
@@ -105,7 +107,8 @@ try {
                 $report.descriptors += @{lba=([long]$expected.sessionStartLba+$offset); hex=[BitConverter]::ToString($raw)}
             } catch { $report.descriptors += @{offset=$offset; error=$_.Exception.Message} }
         }
-        if ($expected.filesystem -eq 'udf1.02') {
+        $report.filesystem = $expected.filesystem
+        if ($expected.filesystem -in @('udf1.02', 'udf2.01+vat')) {
             try {
                 [byte[]]$anchor = [AppendCdReadOnly]::Sector($Drive, [long]$expected.sessionStartLba + 256)
                 $report.descriptors += @{kind='UDF_AVDP'; lba=([long]$expected.sessionStartLba+256); hex=[BitConverter]::ToString($anchor)}

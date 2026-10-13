@@ -2,16 +2,30 @@
 
 原生 macOS / Apple Silicon 的 CD-R / DVD-R multisession 实验。**自动识别光学光驱，无品牌、型号或固件白名单**。`burn` 追加到已有完整 Session 的盘，独立的 `init` 入口用于空白盘首次刻录。单光驱自动选择；多个光驱必须通过 `--device` 指定目标。保留设备身份、写入能力、介质和可写地址检查。CLI 项目名保留 `appendcd`。
 
-独立的 [原生 GUI 本机使用版 1.1.1](gui/README.md) 提供自包含 `.app`、用户输入快照、光盘文件导出、任务归档与系统认证。当前指定 CD-R 已完成 GUI 两次追加/实际读回、Windows 七文件正常打开及再次追加、返回 Mac GUI 八文件实际读取/导出；同路径文件可明确选择跳过或替换。返回盘发现的 Session 地址矛盾和 31-block 短卷导入已修复，六组 CLI 回归、136 条 GUI 断言与专项离线测试通过。原 `build/appendcd` 和两个 runtime 保持基线，未替换文件仍重用旧 extent。最新产物、证据及未完成项见 [验收报告](gui/evidence/write-acceptance-20261010/acceptance.md)，[GUI 制作指南](docs/gui-development-guide.md) 保留历史契约与开发约束。
+独立的 [原生 GUI 正式本机使用版 1.2.1](gui/README.md) 提供自包含 `.app`、用户输入快照、光盘文件导出、任务归档与系统认证。当前指定 CD-R 已完成 GUI 两次追加/实际读回、Windows 七文件正常打开及再次追加、返回 Mac GUI 八文件实际读取/导出；同路径文件可明确选择跳过或替换。返回盘发现的 Session 地址矛盾和 31-block 短卷导入已修复，六组 CLI 回归、136 条 GUI 断言与专项离线测试通过。原 `build/appendcd` 和两个 runtime 保持基线，未替换文件仍重用旧 extent。最新产物、证据及未完成项见 [验收报告](gui/evidence/write-acceptance-20261010/acceptance.md)，[GUI 制作指南](docs/gui-development-guide.md) 保留历史契约与开发约束。
 
 新 Git checkout 请先阅读 [仓库范围与重新构建](docs/repository.md)，恢复必要基准输入，并把当前源码 CLI 构建到独立 `build-cli/`。大缓存、完整实盘任务及用户输入不在 Git 中；验收摘要中的历史路径不保证随 clone 存在。
 
-本项目同时实现两条文件系统路径：
+2026-10-12 当前源码新增受限 **CD-R / UDF 2.01 / VAT** 分支，独立构建到 `build-cli/` 和 `build-udf201-gui/`。第八 Session Anchor 引用第六 Session VDS 的实盘目录解析已成功；其中 `aisea.jar` 的扇区 62772 报介质错误，全文件读取及 Windows 往返仍待验收。历史 ISO/Joliet、UDF 1.02 的物理验收不代表 VAT 已通过。详见 [本次验收与边界](docs/udf201-acceptance-20261012.md)。
+
+用户确认原盘物理损伤并换入同格式单 Session 盘后，完整只读导入和导出通过。授权 Mac 追加发现 vat8 漏结束 Session，已修复为 vat9；用户另行授权用 media6 完成已有会话。随后用户在 Windows 11 25H2 正常打开新旧文件，并从资源管理器追加 `MybatisCodeHelperConfig.json`。返回 Mac 的正常 CLI、独立解析器和 GUI 导出适配器全新实读三个文件通过，两个旧文件的 hash/数据地址保持。当前为 3 个完成 Session / 3 Tracks，仍可追加。
+
+Windows 返回盘有两处 FID Tag Location 偏差。经用户明确授权，核心使用有历史来源证明的受限 `windows-fid-location-v1` 分支，并在 CLI、GUI、诊断与导出收据标记；其余结构、CRC、VAT、范围和旧内容校验保持。该盘不宣称规范严格符合。71 项 VAT 专项、七组 CTest、146 条 GUI 断言及导出回归通过；从真实返回视图再生成的离线追加镜像由独立严格解析器验证通过。详见 [当前 Windows 返回盘验收](docs/udf201-windows-return-20261012.md)。[会话完成](docs/udf201-session-completion-20261012.md)、[失败阶段](docs/udf201-mac-attempt-20261012.md)和 [写前基线](docs/udf201-replacement-acceptance-20261012.md)保留。vat9 正常 burn 全流程的物理复验、原损伤八 Session 盘全文件读取仍未通过；Windows 自动报告和新 JSON 源 hash 未采集。
+
+随后用户授权同一盘的唯一 46-byte 文本追加，修复后的 **vat9 正常 burn、Session 完成、576 个新扇区和四文件实际读回、独立严格解析、macOS 挂载与最终 GUI 适配器导出全部通过**。现盘为 4 个完成 Session / 4 Tracks，仍可追加；旧三个 payload 的 hash/地址保持，新目录无 FID 兼容偏差。仅补充了绑定同一光驱的有限 IOMedia 发布等待，避免连续只读操作后下一命令在预检时误拒绝；不重试 writer。用户随后确认最新四文件在 Windows 均可见且能打开，替换盘正常 vat9 追加与 Windows 读取闭环通过。见 [最新正常追加验收](docs/udf201-vat9-normal-burn-20261012.md)。Windows 自动 hash 报告未采集，原损伤八 Session 全文件读取仍未通过；前段三 Session 和待 vat9 实测内容是历史阶段状态。
+
+后续 Windows 再次追加后盘变为六 Session，旧 GUI 因保留的零位置 FID 引用旧 ICB 而拒绝目录。核心补充来源 VAT 证明和合法已删除记录处理；系统正常重启后，当前五文件全新实际读取、适配器导出及两份缓存的独立解析通过，四个旧文件 hash/地址/UniqueID 保持，新增 `lssjk.jar` 为 189620624 bytes。89 项 VAT、七组 CTest、sanitizer、146 项 GUI 和六个 VAT 导出场景通过。修复包已安装到用户 Applications，原生窗口实际显示最新五文件、UDF 2.01 / VAT 与可追加状态，见 [六 Session GUI 修复验收](docs/udf201-gui-six-session-readback-20261012.md)。本轮零写盘，Windows 偏差仍显式标识；[重启前检查点](docs/udf201-gui-continuation-fix-20261012.md)和四 Session 历史记录保留。
+
+2026-10-13 DVD-R / UDF 2.01 / VAT 已完成本机实盘往返：GUI 正常追加 ZIP 并实际读回，用户确认 Windows 可见后再追加 `swagger.json`（246137 bytes），返回 Mac 三文件两次实读、独立解析和导出通过，旧文件 hash/extent/UniqueID 保持。按用户授权纳入 **1.2.0 正式本机使用版**，详见 [DVD-R 往返验收](docs/udf201-dvd-r-roundtrip-20261013.md)。Windows 确认为人工反馈，未采集源文件 SHA256/自动报告；受限 Windows FID 偏差仍明确标识，不宣称严格规范符合。下文 CD-R 专项记录保持历史范围。
+
+当前源码提供以下文件系统路径：
 
 | 首次刻录的实际格式 | 追加路径 | 旧文件数据 |
 | --- | --- | --- |
 | ISO9660 + Joliet | libisofs 优先导入 Joliet，生成 ISO9660 + Joliet continuation | 原有绝对 LBA 不变 |
 | Windows 资源管理器 master 模式的当前 UDF 1.02 DVD-R | libudfread 导入 UDF 名称/extent，C++ 生成 UDF 1.02 continuation | 原有绝对 LBA 不变 |
+| CD-R，UDF 2.01，type-1 + Virtual Partition Map | 独立 VAT 解析/生成，最新入口可引用较早 Session 的 VDS；已证明的 Windows FID 偏差显式标记 | 原 payload/内嵌 ICB 的实际地址不变；替换盘往返读回通过，写后端物理复验边界见报告 |
+| DVD-R，UDF 2.01，同一受支持 VAT 结构 | 同一 VAT 解析/生成，media6 incremental 写入；ECC 对齐与写前/写后校验保持 | 复用原 payload/ICB；当前 Lenovo XL6M 实盘往返通过 |
 
 **反向 DVD-R 实验也已通过：Mac `init` 创建第一 Session，用户确认 Windows 看到了三个文件并用资源管理器 master 模式追加 `swagger.json`，返回 Mac 后实际光盘读回验证通过。** 当前为 2 Sessions / 2 Tracks、latest=93952、NWA=100272、appendable。首刻完整镜像保持原 hash，三个旧文件的数据 LBA 33/34/35 及 SHA256 均未变；`swagger.json` 为 246137 bytes，两次独立光盘读取 hash 一致。证据为 `artifacts/initial-roundtrip/acceptance.json`，详见实验记录第 14 节。Windows IOCTL/自动 hash 报告未采集。
 
@@ -22,6 +36,10 @@
 真实第二 Session 读回证据位于 `artifacts/physical/run-LyStUD`；Windows 再追加后的 TOC/extent 位于 `artifacts/physical/run-taqeFU`，挂载文件 hash 与人工验收记录位于 `artifacts/windows-roundtrip`。这是本张 DVD-R 的实测结果。2026-10-10 用户另反馈 CD-R 连续三次测试通过；当前只读确认该 CD-R 为 4 Sessions / 4 Tracks、appendable。该反馈未附 Windows IOCTL 或哈希报告，其他型号的实测结果仍需分别记录。
 
 **后续三次失败重试留下的预留区也已恢复，并通过 Windows 验收。** 修补后的后端填满已有 Track 4、关闭空白 Track 5 和第四 Session；Mac 独立读回全部 9 个文件通过，仍 appendable。用户随后确认 Windows 能看到并打开 `816测试_66_10000航迹点.xlsx`，旧文件也在。当前完成状态为 4 Sessions / 5 Tracks，最新 Session LBA 107440、下一写入 LBA 115184。这批文件已写入，不要再对同一批文件运行 burn。证据见 `artifacts/recovery-after-windows/acceptance.json` 和实验记录第 9 节。
+
+1.2.1 新增 GUI“清理本地存储…”：可预览实际占用，清理已归档临时副本或过期历史材料；当前预览、待检查刻录和未知任务保留。归档清理后保留任务摘要，删除需要界面确认，详见 [清理验收](docs/gui-storage-cleanup-20261013.md)。
+
+2026-10-13 用户全量试用反馈无异常，当前 **1.2.1 / build 5 本机版本暂时结档**。本阶段实现、实盘往返、最终构建检查及保留的验收边界见 [结档记录](docs/release-1.2.1-closeout-20261013.md)；后续问题按新的修复阶段处理。
 
 ## 构建
 

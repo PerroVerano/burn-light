@@ -32,6 +32,9 @@ public struct Disc: Equatable, Codable, Sendable {
     // 地址只用于展示与结果核对；不作为 GUI 命令参数传回核心。
     public let lastLBA: UInt64
     public let nextLBA: UInt64
+    public var filesystem: String? = nil
+    public var filesystemView: String? = nil
+    public var udfCompatibility: String? = nil
     public var writeCLIOperation: CLIOperation? {
         guard ["CD-R", "DVD-R"].contains(media), appendable, !unfinished, freeBytes > 0 else { return nil }
         if blank { return sessions == 0 && tracks == 0 && lastLBA == 0 && nextLBA == 0 ? .initialize : nil }
@@ -77,7 +80,7 @@ public enum ConflictPolicy: String, Codable, Sendable {
 public struct CLIRequest: Sendable {
     public let operation: CLIOperation
     public let arguments: [String]
-    public init(_ operation: CLIOperation, input: URL? = nil, image: URL? = nil, drive: Drive? = nil, evidence: URL? = nil, conflictPolicy: ConflictPolicy = .reject) throws {
+    public init(_ operation: CLIOperation, input: URL? = nil, image: URL? = nil, drive: Drive? = nil, evidence: URL? = nil, conflictPolicy: ConflictPolicy = .reject, expectedView: String? = nil) throws {
         var args = [operation.rawValue]
         switch operation {
         case .initialBuild, .build:
@@ -97,6 +100,10 @@ public struct CLIRequest: Sendable {
         if conflictPolicy != .reject {
             guard [.build, .burn].contains(operation) else { throw GUIError.invalid("重名策略仅适用于追加预览与追加刻录") }
             args += ["--on-conflict", conflictPolicy.rawValue]
+        }
+        if let expectedView {
+            guard [.build, .burn, .export].contains(operation), TextContract.matches(expectedView, "^[a-f0-9]{64}$") else { throw GUIError.invalid("无效的 VAT 预览绑定") }
+            args += ["--expected-view", expectedView]
         }
         if operation.physical {
             guard let drive, let evidence, TextContract.matches(drive.device, "^[0-9]+,[0-9]+,[0-9]+$") else {
@@ -154,6 +161,7 @@ public struct JobRecord: Codable, Identifiable, Sendable {
     public var workspacePath: String?
     public var archivePath: String?
     public var archiveWarning: String?
+    public var materialsRemovedAt: Date?
     public var requiresInspection: Bool?
     public var conflictPolicy: ConflictPolicy?
     public var message: String
