@@ -195,3 +195,62 @@ def windows_carried_fid(path,same_session=False,deleted=True):
                   originZeroFidBlock=layout['directoryPacked'],currentZeroFidBlock=tail+1,currentRoot=root,
                   deletedFidOffset=length)
     return layout
+
+def windows_updated_fid(path,same_session=False):
+    """Two Windows updates retain a zero-location FID and its virtual ICB/UID.
+
+    Each update writes a new EFE and different content. The older origin directory
+    still proves the exact FID; neither update is a first virtual allocation.
+    """
+    layout=windows_carried_fid(path,same_session,False);p=layout['partition']
+    previous=layout['vat'];first_child=layout['currentRoot']+1
+    start=layout['end'] if same_session else 18000;end=start+800;root=start+300;tail=start+310
+    with pathlib.Path(path).open('r+b') as f:
+        def read(lba):f.seek(lba*B);return bytearray(f.read(B))
+        def write(lba,b):f.seek(lba*B);f.write(b)
+        def child(lba,payload):
+            b=fe(4,5,payload,efe=True);entity(b,168,'*Microsoft Windows');write(lba,tag(b,266,4,200+len(payload)))
+        oldvat=read(previous);p32(oldvat,216+152+4*4,first_child-p)
+        write(previous,tag(oldvat,266,previous-p,struct.unpack_from('<H',oldvat,10)[0]));child(first_child,b'Windows updated version one\n')
+        current=read(layout['currentRoot']);p32(current,236,tail-p);write(root,tag(current,266,2,232))
+        write(tail,read(layout['currentZeroFidBlock']-1));write(tail+1,read(layout['currentZeroFidBlock']))
+        table=bytearray(oldvat[216:216+struct.unpack_from('<Q',oldvat,56)[0]])
+        p32(table,132,previous-p);p32(table,152+2*4,root-p);p32(table,152+4*4,root+1-p)
+        newest=fe(end-3-p,248,table,efe=True,unique=23);entity(newest,168,'*Microsoft Windows')
+        f.truncate(end*B);write(end-3,tag(newest,266,end-3-p,200+len(table)));child(root+1,b'Windows updated version two\n')
+        if not same_session:
+            for offset,name in [(16,'BEA01'),(17,'NSR03'),(18,'TEA01')]:
+                b=bytearray(B);b[1:6]=name.encode();b[6]=1;write(start+offset,b)
+            anchor=read(layout['session']+256);write(start+256,tag(anchor,2,start+256,496))
+    tracks=list(layout['tracks'])
+    if same_session:tracks[-1]=(tracks[-1][0],end,8,8)
+    else:tracks.append((start,end,10,10))
+    pathlib.Path(str(path)+'.tracks').write_text(''.join('%d %d %d %d\n'%r for r in tracks))
+    layout.update(session=layout['session'] if same_session else start,end=end,vat=end-3,tracks=tracks,
+                  update1VAT=previous,update1FileICB=first_child,update2FileICB=root+1,
+                  currentRoot=root,currentZeroFidBlock=tail+1)
+    return layout
+
+def windows_reused_fid(path,zero_slot=False):
+    """The virtual slot previously described an older UID or recorded zero data."""
+    layout=windows_updated_fid(path);p=layout['partition'];oldvat=12599
+    with pathlib.Path(path).open('r+b') as f:
+        f.seek(oldvat*B);b=bytearray(f.read(B));size=struct.unpack_from('<Q',b,56)[0]+4
+        p64(b,56,size);p32(b,172,size);p32(b,176+152+4*4,55)
+        f.seek(oldvat*B);f.write(tag(b,261,oldvat-p,160+size))
+        prior=fe(4,5,b'older file identity\n',efe=True,unique=19);entity(prior,168,'*Microsoft Windows')
+        f.seek((p+55)*B);f.write(bytes(B) if zero_slot else tag(prior,266,4,struct.unpack_from('<H',prior,10)[0]))
+    layout.update(priorGenerationVAT=oldvat,priorGenerationICB=p+55)
+    return layout
+
+def windows_directory_fid(path):
+    """A hidden Windows directory retains a zero-location FID across updates."""
+    layout=windows_updated_fid(path)
+    with pathlib.Path(path).open('r+b') as f:
+        for lba in (layout['originZeroFidBlock'],layout['update1FileICB']+10,layout['currentZeroFidBlock']):
+            f.seek(lba*B);b=bytearray(f.read(B));n=(38+struct.unpack_from('<H',b,36)[0]+b[19]+3)&~3
+            q=bytearray(b[:n]);q[18]=3;b[:n]=tag(q,257,0,n-16);f.seek(lba*B);f.write(b)
+        lba=14302;f.seek(lba*B);old=f.read(B);size=struct.unpack_from('<Q',old,56)[0]
+        b=fe(5,4,old[176:176+size],efe=True);entity(b,168,'*Microsoft Windows')
+        f.seek(lba*B);f.write(tag(b,266,5,200+size))
+    return layout

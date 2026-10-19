@@ -138,7 +138,7 @@ public:
     struct Node {Block fe;Entry entry;UdfAddress icb;uint8_t type;std::vector<UdfAddress> dataAddresses;};
     Node node(UdfAddress a,const std::vector<uint32_t> *mapping=nullptr) {
         auto lba=physical(a,mapping);Node n{raw(lba),{},a,0,{}};auto p=n.fe.data();auto id=get16(p);
-        require(id==261 || id==266,"Unsupported UDF ICB (FE/EFE required)");validateUdfTag(p,BlockSize,id,3,a.block);
+        require(id==261 || id==266,"Unsupported UDF ICB (FE/EFE required) at absolute LBA "+std::to_string(lba));validateUdfTag(p,BlockSize,id,3,a.block);
         require(get16(p+20)==4 && get16(p+24)==1,"Unsupported UDF ICB strategy/entries");
         n.type=p[27];require(n.type==4 || n.type==5 || n.type==248,"Unsupported UDF file type/stream");
         n.entry.old=true;n.entry.directory=n.type==4;n.entry.size=get64(p+56);
@@ -224,13 +224,50 @@ public:
         }
         return false;
     }
-    bool newZeroChild(UdfAddress a,uint32_t vatIcb,uint64_t nextUniqueId,size_t older,const Node &child) {
-        auto abs=physical(a);
+    bool newZeroChild(UdfAddress a,uint32_t vatIcb,uint64_t nextUniqueId,size_t older,const Node &child,const std::vector<uint32_t> *mapping=nullptr) {
+        auto abs=physical(a,mapping);
         if(abs>vatIcb || (older<history.size() && abs<=history[older].icb) || uniqueId(child.fe)>=nextUniqueId)return false;
         auto r=std::find_if(ranges.begin(),ranges.end(),[&](auto r){return vatIcb>=r.begin && vatIcb<r.end;});
         if(r==ranges.end() || abs<r->begin || abs>=r->end)return false;
-        for(size_t i=older;i<history.size();++i)
-            if(a.block<history[i].map.size() && history[i].map[a.block]!=UINT32_MAX)return false;
+        for(size_t i=older;i<history.size();++i) {
+            const auto &h=history[i];
+            if(uniqueId(child.fe)<h.nextUniqueId)return false;
+            if(a.block<h.map.size() && h.map[a.block]!=UINT32_MAX) {
+                require(++compatibilityProbes<=100000,"Windows FID history proof resource limit");
+                if(physical(a,&h.map)>h.icb)return false;
+                // Windows 也会把先前用于零数据/预留块的虚拟编号用于新文件 ICB。
+                // 只接受真实读取的全零块；缺失缓存或任意非零坏元数据仍失败。
+                if(raw(physical(a,&h.map))==Block{}) {
+                    trace("Windows zero FID prior slot contains recorded zero data",physical(a,&h.map));continue;
+                }
+                auto prior=node(a,&h.map);
+                if(get16(prior.fe.data())!=266 || prior.type!=5 || !microsoft(prior.fe) || uniqueId(prior.fe)<16 ||
+                   uniqueId(prior.fe)>=h.nextUniqueId || uniqueId(prior.fe)>=uniqueId(child.fe))return false;
+            }
+        }
+        return true;
+    }
+    bool windowsChildUpdates(UdfAddress a,size_t origin,const Node &child) {
+        auto identity=[&](const Node &n) {
+            return get16(n.fe.data())==266 && n.type==child.type && microsoft(n.fe) && uniqueId(n.fe)==uniqueId(child.fe);
+        };
+        auto previous=physical(a,&history[origin].map);
+        if(!identity(node(a,&history[origin].map)))return false;
+        for(size_t step=origin+1;step>0;--step) {
+            require(++compatibilityProbes<=100000,"Windows FID history proof resource limit");
+            const auto &map=step==1?v.vat:history[step-2].map;
+            if(a.block>=map.size() || map[a.block]==UINT32_MAX)return false;
+            auto abs=physical(a,&map);
+            if(abs==previous)continue;
+            auto vatIcb=step==1?v.vatIcb:history[step-2].icb;
+            auto next=step==1?v.nextUniqueId:history[step-2].nextUniqueId;
+            auto windows=step==1?windowsTransaction:history[step-2].windows;
+            auto r=std::find_if(ranges.begin(),ranges.end(),[&](auto r){return vatIcb>=r.begin && vatIcb<r.end;});
+            if(!windows || abs<=history[step-1].icb || abs>vatIcb || r==ranges.end() || abs<r->begin || abs>=r->end)return false;
+            auto updated=node(a,&map);
+            if(!identity(updated) || uniqueId(updated.fe)>=next)return false;
+            trace("Windows zero FID proven updated child ICB",abs);previous=abs;
+        }
         return true;
     }
     bool historicalZeroFid(const Node &directory,const uint8_t *fid,uint32_t size,size_t position,const Node &child) {
@@ -240,14 +277,14 @@ public:
             const auto &h=history[i];
             if(!h.windows || a.block>=h.map.size() || h.map[a.block]==UINT32_MAX ||
                childAddress.block>=h.map.size() || h.map[childAddress.block]==UINT32_MAX ||
-               physical(childAddress,&h.map)!=physical(childAddress) || !newZeroChild(childAddress,h.icb,h.nextUniqueId,i+1,child))continue;
+               !newZeroChild(childAddress,h.icb,h.nextUniqueId,i+1,child,&h.map))continue;
             auto old=node(a,&h.map);
             if(old.type!=4 || !microsoft(old.fe) || uniqueId(old.fe)!=uniqueId(directory.fe) ||
                physical(a,&h.map)>h.icb || position+size>old.entry.size)continue;
             compatibilityBytes+=old.entry.size;require(compatibilityBytes<=64*1024*1024,"Windows FID history proof byte limit");
             auto bytes=data(old.entry,64*1024*1024);
             if(!std::equal(fid,fid+size,bytes.data()+position))continue;
-            // 旧零位置 FID 只能追溯到首次分配该 ICB 的 VAT；原事务仍需严格历史搬移证明。
+            // 追溯首次分配该文件身份的 VAT；旧编号复用必须有更早且不同的有效 UniqueID。
             bool proven=false;
             for(size_t pos=0;pos<position;) {
                 require(position-pos>=38,"Truncated Windows origin FID prefix");auto p=bytes.data()+pos;
@@ -259,9 +296,9 @@ public:
                 if(recorded && recorded!=location && historicalFid(old,p,length,pos,recorded,i+1))proven=true;
                 pos+=length;
             }
-            if(!proven)continue;
+            if(!proven || !windowsChildUpdates(childAddress,i,child))continue;
             trace("Windows zero FID origin VAT ICB",h.icb);trace("Windows zero FID origin directory ICB",physical(a,&h.map));
-            trace("Windows zero FID retained child ICB",physical(childAddress));return true;
+            trace("Windows zero FID current child ICB",physical(childAddress));return true;
         }
         return false;
     }
@@ -279,12 +316,13 @@ public:
                     "Windows zero-location FID lacks proven directory relocation profile");
             if(!(p[18]&4)) {
                 auto childAddress=address(p+20);
-                require(p[18]==0 && childAddress.reference==v.virtualReference,"Windows zero-location FID flags/reference differ");
+                require((p[18]&~3)==0 && childAddress.reference==v.virtualReference,"Windows zero-location FID flags/reference differ");
                 auto child=node(childAddress);
-                require(get16(child.fe.data())==266 && child.type==5 && microsoft(child.fe) && uniqueId(child.fe)>=16 &&
+                require(get16(child.fe.data())==266 && child.type==((p[18]&2)?4:5) && microsoft(child.fe) && uniqueId(child.fe)>=16 &&
                         uniqueId(child.fe)<v.nextUniqueId && get32(p+32)==uint32_t(uniqueId(child.fe)),"Windows zero-location FID child identity/type differs");
                 require(newZeroChild(childAddress,v.vatIcb,v.nextUniqueId,0,child) || historicalZeroFid(directory,p,size,position,child),
-                        "Windows zero-location FID lacks exact first-allocation VAT origin proof");
+                        "Windows zero-location FID lacks exact first-allocation VAT origin proof (virtual ICB="+
+                        std::to_string(childAddress.block)+", UniqueID="+std::to_string(uniqueId(child.fe))+")");
             }
         }
         v.tree.compatibility="windows-fid-location-v1";

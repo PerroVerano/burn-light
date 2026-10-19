@@ -8,7 +8,7 @@ import struct
 import subprocess
 import sys
 import tempfile
-from vat_fixture import fixture, split_directory, windows_fid_compatibility, windows_carried_fid, fid, tag, B
+from vat_fixture import fixture, split_directory, windows_fid_compatibility, windows_carried_fid, windows_updated_fid, windows_reused_fid, windows_directory_fid, fid, tag, B
 from vat_oracle import read as oracle
 
 cli=pathlib.Path(sys.argv[1]).resolve()
@@ -104,6 +104,68 @@ try:
         except AssertionError:pass
         else:raise AssertionError('Strict oracle accepted carried Windows deviations')
     check('carried Windows compatibility still not strict conformance')
+    updated=out/'Windows-updated-zero.iso';updated_layout=windows_updated_fid(updated);updated_last=updated_layout['session']
+    updated_listing=run('list','--source',updated,'--last',updated_last,'--hash-files')
+    updated_view=oracle(updated,updated_last,windows_fid_compatibility=True)
+    latest_payload=b'Windows updated version two\n'
+    check('Windows repeated updates read latest payload rather than origin',updated_view['files']['latest.txt']['bytes']==latest_payload and hashlib.sha256(latest_payload).hexdigest() in updated_listing)
+    check('Windows repeated updates retain original file identity',updated_view['files']['latest.txt']['uniqueId']==windows_view['files']['latest.txt']['uniqueId'])
+    updated_same=out/'Windows-updated-same-session.iso';updated_same_layout=windows_updated_fid(updated_same,True)
+    run('list','--source',updated_same,'--last',updated_same_layout['session'],'--hash-files')
+    same_files=oracle(updated_same,updated_same_layout['session'],windows_fid_compatibility=True)['files']
+    check('independent same-Session repeated updates',{p:(e['bytes'],e['uniqueId']) for p,e in same_files.items()}=={p:(e['bytes'],e['uniqueId']) for p,e in updated_view['files'].items()})
+    try:oracle(updated,updated_last)
+    except AssertionError:pass
+    else:raise AssertionError('Strict oracle accepted updated zero-location FID')
+    check('updated zero FID remains explicitly non-strict compatibility')
+    update_cases=[
+        ('origin-identity',updated_layout['newFileICB'],lambda b:struct.pack_into('<Q',b,200,99)),
+        ('intermediate-identity',updated_layout['update1FileICB'],lambda b:struct.pack_into('<Q',b,200,99)),
+        ('origin-writer',updated_layout['newFileICB'],lambda b:b.__setitem__(169,ord('X'))),
+        ('intermediate-writer',updated_layout['update1FileICB'],lambda b:b.__setitem__(169,ord('X'))),
+        ('intermediate-VAT-writer',updated_layout['update1VAT'],lambda b:b.__setitem__(169,ord('X'))),
+        ('deleted-and-reallocated-ICB',updated_layout['update1VAT'],lambda b:pack(b,216+152+4*4,0xffffffff)),
+        ('backwards-remap',updated_layout['vat'],lambda b:pack(b,216+152+4*4,updated_layout['newFileICB']-updated_layout['partition'])),
+    ]
+    for name,lba,mutate in update_cases:
+        bad=patch(updated,'updated-'+name,lba,mutate)
+        rejected('updated zero FID rejects '+name,bad,'first-allocation VAT origin',updated_last)
+        try:oracle(bad,updated_last,windows_fid_compatibility=True)
+        except AssertionError:pass
+        else:raise AssertionError('Independent oracle accepted '+name)
+    check('independent oracle rejects every invalid update chain')
+    corrupt_update=patch(updated,'updated-intermediate-bad-CRC',updated_layout['update1FileICB'],lambda b:b.__setitem__(80,b[80]^1),False)
+    rejected('updated zero FID validates intermediate descriptor CRC',corrupt_update,'checksum/CRC',updated_last)
+    missing_update=patch(updated,'updated-missing-intermediate-cache',updated_layout['update1FileICB'],lambda b:None,False)
+    pathlib.Path(str(missing_update)+'.blocks').write_text(''.join(str(lba)+'\n' for begin,end,*_ in updated_layout['tracks'] for lba in range(begin,end) if lba!=updated_layout['update1FileICB']))
+    rejected('updated zero FID requires actual intermediate metadata',missing_update,'hole in optical cache',updated_last)
+    reused=out/'Windows-reused-virtual-slot.iso';reused_layout=windows_reused_fid(reused)
+    run('list','--source',reused,'--last',reused_layout['session'],'--hash-files')
+    reused_view=oracle(reused,reused_layout['session'],windows_fid_compatibility=True)
+    check('reused virtual slot requires distinct earlier identity and new UID allocation interval',reused_view['files']==updated_view['files'])
+    for name,lba,mutate in [
+        ('same-UID',reused_layout['priorGenerationICB'],lambda b:struct.pack_into('<Q',b,200,20)),
+        ('unknown-prior-writer',reused_layout['priorGenerationICB'],lambda b:b.__setitem__(169,ord('X'))),
+        ('UID-before-allocation-interval',reused_layout['priorGenerationVAT'],lambda b:struct.pack_into('<Q',b,160,21)),
+    ]:
+        bad=patch(reused,'reused-'+name,lba,mutate)
+        rejected('reused slot rejects '+name,bad,'first-allocation VAT origin',reused_layout['session'])
+        try:oracle(bad,reused_layout['session'],windows_fid_compatibility=True)
+        except AssertionError:pass
+        else:raise AssertionError('Independent oracle accepted reused '+name)
+    reserved=out/'Windows-zero-data-slot.iso';reserved_layout=windows_reused_fid(reserved,True)
+    run('list','--source',reserved,'--last',reserved_layout['session'],'--hash-files')
+    check('recorded zero-data slot can later become a file ICB with a freshly allocated UID',oracle(reserved,reserved_layout['session'],windows_fid_compatibility=True)['files']==updated_view['files'])
+    dirty_reserved=patch(reserved,'zero-slot-nonzero-invalid-metadata',reserved_layout['priorGenerationICB'],lambda b:b.__setitem__(100,1),False)
+    rejected('zero-slot exception cannot hide nonzero invalid metadata',dirty_reserved,'Unsupported UDF ICB',reserved_layout['session'])
+    missing_reserved=patch(reserved,'zero-slot-cache-hole',reserved_layout['priorGenerationICB'],lambda b:None,False)
+    pathlib.Path(str(missing_reserved)+'.blocks').write_text(''.join(str(lba)+'\n' for begin,end,*_ in reserved_layout['tracks'] for lba in range(begin,end) if lba!=reserved_layout['priorGenerationICB']))
+    rejected('zero-slot proof cannot substitute a sparse cache hole',missing_reserved,'hole in optical cache',reserved_layout['session'])
+    hidden_dir=out/'Windows-hidden-directory-zero-FID.iso';hidden_layout=windows_directory_fid(hidden_dir)
+    run('list','--source',hidden_dir,'--last',hidden_layout['session'],'--hash-files')
+    check('hidden directory zero FID retains directory identity and nested files across updates',oracle(hidden_dir,hidden_layout['session'],windows_fid_compatibility=True)['files']==updated_view['files'])
+    bad=patch(hidden_dir,'hidden-directory-disguised-as-file',hidden_layout['currentZeroFidBlock'],lambda b:b.__setitem__(18,1))
+    rejected('zero FID directory flag must match the child ICB type',bad,'child identity/type',hidden_layout['session'])
     origin=carried_layout['originZeroFidBlock'];at=carried_layout['zeroFidOffset']
     def change_origin_fid(b):
         size=(38+struct.unpack_from('<H',b,at+36)[0]+b[at+19]+3)&~3
@@ -208,6 +270,10 @@ try:
     carry_append=out/'carried-source-append.iso';run('build',new,carry_append,'--source',carried,'--last',carry_last,'--next',18000);run('verify',carry_append)
     carry_composite=out/'carried-source-composite.iso';composite(carried,carry_append,18000,carry_composite);carry_after=oracle(carry_composite,18000,True)
     check('append from carried zero FID and tombstone view creates strict new directory',carry_after['strictConformance'] and all(carry_after['files'][k]==v for k,v in carried_view['files'].items()))
+    update_append=out/'updated-source-append.iso';run('build',new,update_append,'--source',updated,'--last',updated_last,'--next',20000);run('verify',update_append)
+    update_composite=out/'updated-source-composite.iso';composite(updated,update_append,20000,update_composite)
+    update_after=oracle(update_composite,20000,True)
+    check('offline continuation from updated Windows view retains latest payload and extents',update_after['strictConformance'] and all(update_after['files'][k]==v for k,v in updated_view['files'].items()))
     run('verify',image);check('VAT append independently reparsed/verified')
     c1=out/'composite1.iso';composite(eight,image,16000,c1);current=actual_tree(c1,16000)
     independent=oracle(c1,16000,True);original_oracle=oracle(eight,14000)

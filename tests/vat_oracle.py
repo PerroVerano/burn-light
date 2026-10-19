@@ -50,7 +50,7 @@ def read(path, session, generated=False, windows_fid_compatibility=False):
             n = number if ref == 0 else (maps if table is None else table)[number]
             assert n < u32(pd, 192)
             return partition+n
-        def contents(number, ref, table=None):
+        def contents(number, ref, table=None, metadata_only=False):
             absolute = physical(number, ref, table); fe = block(absolute); kind = u16(fe, 0)
             assert kind in (261, 266); tagged(fe, kind, number)
             header = 176 if kind == 261 else 216
@@ -68,9 +68,10 @@ def read(path, session, generated=False, windows_fid_compatibility=False):
                     assert length < 1 << 30 and reference == 0
                     start = physical(address, reference); chunks = []
                     for offset in range((length+B-1)//B):
-                        chunks.append(block(start+offset)); locations.append(address+offset)
+                        if not metadata_only:chunks.append(block(start+offset))
+                        locations.append(address+offset)
                     payload += b''.join(chunks)[:length]; sections.append((start, length, 0))
-            assert len(payload) == u64(fe, 56)
+            assert metadata_only or len(payload) == u64(fe, 56)
             return fe, payload, sections, locations
         end = ranges[-1][1]; vat_lba = end-1
         while block(vat_lba) == bytes(B): vat_lba -= 1
@@ -90,32 +91,58 @@ def read(path, session, generated=False, windows_fid_compatibility=False):
                 previous=u32(oldtable,132)
         fsd = tagged(block(physical(u32(lvd, 252), 1)), 256, u32(lvd, 252))
         root = u32(fsd, 404); files = {}; directories = set(); seen = set()
-        def first_allocation(child, vat, next_uid, older, childfe):
-            absolute=physical(child,1)
+        def first_allocation(child, vat, next_uid, older, childfe,table=None):
+            absolute=physical(child,1,table)
             if absolute>vat or older<len(histories) and absolute<=histories[older][0]:return False
             if u64(childfe,200)>=next_uid:return False
             if not any(begin<=vat<end and begin<=absolute<end for begin,end in ranges):return False
-            return all(child>=len(h[1]) or h[1][child]==0xffffffff for h in histories[older:])
+            for oldvat,oldmap,_,oldnext in histories[older:]:
+                if u64(childfe,200)<oldnext:return False
+                if child<len(oldmap) and oldmap[child]!=0xffffffff:
+                    prior=physical(child,1,oldmap)
+                    if prior>oldvat:return False
+                    b=block(prior)
+                    if b==bytes(B):continue
+                    tagged(b,266,child)
+                    if b[27]!=5 or not microsoft(b) or not 16<=u64(b,200)<oldnext or u64(b,200)>=u64(childfe,200):return False
+            return True
+        def updated_child(child,index,childfe):
+            origin=histories[index];previous=physical(child,1,origin[1])
+            states=[origin]+histories[:index][::-1]+[[vat_lba,maps,vat_fe,u64(vat_fe,160 if u16(vat_fe,0)==261 else 200)]]
+            boundary=None
+            for vat,table,writer,next_uid in states:
+                if child>=len(table) or table[child]==0xffffffff:return False
+                absolute=physical(child,1,table)
+                if boundary is None or absolute!=previous:
+                    b=tagged(block(absolute),266,child)
+                    if b[27]!=childfe[27] or not microsoft(b) or u64(b,200)!=u64(childfe,200) or u64(b,200)>=next_uid:return False
+                    if boundary is not None and (not microsoft(writer) or not boundary<absolute<=vat or
+                            not any(begin<=absolute<end and begin<=vat<end for begin,end in ranges)):return False
+                previous=absolute;boundary=vat
+            return True
         def relocation_record(number,fe,b,position,first):
             size=len(b);recorded=u32(b,12)
             for oldvat,oldmap,_,_ in histories[first:]:
                 if number>=len(oldmap) or oldmap[number]==0xffffffff or physical(number,1,oldmap)>oldvat:continue
-                oldfe,oldbytes,_,oldlocations=contents(number,1,oldmap)
-                if oldfe[27]!=4 or position+size>len(oldbytes):continue
+                oldfe,_,_,oldlocations=contents(number,1,oldmap,metadata_only=True)
+                if oldfe[27]!=4 or position+size>u64(oldfe,56):continue
                 if u64(oldfe,160 if u16(oldfe,0)==261 else 200)!=u64(fe,160 if u16(fe,0)==261 else 200):continue
-                if oldlocations[position//B]!=recorded or oldbytes[position:position+size]!=b:continue
+                if oldlocations[position//B]!=recorded:continue
+                _,oldbytes,_,_=contents(number,1,oldmap)
+                if oldbytes[position:position+size]!=b:continue
                 tagged(b,257,recorded)
-                oldchild,_,_,_=contents(u32(b,24),u16(b,28),oldmap)
+                child=u32(b,24);oldchild=block(physical(child,u16(b,28),oldmap));tagged(oldchild,u16(oldchild,0),child)
                 assert u32(b,32)==u64(oldchild,160 if u16(oldchild,0)==261 else 200)&0xffffffff
                 return True
             return False
         def carried_origin(number,fe,b,position,child,childfe):
             for index,(vat,table,vatfe,next_uid) in enumerate(histories):
                 if not microsoft(vatfe) or number>=len(table) or table[number]==0xffffffff or child>=len(table) or table[child]==0xffffffff:continue
-                if physical(child,1,table)!=physical(child,1) or not first_allocation(child,vat,next_uid,index+1,childfe):continue
-                oldfe,payload,_,locations=contents(number,1,table)
-                if not microsoft(oldfe) or oldfe[27]!=4 or physical(number,1,table)>vat or position+len(b)>len(payload):continue
+                if not first_allocation(child,vat,next_uid,index+1,childfe,table):continue
+                oldfe,_,_,locations=contents(number,1,table,metadata_only=True)
+                if not microsoft(oldfe) or oldfe[27]!=4 or physical(number,1,table)>vat or position+len(b)>u64(oldfe,56):continue
                 if u64(oldfe,160 if u16(oldfe,0)==261 else 200)!=u64(fe,160 if u16(fe,0)==261 else 200):continue
+                _,payload,_,_=contents(number,1,table)
                 if payload[position:position+len(b)]!=b:continue
                 offset=0;proven=False
                 while offset<position:
@@ -124,7 +151,7 @@ def read(path, session, generated=False, windows_fid_compatibility=False):
                     if u32(q,12) and u32(q,12)!=locations[offset//B]:
                         proven |= relocation_record(number,oldfe,q[:n],offset,index+1)
                     offset+=n
-                if proven:return vat
+                if proven and updated_child(child,index,childfe):return vat
             return None
         def walk(number, path, parent):
             assert number not in seen; seen.add(number)
@@ -153,9 +180,9 @@ def read(path, session, generated=False, windows_fid_compatibility=False):
                     else:
                         assert relocation and impl==0
                         if not deleted:
-                            child=u32(b,24);assert b[18]==0 and u16(b,28)==1
-                            childfe,_,_,_=contents(child,1)
-                            assert u16(childfe,0)==266 and childfe[27]==5 and microsoft(childfe)
+                            child=u32(b,24);assert b[18]&~3==0 and u16(b,28)==1
+                            childfe,_,_,_=contents(child,1,metadata_only=True)
+                            assert u16(childfe,0)==266 and childfe[27]==(4 if b[18]&2 else 5) and microsoft(childfe)
                             assert 16<=u64(childfe,200)<u64(vat_fe,160 if u16(vat_fe,0)==261 else 200)
                             assert u32(b,32)==u64(childfe,200)&0xffffffff
                             assert first_allocation(child,vat_lba,u64(vat_fe,160 if u16(vat_fe,0)==261 else 200),0,childfe) or carried_origin(number,fe,b[:size],position,child,childfe) is not None

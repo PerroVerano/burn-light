@@ -11,7 +11,7 @@ import tempfile
 
 root=pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(root/'tests'))
-from vat_fixture import fixture, windows_fid_compatibility, windows_carried_fid
+from vat_fixture import fixture, windows_fid_compatibility, windows_carried_fid, windows_updated_fid, windows_reused_fid, windows_directory_fid
 from vat_oracle import read as oracle
 app=pathlib.Path(os.environ['BURNLIGHT_TEST_APP'])
 cli=app/'Contents/MacOS/appendcd';adapter=cli.with_name('burnlight-export')
@@ -58,6 +58,26 @@ try:
     listing=run(cli,'list','--source',image,'--last',layout['session'])
     carriedView=next(line.split(': ')[1] for line in listing.splitlines() if line.startswith('Filesystem view:'))
     export('Windows-carried-origin-and-deleted-FID-export',list(expected),carriedView,compatibility='windows-fid-location-v1',last=layout['session'])
+    image=out/'windows-updated.iso';layout=windows_updated_fid(image)
+    expected=oracle(image,layout['session'],windows_fid_compatibility=True)['files']
+    listing=run(cli,'list','--source',image,'--last',layout['session'])
+    updatedView=next(line.split(': ')[1] for line in listing.splitlines() if line.startswith('Filesystem view:'))
+    export('Windows-updated-file-exports-latest-bytes',list(expected),updatedView,compatibility='windows-fid-location-v1',last=layout['session'])
+    image=out/'windows-reused.iso';layout=windows_reused_fid(image)
+    expected=oracle(image,layout['session'],windows_fid_compatibility=True)['files']
+    listing=run(cli,'list','--source',image,'--last',layout['session'])
+    reusedView=next(line.split(': ')[1] for line in listing.splitlines() if line.startswith('Filesystem view:'))
+    export('Windows-reused-slot-exports-current-identity',list(expected),reusedView,compatibility='windows-fid-location-v1',last=layout['session'])
+    image=out/'windows-zero-data-slot.iso';layout=windows_reused_fid(image,True)
+    expected=oracle(image,layout['session'],windows_fid_compatibility=True)['files']
+    listing=run(cli,'list','--source',image,'--last',layout['session'])
+    reservedView=next(line.split(': ')[1] for line in listing.splitlines() if line.startswith('Filesystem view:'))
+    export('Windows-recorded-zero-slot-becomes-file-ICB',list(expected),reservedView,compatibility='windows-fid-location-v1',last=layout['session'])
+    image=out/'windows-hidden-directory.iso';layout=windows_directory_fid(image)
+    expected=oracle(image,layout['session'],windows_fid_compatibility=True)['files']
+    listing=run(cli,'list','--source',image,'--last',layout['session'])
+    directoryView=next(line.split(': ')[1] for line in listing.splitlines() if line.startswith('Filesystem view:'))
+    export('Windows-hidden-directory-zero-FID-and-descendants',list(expected),directoryView,compatibility='windows-fid-location-v1',last=layout['session'])
     report={'result':'PASS','checks':checks,'count':len(checks),'cliSHA256':hashlib.sha256(cli.read_bytes()).hexdigest(),'adapterSHA256':hashlib.sha256(adapter.read_bytes()).hexdigest(),'fixture':'tests/vat_fixture.py','oracle':'tests/vat_oracle.py','scratch':str(out),'physicalWrites':0}
     (evidence/'vat-export.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
     print('PASS:',len(checks),'VAT export scenarios;',out)

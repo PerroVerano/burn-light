@@ -2,7 +2,9 @@
 
 原生 macOS / Apple Silicon 的 CD-R / DVD-R multisession 实验。**自动识别光学光驱，无品牌、型号或固件白名单**。`burn` 追加到已有完整 Session 的盘，独立的 `init` 入口用于空白盘首次刻录。单光驱自动选择；多个光驱必须通过 `--device` 指定目标。保留设备身份、写入能力、介质和可写地址检查。CLI 项目名保留 `appendcd`。
 
-独立的 [原生 GUI 正式本机使用版 1.2.1](gui/README.md) 提供自包含 `.app`、用户输入快照、光盘文件导出、任务归档与系统认证。当前指定 CD-R 已完成 GUI 两次追加/实际读回、Windows 七文件正常打开及再次追加、返回 Mac GUI 八文件实际读取/导出；同路径文件可明确选择跳过或替换。返回盘发现的 Session 地址矛盾和 31-block 短卷导入已修复，六组 CLI 回归、136 条 GUI 断言与专项离线测试通过。原 `build/appendcd` 和两个 runtime 保持基线，未替换文件仍重用旧 extent。最新产物、证据及未完成项见 [验收报告](gui/evidence/write-acceptance-20261010/acceptance.md)，[GUI 制作指南](docs/gui-development-guide.md) 保留历史契约与开发约束。
+独立的 [原生 GUI 正式本机使用版 1.2.2](gui/README.md) 提供自包含 `.app`、用户输入快照、光盘文件导出、任务归档与系统认证。2026-10-19 修复 Windows 连续更新文件、先前映射零数据的虚拟编号和隐藏目录的 VAT/FID 兼容；当前 12 Session DVD-R 的 9 文件双重实读、独立解析和本地 SHA-256 比对通过，见 [本次只读验收](docs/udf201-windows-updates-20261019.md)。本轮没有写盘。
+
+此前指定 CD-R 已完成 GUI 两次追加/实际读回、Windows 七文件正常打开及再次追加、返回 Mac GUI 八文件实际读取/导出；同路径文件可明确选择跳过或替换。返回盘发现的 Session 地址矛盾和 31-block 短卷导入已修复，六组 CLI 回归、136 条 GUI 断言与专项离线测试通过。原 `build/appendcd` 和两个 runtime 保持基线，未替换文件仍重用旧 extent。该阶段产物、证据及未完成项见 [验收报告](gui/evidence/write-acceptance-20261010/acceptance.md)，[GUI 制作指南](docs/gui-development-guide.md) 保留历史契约与开发约束。
 
 新 Git checkout 请先阅读 [仓库范围与重新构建](docs/repository.md)，恢复必要基准输入，并把当前源码 CLI 构建到独立 `build-cli/`。大缓存、完整实盘任务及用户输入不在 Git 中；验收摘要中的历史路径不保证随 clone 存在。
 

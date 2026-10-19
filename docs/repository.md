@@ -2,7 +2,7 @@
 
 仓库保存 C++ CLI/core、现有后端 patch/header、原六组回归、SwiftUI/AppKit GUI、独立导出适配器、构建/打包/验证脚本、合成小文件、说明与少量验收摘要。
 
-当前本机 1.2.1 / build 5 经用户试用无异常，于 2026-10-13 按用户要求暂时结档，见 [结档记录](release-1.2.1-closeout-20261013.md)。`docs/evidence/` 保存 UDF/VAT、GUI 修复及清理的小型机器摘要；这些摘要中的路径/hash 是验收时的绑定，真实用户数据和大缓存仍保留本地。
+当前本机版本为 1.2.2 / build 6，2026-10-19 的 Windows 连续更新兼容修复与当前 DVD-R 只读验收见 [本次记录](udf201-windows-updates-20261019.md)。1.2.1 / build 5 的历史结档见 [结档记录](release-1.2.1-closeout-20261013.md)。`docs/evidence/` 保存 UDF/VAT、GUI 修复及清理的小型机器摘要；这些摘要中的路径/hash 是验收时的绑定，真实用户数据和大缓存仍保留本地。
 
 本地 build、GUI output/编译缓存、光盘 ISO/cache/manifest、完整物理任务归档、本次用户输入 DOCX/Java、导出的用户文件、toc.dat、.DS_Store 均不提交。`gui/evidence/` 只按 .gitignore 中的明确名单提交说明和小型摘要；摘要中的绝对路径和任务 ID 是历史诊断位置，未附对应用户数据。历史 hash 和构建绑定保留当时结果，不当作 Git 当前源码的完整 hash。
 
