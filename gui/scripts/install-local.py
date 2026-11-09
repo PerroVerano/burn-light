@@ -41,3 +41,10 @@ if destination.exists() or destination.is_symlink():
         print('Removed old backup:', old)
 pending.rename(destination)
 print('Installed:', destination)
+# 已安装副本通过签名校验后删除构建产物，避免 Spotlight / 启动台再收录一份 BurnLight.app。
+if os.environ.get('BURNLIGHT_KEEP_BUILD') != '1' and app.is_dir() and not app.is_symlink():
+    subprocess.run(['/usr/bin/codesign', '--verify', '--deep', '--strict', str(destination)], check=True)
+    lsregister = '/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister'
+    subprocess.run([lsregister, '-u', str(app)], stderr=subprocess.DEVNULL)
+    shutil.rmtree(app)
+    print('Removed build output:', app, '(set BURNLIGHT_KEEP_BUILD=1 to keep it)')
