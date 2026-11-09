@@ -4,7 +4,10 @@ import datetime
 import os
 import pathlib
 import subprocess
+import shutil
 import uuid
+
+KEEP_BACKUPS = 3
 
 root = pathlib.Path(__file__).resolve().parents[1]
 app = root / 'output/BurnLight.app'
@@ -25,8 +28,16 @@ if destination.exists() or destination.is_symlink():
     identifier = subprocess.check_output(['/usr/libexec/PlistBuddy', '-c', 'Print :CFBundleIdentifier', str(destination / 'Contents/Info.plist')], text=True).strip()
     if identifier != 'local.burnlight.gui':
         raise SystemExit('Existing app has another identity; left unchanged')
-    backup = folder / ('BurnLight-previous-' + datetime.datetime.now().strftime('%Y%m%d-%H%M%S') + '-' + str(uuid.uuid4())[:8] + '.app')
+    # 备份放在 .noindex 目录，避免 Spotlight / 启动台把旧版本当成可启动应用；只保留最近几份。
+    backups = pathlib.Path.home() / 'Library/Application Support/BurnLight/AppBackups.noindex'
+    backups.mkdir(parents=True, exist_ok=True, mode=0o700)
+    backup = backups / ('BurnLight-previous-' + datetime.datetime.now().strftime('%Y%m%d-%H%M%S') + '-' + str(uuid.uuid4())[:8] + '.app')
     destination.rename(backup)
     print('Previous app retained:', backup)
+    for old in sorted(backups.glob('BurnLight-previous-*.app'))[:-KEEP_BACKUPS]:
+        if old.is_symlink() or not old.is_dir():
+            continue
+        shutil.rmtree(old)
+        print('Removed old backup:', old)
 pending.rename(destination)
 print('Installed:', destination)

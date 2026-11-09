@@ -155,6 +155,27 @@ public enum TextContract {
         guard values.isDirectory == true, values.isSymbolicLink != true else { throw GUIError.invalid("记录目录不是安全目录") }
         return url
     }
+    static func physicalTrackLines(_ records: [String]) -> [String] {
+        records.filter { matches($0, "^Track [0-9]+: start=[0-9]+ blocks=[0-9]+ reserved=[01] blank=[01] NWA-valid=[01]$") }
+    }
+    // 写一次介质上任何写入都会改变 Session/Track/NWA/剩余容量或留下未完成 Session。
+    // 只有核心自己在写入前打印的唯一扫描块与当前只读检查完全一致，才能证明该失败任务未写盘。
+    public static func unchangedSinceFailedWrite(writeStdout: String, inspect: CLIResult, selected: Drive) throws -> Bool {
+        let records = try lines(writeStdout)
+        let starts = records.indices.filter { records[$0].hasPrefix("Drive: ") }
+        guard starts.count == 1 else { return false }
+        let block = Array(records[starts[0]...])
+        var before = try discFromLines(block, selected: selected)
+        guard before.writeCLIOperation != nil else { return false }
+        let currentRecords = try lines(inspect.stdout)
+        var current = try disc(inspect, selected: selected)
+        guard !current.unfinished else { return false }
+        let beforeTracks = physicalTrackLines(block), currentTracks = physicalTrackLines(currentRecords)
+        guard !beforeTracks.isEmpty, beforeTracks == currentTracks else { return false }
+        // 写入命令输出不含文件系统识别行；只比较物理几何与身份。
+        for d in [\Disc.filesystem, \Disc.filesystemView, \Disc.udfCompatibility] as [WritableKeyPath<Disc, String?>] { before[keyPath: d] = nil; current[keyPath: d] = nil }
+        return before == current
+    }
     public static func physicalSuccess(_ result: CLIResult, request: CLIOperation, selected: Drive, evidence: URL) throws -> Disc {
         guard result.succeeded else { throw GUIError.invalid("物理操作没有明确成功") }
         let marker = try lines(String(contentsOf: evidence.appendingPathComponent("result.txt"), encoding: .utf8))

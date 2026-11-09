@@ -95,7 +95,7 @@ public final class CleanupManager: Sendable {
         guard errno == ENOENT else { throw Staging.error("无法检查任务材料") }; return false
     }
     private func archiveIndex(_ record: JobRecord, wholeWorkspace: Bool = true) throws -> ArchiveIndex {
-        let expected = store.directory.deletingLastPathComponent().appendingPathComponent("Archives").appendingPathComponent(record.id.uuidString).path
+        let expected = store.archiveBase.appendingPathComponent(record.id.uuidString).path
         guard try record.archivePath.map(canonical) == expected else { throw GUIError.invalid("缺少完整归档") }
         let root = try openDirectory(expected); defer { close(root) }
         let fd = openat(root, "archive.json", O_RDONLY | O_NOFOLLOW | O_CLOEXEC | O_NONBLOCK)
@@ -178,7 +178,7 @@ public final class CleanupManager: Sendable {
                 if policy.mode == .temporary { _ = try archiveIndex(r); backups.insert(r.id) }
                 if try exists(workspace), !blocked(workspace) { paths.append(workspace) }
                 if policy.mode == .history, let archive = r.archivePath {
-                    let expected = store.directory.deletingLastPathComponent().appendingPathComponent("Archives").appendingPathComponent(r.id.uuidString).path
+                    let expected = store.archiveBase.appendingPathComponent(r.id.uuidString).path
                     guard try canonical(archive) == expected else { throw GUIError.invalid("归档位置不属于该任务") }
                     if try exists(expected), !blocked(expected) { paths.append(expected) }
                 }

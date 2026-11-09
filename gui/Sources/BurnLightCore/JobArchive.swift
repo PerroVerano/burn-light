@@ -44,7 +44,7 @@ extension JobStore {
         guard ![.physical, .unknown].contains(record.phase), workspace.resolvingSymlinksInPath().path == (try JobStore.temporaryJob(record.id)).resolvingSymlinksInPath().path else {
             throw GUIError.invalid("活动/未知任务不能归档，或任务位置不一致")
         }
-        let base = directory.deletingLastPathComponent().appendingPathComponent("Archives", isDirectory: true)
+        let base = archiveBase
         try Self.secureDirectory(base)
         let final = base.appendingPathComponent(record.id.uuidString, isDirectory: true)
         if FileManager.default.fileExists(atPath: final.path) {
@@ -78,7 +78,7 @@ extension JobStore {
     public func validatedArchive(_ record: JobRecord) throws -> (URL, ArchiveIndex) {
         guard let path = record.archivePath else { throw GUIError.invalid("任务尚未归档") }
         let archive = URL(fileURLWithPath: path).resolvingSymlinksInPath()
-        let base = directory.deletingLastPathComponent().appendingPathComponent("Archives").resolvingSymlinksInPath()
+        let base = archiveBase.resolvingSymlinksInPath()
         guard archive.deletingLastPathComponent() == base, archive.lastPathComponent == record.id.uuidString else { throw GUIError.invalid("归档不属于本应用任务") }
         try Self.secureDirectory(archive)
         let fd = open(archive.appendingPathComponent("archive.json").path, O_RDONLY | O_NOFOLLOW | O_CLOEXEC | O_NONBLOCK)
@@ -102,6 +102,26 @@ extension JobStore {
             guard try Staging.walk(source, prefix: "", target: nil, flag: CancellationFlag(), includeFinderCache: true) == content.sorted(by: { $0.path < $1.path }) else { throw GUIError.invalid("归档内容 hash 不一致，停止还原") }
         }
         return (archive, index)
+    }
+    // 从已校验的归档中取出该任务唯一一次写入命令的 CLI stdout；找不到或不唯一时拒绝。
+    public func archivedWriteOutput(_ record: JobRecord) throws -> String {
+        guard record.operation?.writes == true else { throw GUIError.invalid("不是写入任务") }
+        let (archive, index) = try validatedArchive(record)
+        let files = Set(index.entries.filter { !$0.directory }.map { $0.path })
+        var outputs: [String] = []
+        for request in files.sorted() where TextContract.matches(request, "^workspace/command-[0-9A-F-]{36}/request[.]json$") {
+            let data = try Data(contentsOf: archive.appendingPathComponent(request))
+            guard data.count <= 1024 * 1024, let object = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let raw = object["operation"] as? String, let operation = CLIOperation(rawValue: raw) else { throw GUIError.invalid("归档命令请求无法识别") }
+            guard operation.writes else { continue }
+            let stdout = String(request.dropLast("request.json".count)) + "stdout.log"
+            guard files.contains(stdout) else { throw GUIError.invalid("归档缺少写入命令输出") }
+            let text = try Data(contentsOf: archive.appendingPathComponent(stdout))
+            guard text.count <= 32 * 1024 * 1024, let string = String(data: text, encoding: .utf8) else { throw GUIError.invalid("写入命令输出无效") }
+            outputs.append(string)
+        }
+        guard outputs.count == 1 else { throw GUIError.invalid("归档中写入命令缺失或重复") }
+        return outputs[0]
     }
     public func restore(_ record: JobRecord) throws {
         guard !FileManager.default.fileExists(atPath: PhysicalLease.activeMarker.path) else { throw GUIError.invalid("物理 worker 未确认退出") }

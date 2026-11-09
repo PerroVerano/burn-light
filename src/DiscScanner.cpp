@@ -175,8 +175,21 @@ static std::map<std::string,std::string> opticalEnvironment(const DiscInfo &disc
     require(disc.drive.registryId,"Missing stable optical device identity");
     return {{"APPENDCD_DEVICE_REGISTRY_ID",std::to_string(disc.drive.registryId)}};
 }
+// macOS 27.2 上，前一个 SCSI 客户端释放光驱后约 1 秒内，新的 ObtainExclusiveAccess 可能被拒绝，
+// 且失败发生在任何 SCSI 命令之前。只对只读查询/读取重试；写入器本身从不重试。
+static std::string readOnlyOpticalRun(const std::vector<std::string> &args,int timeout,const std::map<std::string,std::string> &environment) {
+    constexpr int attempts=6;
+    for(int attempt=1;;++attempt) {
+        auto r=run(args,timeout,false,environment);
+        if(r.status==0)return r.output;
+        bool busy=r.output.find("Unable to get exclusive access to device")!=std::string::npos;
+        require(busy && attempt<attempts,args[0]+" failed ("+std::to_string(r.status)+"):\n"+r.output);
+        std::cerr<<"Optical exclusive access refused before any SCSI command; read-only retry "<<attempt<<"/"<<attempts-1<<" in 1s\n";
+        for(int i=0;i<10;++i){checkInterrupted();usleep(100000);}
+    }
+}
 static std::string recorder(const DiscInfo &disc,const std::vector<std::string> &args) {
-    return checkedRun(args,60,false,opticalEnvironment(disc));
+    return readOnlyOpticalRun(args,60,opticalEnvironment(disc));
 }
 void DiscScanner::applyInitialProbe(DiscInfo &d, const std::string &probe) {
     require(d.blank, "Initial probe cannot authorize a recorded disc");
@@ -359,7 +372,7 @@ void OpticalBlocks::prefetch(uint32_t lba, uint32_t count) {
         for(uint32_t i=1;i<n;++i)if(cached_.contains(begin+i)){n=i;break;}
         revalidateDrive(disc_.drive,false);
         auto file = directory_ / "sector.bin"; std::error_code ec; fs::remove(file, ec);
-        auto output = checkedRun({READCD_PATH, "dev=" + disc_.device, "sectors=" + std::to_string(begin) + "-" + std::to_string(begin + n), "retries=4", "f=" + file.string()}, 120);
+        auto output = readOnlyOpticalRun({READCD_PATH, "dev=" + disc_.device, "sectors=" + std::to_string(begin) + "-" + std::to_string(begin + n), "retries=4", "f=" + file.string()}, 120, {});
         writeText(directory_ / "last-readcd.txt", output);
         require(fs::file_size(file) == uint64_t(n) * BlockSize, "readcd range size mismatch");
         FileBlocks sector(file);

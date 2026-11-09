@@ -77,6 +77,7 @@ final class AppModel: ObservableObject {
             runner = CLIRunner(configuration: config)
             physicalWritesEnabled = config.allowPhysicalWrites
             store = try JobStore(directory: URL(fileURLWithPath: config.recordDirectory))
+            try store!.migrateArchives()
             let loaded = try store!.load(); history = loaded.records; historyWarnings = loaded.warnings
             needsInspection = history.contains { ($0.operation?.writes == true && [.needsInspection, .physical, .unknown].contains($0.phase)) || $0.requiresInspection == true }
             workerUnknown = FileManager.default.fileExists(atPath: PhysicalLease.activeMarker.path)
@@ -199,8 +200,34 @@ final class AppModel: ObservableObject {
                 oldFiles = try TextContract.tree(listing, selected: drive, matching: disc)
             }
             inspectionAfterFailure = needsInspection
-            await end(needsInspection ? .needsInspection : .idle, needsInspection ? "只读检查完成。仍保留写入锁定，请选择失败任务的原镜像进行补验。" : "介质检查完成。\(disc?.blank == true ? "空白盘尚无目录。" : "已读取最新 Session 目录。")")
+            let cleared = needsInspection ? await clearUnwrittenFailures(inspect: result, drive: drive) : 0
+            let unlocked = cleared > 0 && !needsInspection
+            let suffix = disc?.blank == true ? "空白盘尚无目录。" : "已读取最新 Session 目录。"
+            await end(needsInspection ? .needsInspection : .idle,
+                      needsInspection ? "只读检查完成。仍保留写入锁定，请选择失败任务的原镜像进行补验。" + (cleared > 0 ? "（已有 \(cleared) 个失败任务确认未写入）" : "")
+                                      : unlocked ? "介质检查完成。失败任务的光盘状态与其写入前扫描完全一致，确认未写入，已解除写入锁定。\(suffix)" : "介质检查完成。\(suffix)")
         } catch { disc = nil; oldFiles = []; await end(workerUnknown ? .unknown : .failed, error.localizedDescription) }
+    }
+    // 写入前失败（例如写前复核拿不到独占访问）不会改变写一次介质，原镜像补验也永远无法通过。
+    // 仅当核心在该任务中打印的写前扫描与本次只读检查的物理几何完全一致时，才把记录改为未写入失败。
+    private func clearUnwrittenFailures(inspect: CLIResult, drive: Drive) async -> Int {
+        guard let store else { return 0 }
+        var cleared = 0
+        for var record in history where record.operation?.writes == true && [.needsInspection, .physical].contains(record.phase) && record.device?.id == drive.id {
+            do {
+                let job = record
+                let output = try await Task.detached { try store.archivedWriteOutput(job) }.value
+                guard try TextContract.unchangedSinceFailedWrite(writeStdout: output, inspect: inspect, selected: drive) else { continue }
+                record.phase = .failed; record.requiresInspection = false
+                record.message = "只读检查确认未写入：Session、Track、下一可写地址与剩余容量均与写入前扫描一致。"
+                try store.save(record); cleared += 1
+            } catch { logs += "\n任务 \(record.id.uuidString) 无法证明未写入，保留锁定：\(error.localizedDescription)" }
+        }
+        if cleared > 0, let loaded = try? store.load() {
+            history = loaded.records; historyWarnings = loaded.warnings
+            needsInspection = history.contains { $0.requiresInspection == true || ($0.operation?.writes == true && [.needsInspection, .physical, .unknown].contains($0.phase)) }
+        }
+        return cleared
     }
     func chooseInput() {
         guard !busy else { return }

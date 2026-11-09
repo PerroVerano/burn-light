@@ -15,7 +15,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         return .terminateNow
     }
-    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
+    // 关闭最后一个窗口即退出（等同 ⌘Q）；任务运行中仍由 applicationShouldTerminate 拒绝退出。
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         if !flag { sender.windows.first(where: { $0.canBecomeMain })?.makeKeyAndOrderFront(nil) }
         return true

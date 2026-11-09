@@ -32,11 +32,20 @@ actor MockRunner: CLIRunning {
     var cancelledWrites = false
     var blank = false
     var sessions = 2
-    func configure(fail: Bool = false, unknown: Bool = false, cancelled: Bool = false, blank: Bool = false) {
-        failWrites = fail; unknownWrites = unknown; cancelledWrites = cancelled; self.blank = blank
+    var advanceOnFail = false
+    func configure(fail: Bool = false, unknown: Bool = false, cancelled: Bool = false, blank: Bool = false, advanceOnFail: Bool = false) {
+        failWrites = fail; unknownWrites = unknown; cancelledWrites = cancelled; self.blank = blank; self.advanceOnFail = advanceOnFail
     }
     func writes() -> Int { operations.filter { $0.writes }.count }
+    // 与真实 runner 一样在命令目录留下 request.json / stdout.log，供归档与未写入判定使用。
     func run(_ request: CLIRequest, directory: URL) async throws -> CLIResult {
+        let output = try await respond(request, directory: directory)
+        try JSONSerialization.data(withJSONObject: ["operation": request.operation.rawValue, "arguments": request.arguments], options: [.prettyPrinted, .sortedKeys])
+            .write(to: directory.appendingPathComponent("request.json"), options: .withoutOverwriting)
+        try Data(output.stdout.utf8).write(to: directory.appendingPathComponent("stdout.log"), options: .withoutOverwriting)
+        return output
+    }
+    func respond(_ request: CLIRequest, directory: URL) async throws -> CLIResult {
         operations.append(request.operation)
         requests.append(request)
         try JobStore.secureDirectory(directory)
@@ -67,7 +76,11 @@ actor MockRunner: CLIRunning {
             if cancelledWrites { return CLIResult(exitCode: nil, stdout: "", stderr: "(-128)", logDirectory: directory, authorizationCancelled: true) }
             let image = evidence.appendingPathComponent(request.operation == .initialize ? "session-first.iso" : "session-next.iso")
             try Data("mock".utf8).write(to: image); try Data("mock".utf8).write(to: URL(fileURLWithPath: image.path + ".manifest"))
-            if failWrites { return result(prefix + discText(blank: blank), exit: 1, directory: directory) }
+            if failWrites {
+                let before = discText(blank: blank, sessions: sessions)
+                if advanceOnFail { sessions += 1 } // 模拟写入中途失败：介质几何已改变。
+                return result(prefix + before, exit: 1, directory: directory)
+            }
             try Data("PHYSICAL_READBACK_PASS\nWINDOWS_ACCEPTANCE_PENDING\nMedia: CD-R\nSession start: 11702\nImage SHA256: \(String(repeating: "a", count: 64))\n".utf8).write(to: evidence.appendingPathComponent("result.txt"))
             let success = "OPTICAL READBACK VERIFIED (Windows acceptance still required)\n"
             if request.operation == .readback {
@@ -376,6 +389,15 @@ struct ValidationMain {
         try originalJSON.write(to: archiveJSON)
         let loaded = try JobStore(directory: store.directory).load()
         try c.expect("history survives a new store instance", loaded.records.count == 1 && loaded.records[0].archivePath == archive.path)
+        try c.expect("archives live in a Spotlight-excluded folder", archive.deletingLastPathComponent().lastPathComponent == "Archives.noindex")
+        let legacyBase = store.archiveBase.deletingLastPathComponent().appendingPathComponent("Archives")
+        try FileManager.default.moveItem(at: store.archiveBase, to: legacyBase)
+        var legacyRecord = record; legacyRecord.archivePath = legacyBase.appendingPathComponent(record.id.uuidString).path; try store.save(legacyRecord)
+        let migrated = try store.migrateArchives()
+        let afterMigration = try store.records().first { $0.id == record.id }!
+        try c.expect("legacy Archives migrates with record paths rewritten", migrated == 1 && !FileManager.default.fileExists(atPath: legacyBase.path) &&
+                     afterMigration.archivePath == archive.path && (try? store.validatedArchive(afterMigration)) != nil)
+        try c.expect("archive migration is idempotent", try store.migrateArchives() == 0)
         try Data("broken".utf8).write(to: store.directory.appendingPathComponent(UUID().uuidString + ".json"))
         let isolated = try store.load()
         try c.expect("malformed history isolated with visible warnings", isolated.records.count == 1 && isolated.warnings.count == 1)
@@ -606,7 +628,7 @@ struct ValidationMain {
         model.historyWarnings = ["unreadable job"]
         try c.expect("history warning cannot enable write after preview", !model.canWrite && model.writeDisabledReason?.contains("任务索引") == true)
         model.historyWarnings = []
-        await mock.configure(fail: true)
+        await mock.configure(fail: true, advanceOnFail: true)
         await model.write()
         try c.expect("write failure enters inspection and blocks burn", model.phase == .needsInspection && model.needsInspection && !model.canWrite)
         await model.write()
@@ -615,10 +637,31 @@ struct ValidationMain {
         let failed = try store.records().first { $0.operation?.writes == true }!
         try c.expect("failed job persists original image and snapshot", failed.imagePath != nil && failed.snapshotPath == snapshot.directory.path)
         await model.inspect(); await mock.configure()
+        try c.expect("inspect after geometry-changing failure keeps write lock", model.needsInspection && !model.canWrite && model.phase == .needsInspection)
         await model.readback(URL(fileURLWithPath: failed.imagePath!))
         try c.expect("original image readback resolves matching failure only", model.phase == .completed && !model.needsInspection && !model.canWrite)
         let writesAfterReadback = await mock.writes()
         try c.expect("readback did not create second write request", writesAfterReadback == 1)
+        let prewriteMock = MockRunner(), prewriteStore = try JobStore(directory: root.appendingPathComponent("prewrite-records"))
+        let prewrite = AppModel(runner: prewriteMock, store: prewriteStore)
+        await prewrite.discover(); await prewrite.inspect(); prewrite.snapshot = snapshot; await prewrite.preview()
+        await prewriteMock.configure(fail: true); await prewrite.write()
+        try c.expect("pre-write failure still locks until inspected", prewrite.needsInspection && !prewrite.canWrite)
+        await prewriteMock.configure(); await prewrite.inspect()
+        let prewriteRecord = try prewriteStore.records().first { $0.operation?.writes == true }
+        try c.expect("inspect with unchanged geometry clears unwritten failure", !prewrite.needsInspection && prewrite.phase == .idle &&
+                     prewriteRecord?.phase == .failed && prewriteRecord?.requiresInspection == false && prewrite.detail.contains("确认未写入"))
+        await prewrite.preview()
+        try c.expect("cleared unwritten failure allows a fresh preview to enable writing", prewrite.canWrite)
+        let prewriteWrites = await prewriteMock.writes()
+        try c.expect("unwritten-failure unlock issues no write", prewriteWrites == 1)
+        let fake = try TextContract.drives(result(driveText))[0]
+        try c.expect("unchanged geometry proves no write", try TextContract.unchangedSinceFailedWrite(writeStdout: discText(), inspect: result(discText()), selected: fake))
+        try c.expect("added Session is not treated as unwritten", try !TextContract.unchangedSinceFailedWrite(writeStdout: discText(), inspect: result(discText(sessions: 3)), selected: fake))
+        try c.expect("unfinished Session is not treated as unwritten", try !TextContract.unchangedSinceFailedWrite(writeStdout: discText(), inspect: result(discText(unfinished: true)), selected: fake))
+        try c.expect("changed NWA Track is not treated as unwritten", try !TextContract.unchangedSinceFailedWrite(writeStdout: discText(), inspect: result(discText().replacingOccurrences(of: "blank=1", with: "blank=0")), selected: fake))
+        try c.expect("post-write scan in output is not treated as unwritten", try !TextContract.unchangedSinceFailedWrite(writeStdout: discText() + discText(sessions: 3), inspect: result(discText()), selected: fake))
+        try c.expect("missing pre-write scan is not treated as unwritten", try !TextContract.unchangedSinceFailedWrite(writeStdout: "appendcd: preflight failed\n", inspect: result(discText()), selected: fake))
         let unknownMock = MockRunner(), unknownStore = try JobStore(directory: root.appendingPathComponent("unknown-records"))
         let unknown = AppModel(runner: unknownMock, store: unknownStore)
         await unknown.discover(); await unknown.inspect(); unknown.snapshot = snapshot; await unknown.preview(); await unknownMock.configure(unknown: true); await unknown.write()
